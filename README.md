@@ -1,39 +1,39 @@
-# AdaVizion: Gamified University Engagement Platform
+# 🦁 AdaVizion: Gamified University Engagement Platform
 
-> **Transforming Euthenics Subject into an Immersive Campus Adventure.**
+> **Transforming Euthenics & Orientation into an Immersive Campus Adventure.**
 
 ![Flutter](https://img.shields.io/badge/Built_with-Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Language-Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-In_Development-orange?style=for-the-badge)
 
-## 📖 About The Project
+## About The Project
 
 **AdaVizion** is a mobile-first EdTech application designed to revolutionize the student onboarding experience at **Enverga University**. 
 
-By digitizing **Euthenics courses** and university orientation, AdaVizion turns passive learning into an active, location-based adventure. Students don't just "read" about university history. They explore it, unlock it, and earn achievements for mastering it.
+By digitizing **Euthenics courses** and university orientation, AdaVizion turns passive learning into an active, location-based adventure. Students don't just "read" about university history—they explore it, unlock it, and earn achievements for mastering it.
 
-### 🎯 Core Mission
+### Core Mission
 To foster a deeper connection between the student body and the university’s history through **gamification**, **interactive discovery**, and **digital storytelling**.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🗺️ Campus Quest (Location-Based)
+### Campus Quest (Location-Based)
 - **Digital Scavenger Hunts:** Unlock lore by physically visiting historical landmarks on campus.
 - **Interactive Maps:** Real-time navigation to key university locations.
 
-### 🧠 Knowledge Hub (Gamified Learning)
+### Knowledge Hub (Gamified Learning)
 - **Trivia Challenges:** Test your knowledge of Enverga history to earn points.
 - **Euthenics Modules:** Interactive lessons that replace traditional static reading materials.
 
-### 🏆 Achievement System
+### Achievement System
 - **Digital Badges:** Earn rewards for completing orientation tasks and history milestones.
 - **Social Flex:** Share banners and badges directly to social media.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Framework:** [Flutter](https://flutter.dev/) (Cross-platform Mobile)
 * **Language:** Dart
@@ -43,26 +43,58 @@ To foster a deeper connection between the student body and the university’s hi
 
 ---
 
-## 🚀 Installation & Setup
+## Environment Setup Guide (Windows)
 
-To run this project locally, follow these specific steps.
+To contribute to this project, you must set up your development environment correctly.
 
-### 1. Prerequisites
-Ensure you have the following installed:
-* **Flutter SDK:** Version 3.x.x (Stable Channel)
-* **Visual Studio Code:** With the official Flutter & Dart extensions.
-* **Android Studio:** With Command-line Tools & Emulator (Pixel 7 recommended).
+> **Official Reference:** We follow the [Flutter Windows Quick Start Guide](https://docs.flutter.dev/install/quick).
 
-### 2. Clone the Repository
-Open your terminal and run:
+### 1. Flutter SDK Installation
+1.  Download the **Flutter SDK (Stable)** zip file from the official website.
+2.  Extract the folder to `C:\src\flutter`.
+    * **⚠️ IMPORTANT:** Do *not* install in `C:\Program Files` (Windows permissions will block updates).
+3.  **Add to Path:**
+    * Press `Windows Key` and type "env". Select **Edit environment variables for your account**.
+    * Under "User variables", find `Path` and click **Edit**.
+    * Click **New** and paste: `C:\src\flutter\bin`.
+    * Click OK to save.
+
+### 2. Android Studio Setup (For Toolchain)
+1.  Download and install **Android Studio** (Standard settings).
+2.  Open Android Studio.
+3.  **Install Command-line Tools:**
+    * Click **More Actions** (3 dots) > **SDK Manager**.
+    * Go to the **SDK Tools** tab in the middle.
+    * Check the box for **Android SDK Command-line Tools (latest)**.
+    * Click **Apply** and let it download.
+
+### 3. VS Code Configuration
+1.  Install **Visual Studio Code**.
+2.  Go to the Extensions tab (`Ctrl+Shift+X`).
+3.  Search for and install the **Flutter** extension (This automatically installs Dart).
+
+### 4. Final Verification & Licenses
+Open your VS Code terminal and run:
+```bash
+flutter doctor --android-licenses
+
+```
+
+* Type `y` and hit Enter for every license prompt.
+* Finally, run `flutter doctor`. You should see all Green Checks ✅.
+
+---
+
+## Running the Project
+
+### 1. Clone the Repository
+
 ```bash
 git clone [https://github.com/pak-pow/AdaVizion.git](https://github.com/pak-pow/AdaVizion.git)
 
 ```
 
-### 3. Install Dependencies
-
-Navigate into the project folder and fetch the required packages:
+### 2. Install Dependencies
 
 ```bash
 cd AdaVizion
@@ -70,9 +102,12 @@ flutter pub get
 
 ```
 
-### 4. Run the App
+### 3. Launch Emulator
 
-Connect your Android Emulator or Physical Device, then run:
+* Open Android Studio > Virtual Device Manager.
+* Start your **Pixel 7** (or similar) emulator.
+
+### 4. Run App
 
 ```bash
 flutter run
@@ -81,7 +116,7 @@ flutter run
 
 ---
 
-## 👥 Contributors & Core Team
+## Contributors & Core Team
 
 This project is developed by the AdaVizion Team.
 
@@ -98,3 +133,4 @@ This project is developed by the AdaVizion Team.
 ## 📄 License
 
 Proprietary Software. All rights reserved.
+

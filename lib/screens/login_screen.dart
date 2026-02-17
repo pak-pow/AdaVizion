@@ -54,6 +54,42 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             const SizedBox(height: 40),
+
+            TextField(
+              controller: _idController,
+              decoration: const InputDecoration(
+                labelText: "Student ID",
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.badge),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: "Password",
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: login, 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ), 
+                child: const Text("LOGIN TO PORTAL"),
+              ),
+            ),
           ],
         ),
       ),

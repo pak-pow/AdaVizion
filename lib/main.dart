@@ -10,6 +10,13 @@ class AdaVisionApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    throw UnimplementedError();
+    return MaterialApp(
+      title: 'AdaVizion',
+      theme: ThemeData(
+        primaryColor: Colors.red,
+        useMaterial3: true,
+      ),
+      home: const LoginScreen(),
+    );
   }
 }

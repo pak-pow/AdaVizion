@@ -82,11 +82,11 @@ class _LoginScreenState extends State<LoginScreen> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: login, 
+                onPressed: login,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
-                ), 
+                ),
                 child: const Text("LOGIN TO PORTAL"),
               ),
             ),

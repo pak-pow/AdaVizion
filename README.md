@@ -1,4 +1,4 @@
-# 🦁 AdaVizion: Gamified University Engagement Platform
+# 🦁 AdaVizion: Interactive University Engagement Platform
 
 > **Transforming Euthenics & Orientation into an Immersive Campus Adventure.**
 

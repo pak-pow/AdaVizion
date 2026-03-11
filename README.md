@@ -52,7 +52,7 @@ To contribute to this project, you must set up your development environment corr
 ### 1. Flutter SDK Installation
 1.  Download the **Flutter SDK (Stable)** zip file from the official website.
 2.  Extract the folder to `C:\src\flutter`.
-    * **⚠️ IMPORTANT:** Do *not* install in `C:\Program Files` (Windows permissions will block updates).
+    * ** IMPORTANT:** Do *not* install in `C:\Program Files` (Windows permissions will block updates).
 3.  **Add to Path:**
     * Press `Windows Key` and type "env". Select **Edit environment variables for your account**.
     * Under "User variables", find `Path` and click **Edit**.

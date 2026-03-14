@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,9 +18,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (studentId == "2023-1234" && password == "password") {
       print("LOGIN SUCCESS");
-      ScaffoldMessenger.of(
+      Navigator.pushReplacement(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Welcome Back, Student!")));
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+      );
     } else {
       print("LOGIN FAILED");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,11 +84,11 @@ class _LoginScreenState extends State<LoginScreen> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: login, 
+                onPressed: login,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
-                ), 
+                ),
                 child: const Text("LOGIN TO PORTAL"),
               ),
             ),

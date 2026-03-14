@@ -44,6 +44,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.white,
         elevation: 1,
       ),
+
+      body: _screens[_currentIndex],
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF800000),
+        foregroundColor: Colors.white,
+        shape: const CircleBorder(),
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Camera Opening: Ready to scan landmark..."),
+            ),
+          );
+        },
+        child: const Icon(Icons.qr_code_scanner, size: 30),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

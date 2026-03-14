@@ -61,6 +61,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: const Icon(Icons.qr_code_scanner, size: 30),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.format_list_bulleted,
+                color: _currentIndex == 0
+                    ? const Color(0xFF800000)
+                    : Colors.grey,
+              ),
+              onPressed: () => setState(() => _currentIndex = 0),
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.school,
+                color: _currentIndex == 1
+                    ? const Color(0xFF800000)
+                    : Colors.grey,
+              ),
+              onPressed: () => setState(() => _currentIndex = 1),
+            ),
+
+            const SizedBox(width: 48),
+            IconButton(
+              icon: Icon(
+                Icons.emoji_events,
+                color: _currentIndex == 3
+                    ? const Color(0xFF800000)
+                    : Colors.grey,
+              ),
+              onPressed: () => setState(() => _currentIndex = 3),
+            ),
+
+            IconButton(
+              icon: Icon(
+                Icons.person,
+                color: _currentIndex == 4
+                    ? const Color(0xFF800000)
+                    : Colors.grey,
+              ),
+              onPressed: () => setState(() => _currentIndex = 4),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

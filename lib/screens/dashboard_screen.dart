@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'landmark_screen.dart';
 
 // The `DashboardScreen` class is a stateful widget in Dart that represents a dashboard screen.
 class DashboardScreen extends StatefulWidget {
@@ -17,9 +18,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // The `final List<Widget> _screens` variable is an array that holds a list of Widgets.
   final List<Widget> _screens = [
-    const Center(
-      child: Text("Landmarks List Screen", style: TextStyle(fontSize: 24)),
-    ),
+    const LandmarkScreen(),
     const Center(child: Text("Quizzes Screen", style: TextStyle(fontSize: 24))),
     const SizedBox(),
 

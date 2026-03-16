@@ -51,6 +51,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
         onPressed: () {
+
+          // TODO: @Lapotski - Implement QR Code Scanner Navigation here.
+          // Temporary placeholder until the scanner is built
+          
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Camera Opening: Ready to scan landmark..."),

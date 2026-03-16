@@ -34,7 +34,7 @@ class LandmarkScreen extends StatelessWidget {
       "points": "+30 pts",
     },
     {
-      "title": "Main Gate Euthenics Marker",
+      "title": "AEC Theater",
       "subtitle": "Scan QR at location to unlock trivia.",
       "isUnlocked": false,
       "points": "+40 pts",
@@ -83,6 +83,80 @@ class LandmarkScreen extends StatelessWidget {
                             : Colors.grey.shade200,
                         width: 1.5,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          // ignore: deprecated_member_use
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: isUnlocked
+                              ? Colors.green.shade50
+                              : Colors.grey.shade100,
+                          radius: 24,
+                          child: Icon(
+                            isUnlocked ? Icons.check_circle : Icons.location_on,
+                            color: isUnlocked
+                                ? Colors.green
+                                : Colors.grey.shade500,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item["title"],
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1E293B),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                item["subtitle"],
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              isUnlocked ? "Unlocked" : item["points"],
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: isUnlocked
+                                    ? Colors.green
+                                    : Colors.grey.shade500,
+                              ),
+                            ),
+                            if (!isUnlocked) ...[
+                              const SizedBox(height: 4),
+                              Icon(
+                                Icons.chevron_right,
+                                color: Colors.grey.shade400,
+                                size: 20,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ],
                     ),
                   );
                 },

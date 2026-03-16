@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'qrcode_screen.dart';
 
 // The `DashboardScreen` class is a stateful widget in Dart that represents a dashboard screen.
 class DashboardScreen extends StatefulWidget {
@@ -56,6 +57,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SnackBar(
               content: Text("Camera Opening: Ready to scan landmark..."),
             ),
+          );
+          // Navigates to the QRCodeScreen when the floating actin button is pressed.
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const QRCodeScreen()),
           );
         },
         child: const Icon(Icons.qr_code_scanner, size: 30),

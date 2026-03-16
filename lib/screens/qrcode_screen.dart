@@ -51,6 +51,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
+                            Navigator.pop(context);
                           },
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.red,
@@ -61,10 +62,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                     );
                   },
                 );
-
-                if (mounted) {
-                  Navigator.pop(context);
-                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -84,7 +81,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text(
-          "EUventure",
+          "QR Reader",
           style: TextStyle(
             color: Color(0xFF800000),
             fontWeight: FontWeight.bold,

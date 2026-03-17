@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'qrcode_screen.dart';
+import 'landmark_screen.dart';
 
 // The `DashboardScreen` class is a stateful widget in Dart that represents a dashboard screen.
 class DashboardScreen extends StatefulWidget {
@@ -18,9 +19,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // The `final List<Widget> _screens` variable is an array that holds a list of Widgets.
   final List<Widget> _screens = [
-    const Center(
-      child: Text("Landmarks List Screen", style: TextStyle(fontSize: 24)),
-    ),
+    const LandmarkScreen(),
     const Center(child: Text("Quizzes Screen", style: TextStyle(fontSize: 24))),
     const SizedBox(),
 
@@ -53,6 +52,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
         onPressed: () {
+          // TODO: @Lapotski - Implement QR Code Scanner Navigation here.
+          // Temporary placeholder until the scanner is built
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Camera Opening: Ready to scan landmark..."),

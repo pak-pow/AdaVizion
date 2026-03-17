@@ -66,6 +66,6 @@ To prevent the common Flutter "Navigator collision" (where multiple screens pop 
 
 Day 3 successfully bridges the gap between the physical environment and the digital interface. The QR module is not only functional but architected to be user-friendly, preventing accidental multiple scans and providing clear, branching pathways for the user post-interaction. The "Fun Facts" logic is now waiting to be linked to a backend database or a local content library.
 
-![Day3.1](../screenshots/day3.1.png)
+![Day3.1](../screenshots/day3.1.1.png)
 
-![Day3.2](../screenshots/day3.2.png)
+![Day3.2](../screenshots/day3.1.2.png)

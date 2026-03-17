@@ -3,6 +3,7 @@ date: 2026-02-17
 project: AdaVizion
 sprint: Week 1 - Day 1
 topic: Input Handling, Modularity, and Control Flow
+dev: Aguirre
 Tags:
   - "[[Flutter]]"
   - "[[Dart]]"

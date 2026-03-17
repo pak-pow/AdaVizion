@@ -2,6 +2,7 @@
 date: 2026-03-14
 project: AdaVizion (EUventure)
 topic: Advanced Routing & Notched BottomAppBar Architecture
+dev: Aguirre
 Tags:
   - "[[Flutter]]"
   - "[[Dart]]"

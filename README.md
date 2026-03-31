@@ -1,4 +1,4 @@
-# 🦁 AdaVizion: Interactive University Engagement Platform
+# AdaVizion: Interactive University Exploration Platform
 
 > **Transforming Euthenics & Orientation into an Immersive Campus Adventure.**
 
@@ -8,38 +8,44 @@
 
 ## About The Project
 
-**AdaVizion** is a mobile-first EdTech application designed to revolutionize the student onboarding experience at **Enverga University**. 
+**EUventure** is a mobile-first web application designed to modernize the orientation experience at **Manuel S. Enverga University Foundation (MSEUF)**. By gamifying the **EU111: University and I** course, the platform shifts traditional classroom lectures into a hands-on, on-site exploration of the campus.
 
-By digitizing **Euthenics courses** and university orientation, AdaVizion turns passive learning into an active, location-based adventure. Students don't just "read" about university history—they explore it, unlock it, and earn achievements for mastering it.
-
-### Core Mission
-To foster a deeper connection between the student body and the university’s history through **gamification**, **interactive discovery**, and **digital storytelling**.
+### Core Objectives
+- **Enhance Euthenics Education:** Transform static website and handbook platform into interactive discovery.
+- **Promote Facility Awareness:** Encourage students to physically interact with campus landmarks and history.
+- **Improve Engagement:** Use gamification and achievement-based systems to increase student retention and learning outcomes.
 
 ---
 
 ## Key Features
 
-### Campus Quest (Location-Based)
-- **Digital Scavenger Hunts:** Unlock lore by physically visiting historical landmarks on campus.
-- **Interactive Maps:** Real-time navigation to key university locations.
+### University Landmarks & QR Scanner
+- **Physical Check-ins:** Use the integrated QR scanner to verify your presence at designated campus locations.
+- **Exploration Progress:** Track visited sites through a visual checklist that differentiates between unlocked and "padlocked" landmarks.
+- **XP Allocation:** Automatically earn a fixed amount of XP for every new landmark successfully scanned.
 
-### Knowledge Hub (Gamified Learning)
-- **Trivia Challenges:** Test your knowledge of Enverga history to earn points.
-- **Euthenics Modules:** Interactive lessons that replace traditional static reading materials.
+### Fun Facts & Trivia
+- **Instant Lore:** Unlock bite-sized historical snippets or engaging trivia immediately after scanning a landmark.
+- **Fallback Content:** Provides general MSEUF trivia if a specific location lacks dedicated historical data.
 
-### Achievement System
-- **Digital Badges:** Earn rewards for completing orientation tasks and history milestones.
-- **Social Flex:** Share banners and badges directly to social media.
+### Progressive Quizzes
+- **XP Gatekeeping:** Access to formal curriculum assessments is restricted until you gather enough XP from campus exploration.
+- **Academic Integrity:** Limited to a single graded submission per module to ensure assessment validity.
+
+### Student Dashboard & Profile
+- **Real-time Summary:** View total XP, quiz points, and a count of visited landmarks immediately upon login.
+- **Digital Badges:** Dynamically earn and display "Explorer" or "Scholar" badges as you hit progress thresholds
 
 ---
 
 ## Tech Stack
 
-* **Framework:** [Flutter](https://flutter.dev/) (Cross-platform Mobile)
+* **Framework:** [Flutter](https://flutter.dev/) (Mobile-first Web)
 * **Language:** Dart
-* **Architecture:** Feature-based / Clean Architecture (Planned)
-* **State Management:** Provider (Planned)
-* **Tools:** VS Code, Android Studio (Emulator)
+* **ORM:** [Prisma](https://www.prisma.io/)
+* **Database:** PostgreSQL (Cloud-hosted via Prisma Postgres)
+* **Dev Tools:** VS Code, Web Browser
+* **Deployment:** Secure HTTPS (Required for browser camera access)
 
 ---
 
@@ -85,6 +91,52 @@ flutter doctor --android-licenses
 
 ---
 
+## Database & Backend Setup
+
+To contribute to the backend or sync your local environment with the cloud database, follow these steps:
+
+### 1. Install Dependencies
+
+* Ensure you have Node.js installed, then run:
+
+```bash
+npm install
+```
+
+### 2. Environment Configuration
+
+* Create a .env file in the root directory.
+
+```bash
+Add your connection string (Ask database owner for the DATABASE_URL):
+```
+
+### 3. Initialize Prisma
+
+* Generate the Prisma Client to enable TypeSafe database queries in VS Code:
+
+```bash
+npx prisma generate
+```
+
+### 4. Sync Database Schema
+
+* Apply existing migrations to ensure your local view matches the cloud infrastructure:
+
+```bash
+npx prisma migrate dev
+```
+
+### 5. Seed Initial Data
+
+* Populate the database with the official MSEUF landmarks and default achievements:
+
+```bash
+TBA
+```
+
+---
+
 ## Running the Project
 
 ### 1. Clone the Repository
@@ -102,12 +154,7 @@ flutter pub get
 
 ```
 
-### 3. Launch Emulator
-
-* Open Android Studio > Virtual Device Manager.
-* Start your **Pixel 7** (or similar) emulator.
-
-### 4. Run App
+### 3. Run App
 
 ```bash
 flutter run
@@ -122,15 +169,16 @@ This project is developed by the AdaVizion Team.
 
 | Role | Name | GitHub |
 | --- | --- | --- |
-| **Mobile Developer** | **Vincent Aguirre** | [@pak-pow](https://github.com/pak-pow) |
-| **Web Developer** | **Neil Tagle** | [@neophiles](https://github.com/neophiles) |
-| **UI / UIX Designer** | **Raily Laurel** | [@username](https://www.google.com/search?q=https://github.com/username) |
-| **Database Developer** | **Ace Gamitin** | [@acevincent05](https://github.com/acevincent05)|
-| **Mobile Developer** | **Kyla Dequito** | [@Lapotski](https://github.com/Lapotski) |
+| **Project Lead, UI/UX Designer** | **Raily Laurel** | [@DaRhyliee](https://github.com/DaRhyliee) |
+| **Lead Developer** | **Vincent Aguirre** | [@pak-pow](https://github.com/pak-pow) |
+| **Frontend Developer** | **Kyla Dequito** | [@Lapotski](https://github.com/Lapotski) |
+| **Backend Developer** | **Neil Tagle** | [@neophiles](https://github.com/neophiles) |
+| **Data Specialist, Researcher** | **Ace Gamitin** | [@acevincent05](https://github.com/acevincent05)|
+
 
 ---
 
-## 📄 License
+## License
 
 Proprietary Software. All rights reserved.
 

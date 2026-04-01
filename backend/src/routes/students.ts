@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcrypt";
+import { type RegistrationBody, type LoginBody, RegistrationSchema, LoginSchema } from "../schemas/student.schema";
 
 const router = express.Router();
 
@@ -18,6 +19,15 @@ router.get("/", async (req: Request, res: Response) => {
 
 // REGISTER ENDPOINT
 router.post("/register", async (req: Request, res: Response) => {
+  // Validate with zod
+  const validation = RegistrationSchema.safeParse(req.body);
+  
+  if (!validation.success) {
+    return res.status(400).json({
+      error: validation.error?.issues[0]?.message
+    });
+  }
+
   const {
     studentNum,
     firstName,
@@ -25,22 +35,7 @@ router.post("/register", async (req: Request, res: Response) => {
     lastName,
     email,
     password
-  } = req.body;
-
-  if (!studentNum || !firstName || !lastName || !email || !password) {
-    return res.status(400).json({
-      error: "Missing required fields"
-    });
-  } 
-
-  const isValidEmail = email.toLowerCase().endsWith("@student.mseuf.edu.ph");
-  
-  // Check if the given email specifically ends with the university student domain
-  if (!isValidEmail) {
-    return res.status(400).json({
-      error: "Invalid email domain. Please use your official MSEUF student email address"
-    });
-  }
+  } = validation.data;
 
   try {
     // Hash the password
@@ -53,7 +48,7 @@ router.post("/register", async (req: Request, res: Response) => {
         data: {
           student_number: studentNum,
           first_name: firstName,
-          middle_name: middleName || null,
+          middle_name: middleName || null, // Explicitly convert undefined to null while zod turns "" to null
           last_name: lastName,
           email: email,
           password: hashedPassword // Save hashed version
@@ -90,13 +85,16 @@ router.post("/register", async (req: Request, res: Response) => {
 
 // LOGIN ENDPOINT
 router.post("/login", async (req: Request, res: Response) => {
-  const { studentNum, password } = req.body;
+  // Validate with zod
+  const validation = LoginSchema.safeParse(req.body);
 
-  if (!studentNum || !password) {
+  if (!validation.success) {
     return res.status(400).json({
-      error: "Student number and password are required"
+      error: validation.error?.issues[0]?.message
     });
   }
+
+  const { studentNum, password } = validation.data;
 
   try {
     // Get unique student that matches the given student number
@@ -116,7 +114,7 @@ router.post("/login", async (req: Request, res: Response) => {
 
     if (!isMatch) {
       return res.status(401).json({
-        error: "Invalid credentials"
+        error: "Invalid student number or password"
       });
     }
 

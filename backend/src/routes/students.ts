@@ -1,5 +1,6 @@
 import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
@@ -56,11 +57,53 @@ router.post("/register", async (req: Request, res: Response) => {
   } catch (error: any) {
     if (error.code === "P2002") {
       return res.status(409).json({
-        error: "Student Number or Email already exists"
+        error: "Student number or email already exists"
       });
     }
 
     console.error(error);
+    return res.status(500).json({
+      error: "Internal Server Error"
+    });
+  }
+})
+
+router.post("/login", async (req: Request, res: Response) => {
+  const { studentNum, password } = req.body;
+
+  if (!studentNum || !password) {
+    return res.status(400).json({
+      error: "Student number and password are required"
+    });
+  }
+
+  try {
+    const student = await prisma.student.findUnique({
+      where: { student_number: studentNum },
+      include: { progress: true }
+    });
+
+    if (!student) {
+      return res.status(401).json({
+        error: "Student does not exist"
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, student.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        error: "Invalid credentials"
+      });
+    }
+
+    const { password: _, ...studentData } = student;
+
+    return res.status(200).json({
+      message: "Login successful",
+      student: studentData
+    });
+  } catch (error) {
     return res.status(500).json({
       error: "Internal Server Error"
     });

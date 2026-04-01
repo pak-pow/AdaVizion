@@ -43,15 +43,3 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-# Auto-generated Flutter files
-**/generated_plugin_registrant.*
-**/generated_plugins.*
-**/GeneratedPluginRegistrant.*
-
-# Backend related
-node_modules
-**/generated/prisma
-
-# Keep environment variables out of version control
-.env 

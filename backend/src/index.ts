@@ -1,12 +1,14 @@
-import express from "express";
+import express, { type Request, type Response } from "express";
 import studentRouter from "./routes/students";
 import landmarkRouter from "./routes/landmarks";
 
 const app = express();
 
+app.use(express.json());
+
 // To run this file, execute `npm run dev` in terminal
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.json({
     status: "ok",
     message: "EUventure API is running"

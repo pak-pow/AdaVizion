@@ -1,9 +1,9 @@
-import express from "express";
+import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const landmarks = await prisma.landmark.findMany();
     res.json(landmarks);

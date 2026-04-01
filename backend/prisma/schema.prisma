@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Student {
+  student_number      String               @id @db.VarChar(20)
+  first_name          String               @db.VarChar(50)
+  middle_name         String?              @db.VarChar(50)
+  last_name           String               @db.VarChar(50)
+  email               String               @unique @db.VarChar(50)
+  created_at          DateTime             @default(now())
+  achievements_earned AchievementsEarned[]
+  landmarks_visited   LandmarksVisited[]
+  progress            Progress?
+  quiz_submissions    QuizSubmission[]
+
+  @@map("students")
+}
+
+model Landmark {
+  landmark_id Int                @id @default(autoincrement())
+  name        String             @unique @db.VarChar(100)
+  description String?
+  fun_fact    String?
+  visitors    LandmarksVisited[]
+
+  @@map("landmarks")
+}
+
+model Quiz {
+  quiz_id     Int              @id @default(autoincrement())
+  name        String           @unique @db.VarChar(100)
+  required_xp Int              @default(0)
+  questions   Question[]
+  submissions QuizSubmission[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  question_id   Int    @id @default(autoincrement())
+  quiz_id       Int
+  question_text String
+  choices       Json
+  correct_idx   Int
+  item_points   Int    @default(10)
+  quiz          Quiz   @relation(fields: [quiz_id], references: [quiz_id])
+
+  @@map("questions")
+}
+
+model Achievement {
+  achievement_id Int                  @id @default(autoincrement())
+  name           String               @db.VarChar(20)
+  description    String
+  earners        AchievementsEarned[]
+
+  @@map("achievements")
+}
+
+model LandmarksVisited {
+  student_number String   @db.VarChar(20)
+  landmark_id    Int
+  visited_at     DateTime @default(now())
+  landmark       Landmark @relation(fields: [landmark_id], references: [landmark_id])
+  student        Student  @relation(fields: [student_number], references: [student_number])
+
+  @@id([student_number, landmark_id])
+  @@map("landmarks_visited")
+}
+
+model QuizSubmission {
+  student_number String   @db.VarChar(20)
+  quiz_id        Int      @default(autoincrement())
+  score          Int
+  completed_at   DateTime @default(now())
+  quiz           Quiz     @relation(fields: [quiz_id], references: [quiz_id])
+  student        Student  @relation(fields: [student_number], references: [student_number])
+
+  @@id([student_number, quiz_id])
+  @@map("quiz_submissions")
+}
+
+model Progress {
+  student_number String  @id @db.VarChar(20)
+  total_xp       Int     @default(0)
+  quiz_points    Int     @default(0)
+  student        Student @relation(fields: [student_number], references: [student_number])
+
+  @@map("progress")
+}
+
+model AchievementsEarned {
+  student_number String      @db.VarChar(20)
+  achievement_id Int
+  earned_at      DateTime    @default(now())
+  achievement    Achievement @relation(fields: [achievement_id], references: [achievement_id])
+  student        Student     @relation(fields: [student_number], references: [student_number])
+
+  @@id([student_number, achievement_id])
+  @@map("achievements_earned")
+}

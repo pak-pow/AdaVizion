@@ -1,30 +1,24 @@
-import { prisma } from "./lib/prisma";
+import express, { type Request, type Response } from "express";
+import studentRouter from "./routes/students";
+import landmarkRouter from "./routes/landmarks";
 
-// To run this file, execute `npm run dev` in termonal
+const app = express();
 
-async function main() {
-  // Create a new student with a post
-  const student = await prisma.student.create({
-    data: {
-      student_number: "A24-67676",
-      first_name: "Juan",
-      last_name: "Dela Cruz",
-      email: "a24-67676@student.mseuf.edu.ph"
-    }
+app.use(express.json());
+
+// To run this file, execute `npm run dev` in terminal
+
+app.get("/", (req: Request, res: Response) => {
+  res.json({
+    status: "ok",
+    message: "EUventure API is running"
   });
-  console.log("Created student:", student);
+})
 
-  // Fetch all students
-  const allStudents = await prisma.student.findMany();
-  console.log("All students:", JSON.stringify(allStudents, null, 2));
-}
+app.use("/students", studentRouter);
+app.use("/landmarks", landmarkRouter);
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server ready at: http://localhost:${PORT}`)
+});

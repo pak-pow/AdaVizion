@@ -13,6 +13,7 @@ model Student {
   middle_name         String?              @db.VarChar(50)
   last_name           String               @db.VarChar(50)
   email               String               @unique @db.VarChar(50)
+  password            String               @db.VarChar(255)
   created_at          DateTime             @default(now())
   achievements_earned AchievementsEarned[]
   landmarks_visited   LandmarksVisited[]

@@ -12,7 +12,7 @@
 
 1. **The Initiative & Context**
 
-Now that the database is active, the frontend requires secure endpoints to manage user sessions. Manual input validation is prone to errors and difficult to scale, so I opted for a schema-driven architecture using Zod. Additionally, raw passwords can never be stored, requiring integration with Bcrypt.
+   Now that the database is active, the frontend requires secure endpoints to manage user sessions. Manual input validation is prone to errors and difficult to scale, so I opted for a schema-driven architecture using Zod. Additionally, raw passwords can never be stored, requiring integration with Bcrypt.
 
 2. **API Validation Layer (Zod)**
 

@@ -12,7 +12,7 @@
 
 1. **The Initiative & Context**
 
-With authentication functioning, the endpoints required an access control mechanism to identify which student is making the request. Following this, the core objective of the app, visiting landmarks to unlock content, needed its API implementation, aligning with our conditional content requirements.
+   With authentication functioning, the endpoints required an access control mechanism to identify which student is making the request. Following this, the core objective of the app, visiting landmarks to unlock content, needed its API implementation, aligning with our conditional content requirements.
 
 2. **Security & Middleware**
 

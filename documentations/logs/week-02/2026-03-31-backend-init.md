@@ -12,7 +12,7 @@
 
 1. **The Initiative & Context**
 
-As we transition from a purely frontend-focused mobile application to a full-stack architecture, the repository required immediate restructuring. The goal for today was to separate our existing Flutter codebase from the incoming backend logic to prevent dependency conflicts and maintain an organized workspace.
+   As we transition from a purely frontend-focused mobile application to a full-stack architecture, the repository required immediate restructuring. The goal for today was to separate our existing Flutter codebase from the incoming backend logic to prevent dependency conflicts and maintain an organized workspace.
 
 2. **Repository Restructuring**
    * **Frontend Isolation:** Created a dedicated `frontend/` directory and transferred all existing Flutter project files.

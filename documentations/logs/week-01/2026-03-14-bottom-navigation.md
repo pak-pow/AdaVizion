@@ -1,16 +1,10 @@
----
-date: 2026-03-14
-project: AdaVizion (EUventure)
-topic: Advanced Routing & Notched BottomAppBar Architecture
-dev: Aguirre
-Tags:
-  - "[[Flutter]]"
-  - "[[Dart]]"
-  - "[[Navigation]]"
-  - "[[UI Architecture]]"
-  - "[[Dev Log]]"
-  - "[[State Management]]"
----
+| Field | Details |
+| :--- | :--- |
+| **Date** | 2026-03-14 |
+| **Project** | EUventure |
+| **Topic** | Advanced Routing & Notched BottomAppBar Architecture Initialization |
+| **Developer** | Aguirre |
+| **Tags** | `Flutter`, `Dart`, `Navigation`, `UI Architecture`, `State Management`, `Dev Log` |
 
 # 📝 DEV LOG: WEEK 1 - DAY 2
 

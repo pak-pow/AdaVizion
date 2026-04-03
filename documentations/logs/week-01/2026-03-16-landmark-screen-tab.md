@@ -1,14 +1,10 @@
----
-date: 2026-03-16
-project: AdaVizion (EUventure)
-topic: Dynamic List Generation & Conditional State Styling
-Tags:
-  - "[[Flutter]]"
-  - "[[Dart]]"
-  - "[[UI Architecture]]"
-  - "[[Data Binding]]"
-  - "[[Dev Log]]"
----
+| Field | Details |
+| :--- | :--- |
+| **Date** | 2026-03-16 |
+| **Project** | EUventure |
+| **Topic** | Dynamic List Generation & Conditional State Styling |
+| **Developer** | Aguirre |
+| **Tags** | `Flutter`, `Dart`, `UI Architecture`, `Data Binding`, `Dev Log` |
 
 # 📝 DEV LOG: WEEK 1 - DAY 3
 

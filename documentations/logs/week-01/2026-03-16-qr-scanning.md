@@ -1,16 +1,10 @@
----
-date: 2026-03-16
-project: AdaVizion (EUventure)
-topic: QR Integration & Sequential Dialog Logic
-dev: Dequito
-Tags:
-  - "[[Flutter]]"
-  - "[[Dart]]"
-  - "[[Mobile Scanner]]"
-  - "[[Asynchronous Programming]]"
-  - "[[Dev Log]]"
-  - "[[State Management]]"
----
+| Field | Details |
+| :--- | :--- |
+| **Date** | 2026-03-16 |
+| **Project** | EUventure |
+| **Topic** | QR Integration & Sequential Dialog Logic Initialization |
+| **Developer** | Dequito |
+| **Tags** | `Flutter`, `Dart`, `Mobile Scanner`, `Asynchronous Programming`, `State Management`, `Dev Log` |
 
 # 📝 DEV LOG: WEEK 1 - DAY 3
 

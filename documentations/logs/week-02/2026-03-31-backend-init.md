@@ -6,7 +6,7 @@
 | **Developer** | Tagle |
 | **Tags** | `Git`, `TypeScript`, `Backend`, `Architecture`, `Dev Log` |
 
-# 📝 DEV LOG: WEEK 4 - DAY 1
+# 📝 DEV LOG: WEEK 2 - DAY 1
 
 **Core Objective:** Establish the initial backend infrastructure, restructure the repository for a full-stack environment, and implement necessary cleanup tasks.
 

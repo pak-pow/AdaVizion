@@ -1,14 +1,26 @@
 import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcrypt";
-import { type RegistrationBody, type LoginBody, RegistrationSchema, LoginSchema } from "../schemas/student.schema";
+import jwt from "jsonwebtoken";
+import { RegistrationSchema, LoginSchema } from "../schemas/student.schema";
+import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
 // STUDENTS ROOT ENDPOINT
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", authenticateToken, async (req: Request, res: Response) => {
   try {
-    const students = await prisma.student.findMany();
+    const students = await prisma.student.findMany({
+      select: {
+        student_number: true,
+        first_name: true,
+        middle_name: true,
+        last_name: true,
+        email: true,
+        // Password omitted
+        created_at: true
+      }
+    });
     res.json(students);
   } catch (error) {
     res.status(500).json({
@@ -118,11 +130,19 @@ router.post("/login", async (req: Request, res: Response) => {
       });
     }
 
+    // Get authentication token
+    const token = jwt.sign(
+      { studentNum: studentNum },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '1h' }
+    )
+
     // Remove password from response
     const { password: _, ...studentData } = student;
 
     return res.status(200).json({
       message: "Login successful",
+      token: token,
       student: studentData
     });
   } catch (error) {

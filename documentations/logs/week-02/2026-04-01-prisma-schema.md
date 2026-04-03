@@ -12,7 +12,7 @@
 
 1. **The Initiative & Context**
 
-With the backend environment initialized, the next critical step was setting up the data persistence layer. Based on the requirements defined in our updated SRS v2.0, we needed a robust relational database capable of handling student records, gamification progress, and landmark tracking.
+   With the backend environment initialized, the next critical step was setting up the data persistence layer. Based on the requirements defined in our updated SRS v2.0, we needed a robust relational database capable of handling student records, gamification progress, and landmark tracking.
 
 2. **Prisma ORM & Database Connection**
 
@@ -22,7 +22,7 @@ With the backend environment initialized, the next critical step was setting up 
 
 3. **Schema Implementation**
 
-I implemented the core database models reflecting our domain architecture:
+   I implemented the core database models reflecting our domain architecture:
 
    * **Core Entities:** Created the `Student`, `Landmark`, `Quiz`, `Question`, and `Achievement` models.
 

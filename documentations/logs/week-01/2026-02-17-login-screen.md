@@ -44,7 +44,7 @@ Instead of just printing to the console, we used `ScaffoldMessenger` to show a p
 - **Green/Default:** Success.
 - **Red:** Error (Invalid Password).
   
-![Day1](../screenshots/day1.png)
+![Day1](../../screenshots/day1.png)
 
 ## KEY WIDGETS USED
 - **`TextField`**: The input box.

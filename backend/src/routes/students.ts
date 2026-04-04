@@ -16,6 +16,9 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
         first_name: true,
         middle_name: true,
         last_name: true,
+        program: true,
+        specialization: true,
+        year_level: true,
         email: true,
         // Password omitted
         created_at: true
@@ -45,6 +48,9 @@ router.post("/register", async (req: Request, res: Response) => {
     firstName,
     middleName,
     lastName,
+    program,
+    specialization,
+    yearLevel,
     email,
     password
   } = validation.data;
@@ -62,6 +68,9 @@ router.post("/register", async (req: Request, res: Response) => {
           first_name: firstName,
           middle_name: middleName || null, // Explicitly convert undefined to null while zod turns "" to null
           last_name: lastName,
+          program: program,
+          specialization: specialization || null,
+          year_level: yearLevel,
           email: email,
           password: hashedPassword // Save hashed version
         }

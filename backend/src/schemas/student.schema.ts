@@ -3,7 +3,8 @@ import { z } from "zod";
 export const RegistrationSchema = z.object({
   studentNum: z.string()
     .min(1, { error: "Student number is required" })
-    .max(20, { error: "Student nunber cannot exceed 20 characters" }),
+    .max(20, { error: "Student nunber cannot exceed 20 characters" })
+    .toUpperCase(),
 
   firstName: z.string()
     .min(1, { error: "First name is required" })
@@ -35,17 +36,25 @@ export const RegistrationSchema = z.object({
 
   email: z.email({ error: "Email is required and must be a valid format" })
     .max(50, { error: "Email cannot exceed 50 characters" })
+    .toLowerCase()
     .refine((val) => val.endsWith("@student.mseuf.edu.ph"), { error: "Must be a valid MSEUF student email address" }),
 
   password: z.string()
     .min(8, { error: "Password requires a minimum of 8 characters" })
     .max(255)
+}).refine((data) => {
+  const emailPrefix = data.email.split("@")[0];
+  return emailPrefix === data.studentNum.toLowerCase();
+}, {
+  error: "Email must match your student number",
+  path: ['email']
 })
 
 export const LoginSchema = z.object({
   studentNum: z.string()
     .min(1, { error: "Student number is required" })
-    .max(20, { error: "Student nunber cannot exceed 20 characters" }),
+    .max(20, { error: "Student nunber cannot exceed 20 characters" })
+    .toUpperCase(),
 
   password: z.string()
     .min(8, { error: "Password requires a minimum of 8 characters" })

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PROGRAM_ABBREVIATIONS, PROGRAM_SPECIALIZATIONS } from "../constants/academic-maps";
 
 export const RegistrationSchema = z.object({
   studentNum: z.string()
@@ -42,12 +43,27 @@ export const RegistrationSchema = z.object({
   password: z.string()
     .min(8, { error: "Password requires a minimum of 8 characters" })
     .max(255)
-}).refine((data) => {
+})
+.refine((data) => {
   const emailPrefix = data.email.split("@")[0];
   return emailPrefix === data.studentNum.toLowerCase();
 }, {
   error: "Email must match your student number",
-  path: ['email']
+  path: ["email"]
+})
+.refine((data) => {
+  return Object.keys(PROGRAM_ABBREVIATIONS).includes(data.program);
+}, {
+  error: "Please select a valid MSEUF academic program",
+  path: ["program"]
+})
+.refine((data) => {
+  if (!data.specialization) return true;
+  const validSpecializations = PROGRAM_SPECIALIZATIONS[data.program] || [];
+  return validSpecializations.includes(data.specialization);
+}, {
+  error: "Invalid specialization for the selected program",
+  path: ["specialization"]
 })
 
 export const LoginSchema = z.object({

@@ -12,6 +12,9 @@ model Student {
   first_name          String               @db.VarChar(50)
   middle_name         String?              @db.VarChar(50)
   last_name           String               @db.VarChar(50)
+  program             String               @db.VarChar(50)
+  specialization      String?              @db.VarChar(50)
+  year_level          Int                  @db.Integer
   email               String               @unique @db.VarChar(50)
   password            String               @db.VarChar(255)
   created_at          DateTime             @default(now())

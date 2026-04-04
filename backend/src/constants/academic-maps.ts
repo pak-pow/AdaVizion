@@ -37,6 +37,7 @@ const PROGRAM_ABBREVIATIONS: Record<string, string> = {
   "BSN": "Bachelor of Science in Nursing"
 }
 
+// Used Partial<> because not all programs in PROGRAM_ABBREVIATIONS have specific specializations
 const PROGRAM_SPECIALIZATIONS: Partial<Record<string, string[]>> = {
   "BFA": ["Visual Communication"],
   "BSBA": ["Marketing Management", "Human Resource Management", "Financial Management", "Operations Management"],

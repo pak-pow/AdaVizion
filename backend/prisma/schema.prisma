@@ -22,6 +22,7 @@ model Student {
   landmarks_visited   LandmarksVisited[]
   progress            Progress?
   quiz_submissions    QuizSubmission[]
+  question_responses  QuestionResponses[]
 
   @@map("students")
 }
@@ -55,6 +56,7 @@ model Question {
   correct_idx   Int
   item_points   Int    @default(10)
   quiz          Quiz   @relation(fields: [quiz_id], references: [quiz_id])
+  responses     QuestionResponses[]
 
   @@map("questions")
 }
@@ -80,15 +82,29 @@ model LandmarksVisited {
 }
 
 model QuizSubmission {
-  student_number String   @db.VarChar(20)
-  quiz_id        Int      @default(autoincrement())
-  score          Int
-  completed_at   DateTime @default(now())
-  quiz           Quiz     @relation(fields: [quiz_id], references: [quiz_id])
-  student        Student  @relation(fields: [student_number], references: [student_number])
+  student_number     String              @db.VarChar(20)
+  quiz_id            Int
+  score              Int
+  completed_at       DateTime            @default(now())
+  quiz               Quiz                @relation(fields: [quiz_id], references: [quiz_id])
+  student            Student             @relation(fields: [student_number], references: [student_number])
+  question_responses QuestionResponses[]
 
   @@id([student_number, quiz_id])
   @@map("quiz_submissions")
+}
+
+model QuestionResponses {
+  student_number  String         @db.VarChar(20)
+  quiz_id         Int
+  question_id     Int
+  selected_idx    Int
+  student         Student        @relation(fields: [student_number], references: [student_number])
+  question        Question       @relation(fields: [question_id], references: [question_id])
+  quiz_submission QuizSubmission @relation(fields: [student_number, quiz_id], references: [student_number, quiz_id])
+
+  @@id([student_number, quiz_id, question_id])
+  @@map("question_submissions")
 }
 
 model Progress {

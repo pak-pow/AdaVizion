@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from "express";
 import studentRouter from "./routes/students";
 import landmarkRouter from "./routes/landmarks";
+import quizRouter from "./routes/quizzes";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/students", studentRouter);
 app.use("/landmarks", landmarkRouter);
+app.use("/quizzes", quizRouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {

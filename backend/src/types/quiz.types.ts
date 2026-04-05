@@ -7,7 +7,6 @@ interface BaseQuestion {
 }
 
 interface SeedQuestion extends BaseQuestion {
-  quiz_id: number;
   correct_idx: number;
 }
 
@@ -31,7 +30,6 @@ interface Answer {
 interface BaseQuiz {
   name: string;
   required_xp: number;
-  passing_score: number;
 }
 
 interface SeedQuiz extends BaseQuiz {

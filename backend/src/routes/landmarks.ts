@@ -1,7 +1,7 @@
 import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 import { authenticateToken } from "../middleware/auth.middleware";
-import type { ViewLandmark } from "../types/landmarks.types";
+import type { LandmarkVisitBody, ViewLandmark } from "../types/landmarks.types";
 
 const router = express.Router();
 
@@ -61,9 +61,11 @@ router.get("/:id", async (req: Request, res: Response) => {
 })
 
 // VISIT ENDPOINT
-router.post("/:id/visit", async (req: Request, res: Response) => {
+router.post("/:id/visit", async (req: Request<{id: string}, any, LandmarkVisitBody>, res: Response) => {
   const studentNum = (req as any).user.studentNum;
   const landmarkId = parseInt(req.params.id as string);
+  const { qr_code_scanned } = req.body;
+
   const XP_REWARD = 20; // Fixed value for each landmark
 
   try {
@@ -93,6 +95,12 @@ router.post("/:id/visit", async (req: Request, res: Response) => {
     if (existingVisit) {
       return res.status(400).json({
         error: "Landmark already visited"
+      });
+    }
+
+    if (landmark.qr_string !== qr_code_scanned) {
+      return res.status(403).json({
+        error: "Invalid landmark QR code"
       });
     }
 

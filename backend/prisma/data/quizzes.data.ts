@@ -1,4 +1,4 @@
-import type { SeedQuiz } from "../../src/types/quiz.types";
+import type { SeedQuiz } from "../../src/types/quizzes.types";
 
 export const quizzes: SeedQuiz[] = [
   {

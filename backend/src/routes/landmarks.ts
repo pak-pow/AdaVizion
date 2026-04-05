@@ -28,7 +28,12 @@ router.get("/:id", async (req: Request, res: Response) => {
     const [landmark, visited] = await Promise.all([
       // Get landmark with the given landmarkId
       prisma.landmark.findUnique({
-        where: { landmark_id: landmarkId }
+        where: { landmark_id: landmarkId },
+        select: {
+          name: true,
+          description: true,
+          fun_fact: true
+        }
       }),
       // Get the entry where the student visits that landmark
       prisma.landmarksVisited.findUnique({
@@ -73,6 +78,12 @@ router.post("/:id/visit", async (req: Request<{id: string}, any, LandmarkVisitBo
     const landmark = await prisma.landmark.findUnique({
       where: {
         landmark_id: landmarkId
+      },
+      select: {
+        name: true,
+        description: true,
+        fun_fact: true,
+        qr_string: true
       }
     });
 
@@ -105,7 +116,7 @@ router.post("/:id/visit", async (req: Request<{id: string}, any, LandmarkVisitBo
     }
 
     // If the landmark is not yet visited, create a new entry in landmarksVisited and increase the student's total XP in progress
-    await prisma.$transaction([
+    const [visit, updatedProgress] = await prisma.$transaction([
       prisma.landmarksVisited.create({
         data: {
           student_number: studentNum,
@@ -124,10 +135,13 @@ router.post("/:id/visit", async (req: Request<{id: string}, any, LandmarkVisitBo
       })
     ]);
 
+    const { qr_string, ...publicData } = landmark; // Exclude qr_string from response
+
     return res.status(200).json({
       message: "Scan and visit successful",
+      ...publicData,
       xp_earned: XP_REWARD,
-      fun_fact: landmark.fun_fact
+      new_total_xp: updatedProgress.total_xp
     });
   } catch (error) {
     return res.status(500).json({

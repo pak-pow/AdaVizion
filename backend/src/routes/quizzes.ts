@@ -1,7 +1,7 @@
 import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 import { authenticateToken } from "../middleware/auth.middleware";
-import type { Question, QuizSubmitBody, QuestionResult } from "../types/quiz.types";
+import type { ViewQuestion, QuizSubmitBody, QuestionResult, ViewQuiz } from "../types/quizzes.types";
 import { SubmitQuizSchema } from "../schemas/quiz.schema";
 
 const router = express.Router();
@@ -12,7 +12,7 @@ router.use(authenticateToken);
 // QUIZZES ROOT ENDPOINT
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const quizzes = await prisma.quiz.findMany({
+    const quizzes: ViewQuiz[] = await prisma.quiz.findMany({
       include: { questions: true }
     });
     res.status(200).json(quizzes);
@@ -64,7 +64,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       });
     }
 
-    let questions: Question[];
+    let questions: ViewQuestion[];
     
     // If the quiz is already taken, include previous answers but keep correct answer hidden to prevent leaking answers to others
     if (answered) {

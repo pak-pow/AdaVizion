@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 import { authenticateToken } from "../middleware/auth.middleware";
+import type { ViewLandmark } from "../types/landmarks.types";
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ router.use(authenticateToken);
 // LANDMARKS ROOT ENDPOINT
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const landmarks = await prisma.landmark.findMany();
+    const landmarks: ViewLandmark[] = await prisma.landmark.findMany();
     res.status(200).json(landmarks);
   } catch (error) {
     res.status(500).json({

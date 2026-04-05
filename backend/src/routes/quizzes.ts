@@ -15,9 +15,9 @@ router.get("/", async (req: Request, res: Response) => {
     const quizzes = await prisma.quiz.findMany({
       include: { questions: true }
     });
-    res.json(quizzes);
+    res.status(200).json(quizzes);
   } catch (error) {
-    res.json({
+    res.status(500).json({
       error: "Failed to fetch quizzes"
     });
   }

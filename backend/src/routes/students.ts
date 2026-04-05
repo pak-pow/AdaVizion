@@ -24,7 +24,7 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
         created_at: true
       }
     });
-    res.json(students);
+    res.status(200).json(students);
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch students"

@@ -10,7 +10,7 @@ router.use(authenticateToken);
 router.get("/", async (req: Request, res: Response) => {
   try {
     const landmarks = await prisma.landmark.findMany();
-    res.json(landmarks);
+    res.status(200).json(landmarks);
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch landmarks"
@@ -48,7 +48,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 
     if (!visited) {
       const { description, fun_fact, ...publicData } = landmark;
-      return res.json({ ...publicData, is_unlocked: false });
+      return res.status(403).json({ ...publicData, is_unlocked: false });
     }
 
     return res.status(200).json({ ...landmark, is_unlocked: true });

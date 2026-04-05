@@ -4,8 +4,10 @@ import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
+router.use(authenticateToken);
+
 // LANDMARKS ROOT ENDPOINT
-router.get("/", authenticateToken, async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const landmarks = await prisma.landmark.findMany();
     res.json(landmarks);
@@ -17,7 +19,7 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
 })
 
 // DETAIL ENDPOINT
-router.get("/:id", authenticateToken, async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   const studentNum = (req as any).user.studentNum;
   const landmarkId = parseInt(req.params.id as string);
 
@@ -58,7 +60,7 @@ router.get("/:id", authenticateToken, async (req: Request, res: Response) => {
 })
 
 // VISIT ENDPOINT
-router.post("/:id/visit", authenticateToken, async (req: Request, res: Response) => {
+router.post("/:id/visit", async (req: Request, res: Response) => {
   const studentNum = (req as any).user.studentNum;
   const landmarkId = parseInt(req.params.id as string);
   const XP_REWARD = 20; // Fixed value for each landmark

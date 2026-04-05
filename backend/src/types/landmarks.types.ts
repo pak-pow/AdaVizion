@@ -12,7 +12,12 @@ interface ViewLandmark extends BaseLandmark {
   landmark_id: number;
 }
 
+interface LandmarkVisitBody {
+  qr_code_scanned: string;
+}
+
 export type {
   SeedLandmark,
-  ViewLandmark
+  ViewLandmark,
+  LandmarkVisitBody
 }

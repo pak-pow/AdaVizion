@@ -39,11 +39,12 @@ model Landmark {
 }
 
 model Quiz {
-  quiz_id     Int              @id @default(autoincrement())
-  name        String           @unique @db.VarChar(100)
-  required_xp Int              @default(0)
-  questions   Question[]
-  submissions QuizSubmission[]
+  quiz_id       Int              @id @default(autoincrement())
+  name          String           @unique @db.VarChar(100)
+  required_xp   Int              @default(0)
+  passing_score Int              @default(0)
+  questions     Question[]
+  submissions   QuizSubmission[]
 
   @@map("quizzes")
 }

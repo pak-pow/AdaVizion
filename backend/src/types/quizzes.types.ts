@@ -1,8 +1,8 @@
-import type { JsonValue } from "@prisma/client/runtime/client";
+import { Prisma } from "../../generated/prisma/client";
 
 interface BaseQuestion {
   question_text: string;
-  choices: string[] | JsonValue;
+  choices: string[] | Prisma.JsonValue;
   item_points: number;
 }
 

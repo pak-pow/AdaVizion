@@ -54,9 +54,11 @@ router.get("/:id", async (req: Request, res: Response) => {
       prisma.landmark.findUnique({
         where: { landmark_id: landmarkId },
         select: {
+          landmark_id: true,
           name: true,
           description: true,
           fun_fact: true
+          // Omit qr_string
         }
       }),
       // Get the entry where the student visits that landmark
@@ -77,7 +79,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 
     if (!visited) {
-      const { description, fun_fact, ...publicData } = landmark;
+      const { fun_fact, ...publicData } = landmark;
       return res.status(403).json({ ...publicData, is_unlocked: false });
     }
 
@@ -100,15 +102,7 @@ router.post("/:id/visit", async (req: Request<{id: string}, any, LandmarkVisitBo
   try {
     // Get landmark with the given landmarkId
     const landmark = await prisma.landmark.findUnique({
-      where: {
-        landmark_id: landmarkId
-      },
-      select: {
-        name: true,
-        description: true,
-        fun_fact: true,
-        qr_string: true
-      }
+      where: { landmark_id: landmarkId }
     });
 
     if (!landmark) {
@@ -148,9 +142,7 @@ router.post("/:id/visit", async (req: Request<{id: string}, any, LandmarkVisitBo
         }
       }),
       prisma.progress.update({
-        where: {
-          student_number: studentNum
-        },
+        where: { student_number: studentNum },
         data: {
           total_xp: {
             increment: XP_REWARD

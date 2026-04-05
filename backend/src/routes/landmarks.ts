@@ -9,9 +9,33 @@ router.use(authenticateToken);
 
 // LANDMARKS ROOT ENDPOINT
 router.get("/", async (req: Request, res: Response) => {
+  const studentNum = (req as any).user.studentNum;
+
   try {
-    const landmarks: ViewLandmark[] = await prisma.landmark.findMany();
-    res.status(200).json(landmarks);
+    const [allLandmarks, visitedLandmarks] = await Promise.all([
+      // Get all landmarks
+      prisma.landmark.findMany(),
+
+      // Get landmarks that are already visited by the student
+      prisma.landmarksVisited.findMany({
+        where: { student_number: studentNum }
+      })
+    ]);
+
+    const visitedIds = new Set(visitedLandmarks.map((v) => v.landmark_id));
+
+    // Final checklist to show on the frontend
+    const checklist = allLandmarks.map((landmark) => {
+      const isVisited = visitedIds.has(landmark.landmark_id);
+
+      return {
+        landmark_id: landmark.landmark_id,
+        name: landmark.name,
+        is_visited: isVisited // Flag for frontend to visually display visited status
+      };
+    });
+
+    res.status(200).json(checklist);
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch landmarks"

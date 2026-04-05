@@ -6,6 +6,8 @@ import quizRouter from "./routes/quizzes";
 
 dotenv.config();
 
+const PORT = process.env.PORT || 3000;
+
 const app = express();
 
 app.use(express.json());
@@ -23,7 +25,6 @@ app.use("/students", studentRouter);
 app.use("/landmarks", landmarkRouter);
 app.use("/quizzes", quizRouter);
 
-const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server ready at: http://localhost:${PORT}`)
 });

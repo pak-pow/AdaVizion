@@ -155,6 +155,7 @@ router.post("/:id/submit", async (req: Request<{id: string}, any, QuizSubmitBody
     const quiz = await prisma.quiz.findUnique({
       where: { quiz_id: quizId },
       select: {
+        quiz_id: true,
         name: true,
         passing_score: true
       }
@@ -250,8 +251,7 @@ router.post("/:id/submit", async (req: Request<{id: string}, any, QuizSubmitBody
 
     res.status(200).json({
       message: "Quiz submitted successfully",
-      quiz_name: quiz.name,
-      passing_score: quiz.passing_score,
+      ...quiz,
       total_score: totalScore,
       result: questionResults
     });

@@ -1,7 +1,10 @@
+import dotenv from "dotenv";
 import express, { type Request, type Response } from "express";
 import studentRouter from "./routes/students";
 import landmarkRouter from "./routes/landmarks";
 import quizRouter from "./routes/quizzes";
+
+dotenv.config();
 
 const app = express();
 

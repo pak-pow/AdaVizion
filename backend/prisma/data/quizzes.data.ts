@@ -1,6 +1,6 @@
 import type { SeedQuiz } from "../../src/types/quizzes.types";
 
-export const quizzes: SeedQuiz[] = [
+export const quizzesData: SeedQuiz[] = [
   {
     name: "", 
     required_xp: 0, 

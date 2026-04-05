@@ -11,11 +11,34 @@ router.use(authenticateToken);
 
 // QUIZZES ROOT ENDPOINT
 router.get("/", async (req: Request, res: Response) => {
+  const studentNum = (req as any).user.studentNum;
+
   try {
-    const quizzes: ViewQuiz[] = await prisma.quiz.findMany({
-      include: { questions: true }
-    });
-    res.status(200).json(quizzes);
+    const [allQuizzes, studentProgress] = await Promise.all([
+      // Get all quizzes in the database
+      prisma.quiz.findMany({
+        include: { _count: { select: { questions: true } } }
+      }),
+
+      // Get student's progress
+      prisma.progress.findUnique({
+        where: { student_number: studentNum }
+      })
+    ]);
+
+    const currentXp = studentProgress?.total_xp || 0;
+
+    // Final list of quizzes to show on the frontend
+    const quizList = allQuizzes.map((quiz) => ({
+      quiz_id: quiz.quiz_id,
+      name: quiz.name,
+      required_xp: quiz.required_xp,
+      question_count: quiz._count.questions,
+      is_locked: currentXp < quiz.required_xp,
+      remaining_xp_needed: Math.max(0, quiz.required_xp - currentXp)
+    }));
+
+    res.status(200).json(quizList);
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch quizzes"

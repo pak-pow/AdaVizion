@@ -14,7 +14,7 @@ router.get("/", async (req: Request, res: Response) => {
   const studentNum = (req as any).user.studentNum;
 
   try {
-    const [allQuizzes, studentProgress] = await Promise.all([
+    const [allQuizzes, studentProgress, quizSubmissions] = await Promise.all([
       // Get all quizzes in the database
       prisma.quiz.findMany({
         include: { _count: { select: { questions: true } } }
@@ -23,20 +23,36 @@ router.get("/", async (req: Request, res: Response) => {
       // Get student's progress
       prisma.progress.findUnique({
         where: { student_number: studentNum }
+      }),
+
+      // Get quizzes that are already answered by the student
+      prisma.quizSubmission.findMany({
+        where: { student_number: studentNum }
       })
     ]);
 
     const currentXp = studentProgress?.total_xp || 0;
 
+    const submissionDetails = new Map(quizSubmissions.map((s) => [
+      s.quiz_id, { score: s.score, is_passed: s.is_passed }
+    ]));
+
     // Final list of quizzes to show on the frontend
-    const quizList = allQuizzes.map((quiz) => ({
-      quiz_id: quiz.quiz_id,
-      name: quiz.name,
-      required_xp: quiz.required_xp,
-      question_count: quiz._count.questions,
-      is_locked: currentXp < quiz.required_xp,
-      remaining_xp_needed: Math.max(0, quiz.required_xp - currentXp)
-    }));
+    const quizList = allQuizzes.map((quiz) => {
+      const submission = submissionDetails.get(quiz.quiz_id);
+
+      return {
+        quiz_id: quiz.quiz_id,
+        name: quiz.name,
+        required_xp: quiz.required_xp,
+        remaining_xp_needed: Math.max(0, quiz.required_xp - currentXp),
+        question_count: quiz._count.questions,
+        is_locked: currentXp < quiz.required_xp,
+        is_completed: !submission,
+        score_achieved: submission ? submission.score : null,
+        is_passed: submission ? submission.is_passed : false,
+      }
+    });
 
     res.status(200).json(quizList);
   } catch (error) {

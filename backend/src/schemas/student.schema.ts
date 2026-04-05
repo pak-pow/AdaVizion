@@ -31,7 +31,8 @@ export const RegistrationSchema = z.object({
     .optional()
     .transform((val) => val === "" ? null : val),
 
-  yearLevel: z.int()
+  yearLevel: z.number()
+    .int({ error: "Year level must be a whole number" })
     .min(1, { error: "Year level must be at least 1" })
     .max(5, { error: "Year level cannot exceed 5" }),
 

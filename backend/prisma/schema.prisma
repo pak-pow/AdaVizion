@@ -86,6 +86,7 @@ model QuizSubmission {
   student_number     String              @db.VarChar(20)
   quiz_id            Int
   score              Int
+  is_passed          Boolean             @default(false)
   completed_at       DateTime            @default(now())
   quiz               Quiz                @relation(fields: [quiz_id], references: [quiz_id])
   student            Student             @relation(fields: [student_number], references: [student_number])

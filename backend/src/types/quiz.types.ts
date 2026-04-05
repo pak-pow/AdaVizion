@@ -1,11 +1,26 @@
 import type { JsonValue } from "@prisma/client/runtime/client";
 
-interface Question {
-  question_id: number;
+interface BaseQuestion {
   question_text: string;
-  choices: JsonValue;
-  your_answer?: number;
+  choices: string[] | JsonValue;
   item_points: number;
+}
+
+interface SeedQuestion extends BaseQuestion {
+  quiz_id: number;
+  correct_idx: number;
+}
+
+interface ViewQuestion extends BaseQuestion {
+  question_id: number;
+  your_answer?: number;
+}
+
+interface QuestionResult extends ViewQuestion {
+  your_answer: number;
+  correct_answer: number;
+  is_correct: boolean;
+  points_earned: number;
 }
 
 interface Answer {
@@ -13,24 +28,30 @@ interface Answer {
   selected_idx: number;
 }
 
+interface BaseQuiz {
+  name: string;
+  required_xp: number;
+  passing_score: number;
+}
+
+interface SeedQuiz extends BaseQuiz {
+  questions: SeedQuestion[]
+}
+
+interface ViewQuiz extends BaseQuiz {
+  quiz_id: number;
+}
+
 interface QuizSubmitBody {
   answers: Answer[];
 }
 
-interface QuestionResult {
-  question_id: number;
-  question_text: string;
-  choices: any;
-  your_answer: number;
-  correct_answer: number;
-  is_correct: boolean;
-  item_points: number;
-  points_earned: number;
-}
-
 export type {
-  Question,
+  SeedQuestion,
+  ViewQuestion,
+  QuestionResult,
   Answer,
+  SeedQuiz,
+  ViewQuiz,
   QuizSubmitBody,
-  QuestionResult
 }

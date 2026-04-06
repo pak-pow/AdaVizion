@@ -22,7 +22,7 @@ model Student {
   landmarks_visited   LandmarksVisited[]
   progress            Progress?
   quiz_submissions    QuizSubmission[]
-  question_responses  QuestionResponses[]
+  question_responses  QuestionResponse[]
 
   @@map("students")
 }
@@ -33,6 +33,7 @@ model Landmark {
   description String?
   fun_fact    String?
   qr_string   String             @unique
+  created_at  DateTime           @default(now())
   visitors    LandmarksVisited[]
 
   @@map("landmarks")
@@ -44,6 +45,7 @@ model Quiz {
   required_xp   Int              @default(0)
   max_score     Int              @default(0)
   passing_score Int              @default(0)
+  created_at     DateTime        @default(now())
   questions     Question[]
   submissions   QuizSubmission[]
 
@@ -58,7 +60,7 @@ model Question {
   correct_idx   Int
   item_points   Int    @default(10)
   quiz          Quiz   @relation(fields: [quiz_id], references: [quiz_id])
-  responses     QuestionResponses[]
+  responses     QuestionResponse[]
 
   @@map("questions")
 }
@@ -74,6 +76,7 @@ model Achievement {
   description    String
   category       AchievementCategory
   threshold      Int
+  created_at     DateTime             @default(now())
   earners        AchievementsEarned[]
 
   @@map("achievements")
@@ -98,13 +101,13 @@ model QuizSubmission {
   completed_at       DateTime            @default(now())
   quiz               Quiz                @relation(fields: [quiz_id], references: [quiz_id])
   student            Student             @relation(fields: [student_number], references: [student_number])
-  question_responses QuestionResponses[]
+  question_responses QuestionResponse[]
 
   @@id([student_number, quiz_id])
   @@map("quiz_submissions")
 }
 
-model QuestionResponses {
+model QuestionResponse {
   student_number  String         @db.VarChar(20)
   quiz_id         Int
   question_id     Int
@@ -118,10 +121,11 @@ model QuestionResponses {
 }
 
 model Progress {
-  student_number String  @id @db.VarChar(20)
-  total_xp       Int     @default(0)
-  quiz_points    Int     @default(0)
-  student        Student @relation(fields: [student_number], references: [student_number])
+  student_number String   @id @db.VarChar(20)
+  total_xp       Int      @default(0)
+  quiz_points    Int      @default(0)
+  updated_at     DateTime @updatedAt
+  student        Student  @relation(fields: [student_number], references: [student_number])
 
   @@map("progress")
 }

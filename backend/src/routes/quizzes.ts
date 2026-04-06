@@ -48,7 +48,7 @@ router.get("/", async (req: Request, res: Response) => {
         remaining_xp_needed: Math.max(0, quiz.required_xp - currentXp),
         question_count: quiz._count.questions,
         is_locked: currentXp < quiz.required_xp,
-        is_completed: !submission,
+        is_completed: !!submission,
         max_score: quiz.max_score,
         score_achieved: submission ? submission.score : null,
         is_passed: submission ? submission.is_passed : false,

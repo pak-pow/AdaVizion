@@ -49,6 +49,7 @@ router.get("/", async (req: Request, res: Response) => {
         question_count: quiz._count.questions,
         is_locked: currentXp < quiz.required_xp,
         is_completed: !submission,
+        max_score: quiz.max_score,
         score_achieved: submission ? submission.score : null,
         is_passed: submission ? submission.is_passed : false,
       }
@@ -173,6 +174,7 @@ router.post("/:id/submit", async (req: Request<{id: string}, any, QuizSubmitBody
       select: {
         quiz_id: true,
         name: true,
+        max_score: true,
         passing_score: true
       }
     });
@@ -241,13 +243,14 @@ router.post("/:id/submit", async (req: Request<{id: string}, any, QuizSubmitBody
       };
     })
 
-    await prisma.$transaction(async (tx) => {
+    const [submission, updatedProgress] = await prisma.$transaction(async (tx) => {
       // Save detailed responses for review history
-      await tx.quizSubmission.create({
+      const submission = await tx.quizSubmission.create({
         data: {
           student_number: studentNum,
           quiz_id: quizId,
           score: totalScore,
+          is_passed: totalScore >= quiz.passing_score,
           question_responses: {
             create: questionResults.map((result) => ({
               student: { connect: { student_number: studentNum } },
@@ -259,16 +262,21 @@ router.post("/:id/submit", async (req: Request<{id: string}, any, QuizSubmitBody
       });
 
       // Save cumulative quiz points to the student profile
-      await tx.progress.update({
+      const updatedProgress = await tx.progress.update({
         where: { student_number: studentNum },
         data: { quiz_points: { increment: totalScore } }
       })
+
+      return [submission, updatedProgress];
     });
 
     res.status(200).json({
       message: "Quiz submitted successfully",
       ...quiz,
-      total_score: totalScore,
+      total_score: submission.score,
+      is_passed: submission.is_passed,
+      completed_at: submission.completed_at,
+      new_total_quiz_points: updatedProgress.quiz_points,
       result: questionResults
     });
   } catch (error) {

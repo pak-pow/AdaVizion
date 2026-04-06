@@ -1,16 +1,8 @@
-interface BaseLandmark {
-  name: string;
-  description: string | null;
-  fun_fact: string | null;
-}
+import type { Landmark } from "../../generated/prisma/client";
 
-interface SeedLandmark extends BaseLandmark {
-  qr_string: string;
-}
+type SeedLandmark = Omit<Landmark, "landmark_id" | "created_at">
 
-interface ViewLandmark extends BaseLandmark {
-  landmark_id: number;
-}
+type ViewLandmark = Omit<Landmark, "qr_string">
 
 interface LandmarkVisitBody {
   qr_code_scanned: string;

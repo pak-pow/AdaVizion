@@ -1,25 +1,9 @@
-import { Prisma } from "../../generated/prisma/client";
+import type { Quiz, Question } from "../../generated/prisma/client";
 
-interface BaseQuestion {
-  question_text: string;
-  choices: string[] | Prisma.JsonValue;
-  item_points: number;
-}
+type SeedQuestion = Omit<Question, "question_id" | "quiz_id">
 
-interface SeedQuestion extends BaseQuestion {
-  correct_idx: number;
-}
-
-interface ViewQuestion extends BaseQuestion {
-  question_id: number;
+type ViewQuestion = Omit<Question, "correct_idx"> & {
   your_answer?: number;
-}
-
-interface QuestionResult extends ViewQuestion {
-  your_answer: number;
-  correct_answer: number;
-  is_correct: boolean;
-  points_earned: number;
 }
 
 interface Answer {
@@ -27,17 +11,8 @@ interface Answer {
   selected_idx: number;
 }
 
-interface BaseQuiz {
-  name: string;
-  required_xp: number;
-}
-
-interface SeedQuiz extends BaseQuiz {
+type SeedQuiz = Omit<Quiz, "quiz_id" | "max_score" | "passing_score" | "created_at"> & {
   questions: SeedQuestion[]
-}
-
-interface ViewQuiz extends BaseQuiz {
-  quiz_id: number;
 }
 
 interface QuizSubmitBody {
@@ -47,9 +22,7 @@ interface QuizSubmitBody {
 export type {
   SeedQuestion,
   ViewQuestion,
-  QuestionResult,
   Answer,
   SeedQuiz,
-  ViewQuiz,
   QuizSubmitBody,
 }

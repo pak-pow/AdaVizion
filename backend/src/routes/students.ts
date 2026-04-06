@@ -32,6 +32,33 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
   }
 })
 
+// STUDENT PROFILE ENDPOINT
+router.get("/me", authenticateToken, async (req: Request, res: Response) => {
+  const studentNum = (req as any).user.studentNum;
+
+  try {
+    // Get all information about the student including their progress and earned achievements to display on the frontend
+    const studentInfo = await prisma.student.findUnique({
+      where: { student_number: studentNum },
+      include: {
+        progress: true,
+        achievements_earned: {
+          select: {
+            earned_at: true,
+            achievement: true
+          }
+        }
+      }
+    });
+
+    return res.status(200).json(studentInfo);
+  } catch (error) {
+    return res.status(500).json({
+      error: "Internal Server Error"
+    });
+  }
+})
+
 // REGISTER ENDPOINT
 router.post("/register", async (req: Request, res: Response) => {
   // Validate with zod

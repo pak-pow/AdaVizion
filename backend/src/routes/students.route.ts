@@ -2,7 +2,7 @@ import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { RegistrationSchema, LoginSchema } from "../schemas/student.schema";
+import { RegistrationSchema, LoginSchema } from "../schemas/students.schema";
 import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = express.Router();

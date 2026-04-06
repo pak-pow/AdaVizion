@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
 import express, { type Request, type Response } from "express";
-import studentRouter from "./routes/students";
-import landmarkRouter from "./routes/landmarks";
-import quizRouter from "./routes/quizzes";
-import achievementRouter from "./routes/achievements";
+import studentRouter from "./routes/students.route";
+import landmarkRouter from "./routes/landmarks.route";
+import quizRouter from "./routes/quizzes.route";
+import achievementRouter from "./routes/achievements.route";
 
 dotenv.config();
 

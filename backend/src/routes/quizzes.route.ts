@@ -2,7 +2,7 @@ import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 import { authenticateToken } from "../middleware/auth.middleware";
 import type { ViewQuestion, QuizSubmitBody } from "../types/quizzes.types";
-import { SubmitQuizSchema } from "../schemas/quiz.schema";
+import { SubmitQuizSchema } from "../schemas/quizzes.schema";
 import { checkQuizAchievements } from "../services/achievements.service";
 
 const router = express.Router();

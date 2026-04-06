@@ -1,7 +1,8 @@
 import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 import { authenticateToken } from "../middleware/auth.middleware";
-import type { LandmarkVisitBody, ViewLandmark } from "../types/landmarks.types";
+import type { LandmarkVisitBody } from "../types/landmarks.types";
+import { checkLandmarkAchievements } from "../services/achievements.service";
 
 const router = express.Router();
 
@@ -151,13 +152,16 @@ router.post("/:id/visit", async (req: Request<{id: string}, any, LandmarkVisitBo
       })
     ]);
 
+    const achievementsEarned = await checkLandmarkAchievements(studentNum);
+
     const { qr_string, ...publicData } = landmark; // Exclude qr_string from response
 
     return res.status(200).json({
       message: "Scan and visit successful",
       ...publicData,
       xp_earned: XP_REWARD,
-      new_total_xp: updatedProgress.total_xp
+      new_total_xp: updatedProgress.total_xp,
+      new_achievements: achievementsEarned
     });
   } catch (error) {
     return res.status(500).json({

@@ -1,8 +1,9 @@
 import express, { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma";
 import { authenticateToken } from "../middleware/auth.middleware";
-import type { ViewQuestion, QuizSubmitBody, QuestionResult, ViewQuiz } from "../types/quizzes.types";
+import type { ViewQuestion, QuizSubmitBody } from "../types/quizzes.types";
 import { SubmitQuizSchema } from "../schemas/quiz.schema";
+import { checkQuizAchievements } from "../services/achievements.service";
 
 const router = express.Router();
 
@@ -108,7 +109,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     
     // If the quiz is already taken, include previous answers but keep correct answer hidden to prevent leaking answers to others
     if (answered) {
-      const responses = await prisma.questionResponses.findMany({
+      const responses = await prisma.questionResponse.findMany({
         where: {
           student_number: studentNum,
           quiz_id: quizId,
@@ -119,6 +120,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 
       questions = responses.map((response) => ({
         question_id: response.question_id,
+        quiz_id: response.quiz_id,
         question_text: response.question.question_text,
         choices: response.question.choices,
         your_answer: response.selected_idx,
@@ -131,6 +133,7 @@ router.get("/:id", async (req: Request, res: Response) => {
         where: { quiz_id: quizId },
         select: {
           question_id: true,
+          quiz_id: true,
           question_text: true,
           choices: true,
           item_points: true
@@ -221,7 +224,7 @@ router.post("/:id/submit", async (req: Request<{id: string}, any, QuizSubmitBody
 
     let totalScore = 0;
 
-    const questionResults: QuestionResult[] = answers.map((ans) => {
+    const questionResults = answers.map((ans) => {
       const question = questions.find(q => q.question_id === ans.question_id);
 
       if (!question) throw new Error(`Question ${ans.question_id} not found`);
@@ -270,6 +273,8 @@ router.post("/:id/submit", async (req: Request<{id: string}, any, QuizSubmitBody
       return [submission, updatedProgress];
     });
 
+    const achievementsEarned = await checkQuizAchievements(studentNum);
+
     res.status(200).json({
       message: "Quiz submitted successfully",
       ...quiz,
@@ -277,7 +282,8 @@ router.post("/:id/submit", async (req: Request<{id: string}, any, QuizSubmitBody
       is_passed: submission.is_passed,
       completed_at: submission.completed_at,
       new_total_quiz_points: updatedProgress.quiz_points,
-      result: questionResults
+      result: questionResults,
+      new_achievements: achievementsEarned
     });
   } catch (error) {
     res.status(500).json({

@@ -63,10 +63,17 @@ model Question {
   @@map("questions")
 }
 
+enum AchievementCategory {
+  EXPLORER
+  SCHOLAR
+}
+
 model Achievement {
   achievement_id Int                  @id @default(autoincrement())
-  name           String               @db.VarChar(20)
+  title          String               @unique @db.VarChar(100)
   description    String
+  category       AchievementCategory
+  threshold      Int
   earners        AchievementsEarned[]
 
   @@map("achievements")

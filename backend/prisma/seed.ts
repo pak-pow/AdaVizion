@@ -2,10 +2,12 @@ import type { Prisma } from "../generated/prisma/client";
 import { prisma } from "../src/lib/prisma";
 import { landmarksData } from "./data/landmarks.data";
 import { quizzesData } from "./data/quizzes.data";
+import { achievementsData } from "./data/achievements.data";
 
 async function main() {
   await seedLandmarks();
   await seedQuizzes();
+  await seedAchievements();
 }
 
 async function seedLandmarks() {
@@ -71,6 +73,24 @@ async function seedQuizzes() {
   }
 
   console.log(`${quizzesData.length} quizzes seeded successfully`);
+}
+
+async function seedAchievements() {
+  console.log("Seeding achievements...");
+
+  for (const achievement of achievementsData) {
+    await prisma.achievement.upsert({
+      where: { title: achievement.title },
+      update: {
+        description: achievement.description,
+        category: achievement.category,
+        threshold: achievement.threshold
+      },
+      create: achievement
+    })
+  }
+
+  console.log(`${achievementsData.length} achievements seeded successfully`);
 }
 
 main()

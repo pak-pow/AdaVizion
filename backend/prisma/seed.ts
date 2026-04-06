@@ -35,10 +35,10 @@ async function seedQuizzes() {
   console.log("Seeding quizzes and questions...");
 
   for (const quiz of quizzesData) {
-    const totalPoints = quiz.questions.reduce((sum, question) => sum + question.item_points, 0);
+    const maxPoints = quiz.questions.reduce((sum, question) => sum + question.item_points, 0);
 
     const passingPercent = 0.75;
-    const passingScore = Math.ceil(totalPoints * passingPercent);
+    const passingScore = Math.ceil(maxPoints * passingPercent);
 
     const questionData = quiz.questions.map((question) => ({
       question_text: question.question_text,
@@ -51,6 +51,7 @@ async function seedQuizzes() {
       where: { name: quiz.name },
       update: {
         required_xp: quiz.required_xp,
+        max_score: maxPoints,
         passing_score: passingScore,
         questions: {
           deleteMany: {},
@@ -60,6 +61,7 @@ async function seedQuizzes() {
       create: {
         name: quiz.name,
         required_xp: quiz.required_xp,
+        max_score: maxPoints,
         passing_score: passingScore,
         questions: {
           create: questionData

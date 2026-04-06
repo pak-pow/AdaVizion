@@ -3,6 +3,7 @@ import express, { type Request, type Response } from "express";
 import studentRouter from "./routes/students";
 import landmarkRouter from "./routes/landmarks";
 import quizRouter from "./routes/quizzes";
+import achievementRouter from "./routes/achievements";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/students", studentRouter);
 app.use("/landmarks", landmarkRouter);
 app.use("/quizzes", quizRouter);
+app.use("/achievements", achievementRouter);
 
 app.listen(PORT, () => {
   console.log(`Server ready at: http://localhost:${PORT}`)

@@ -54,7 +54,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
 
           Positioned(
-            top: size.height * 0.55, 
+            top: size.height * 0.55,
             bottom: 0,
             left: 0,
             right: 0,
@@ -81,15 +81,19 @@ class _AuthScreenState extends State<AuthScreen> {
 
                   // The Mascot & Card Stack
                   Stack(
+                    clipBehavior: Clip.none,
                     alignment: Alignment.topCenter,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 0),
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          height:
-                              400, // Nice and large, matching Figma proportions
-                          fit: BoxFit.contain,
+                        padding: const EdgeInsets.only(top: 148),
+                        child: Transform.scale(
+                          scale: 2,
+                          alignment: Alignment.bottomCenter,
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            height: 240,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
 

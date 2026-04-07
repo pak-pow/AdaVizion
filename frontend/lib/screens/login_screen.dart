@@ -73,6 +73,46 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     const SizedBox(height: 30),
 
+                    if (!_isLoginMode) ...[
+                      TextField(
+                        controller: _studentIdController,
+                        decoration: const InputDecoration(
+                          labelText: 'Student Number',
+                          prefixIcon: Icon(Icons.badge_outlined),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Full Name',
+                          prefixIcon: Icon(Icons.person_outline),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _programController,
+                        decoration: const InputDecoration(
+                          labelText: 'Program (e.g., BSCS)',
+                          prefixIcon: Icon(Icons.school_outlined),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _yearLevelController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Year Level (1-4)',
+                          prefixIcon: Icon(Icons.format_list_numbered),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
                     // Email Field
                     TextField(
                       controller: _emailController,

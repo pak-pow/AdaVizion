@@ -1,16 +1,10 @@
----
-date: 2026-03-16
-project: AdaVizion (EUventure)
-topic: QR Integration & Sequential Dialog Logic
-dev: Dequito
-Tags:
-  - "[[Flutter]]"
-  - "[[Dart]]"
-  - "[[Mobile Scanner]]"
-  - "[[Asynchronous Programming]]"
-  - "[[Dev Log]]"
-  - "[[State Management]]"
----
+| Field | Details |
+| :--- | :--- |
+| **Date** | 2026-03-16 |
+| **Project** | EUventure |
+| **Topic** | QR Integration & Sequential Dialog Logic Initialization |
+| **Developer** | Dequito |
+| **Tags** | `Flutter`, `Dart`, `Mobile Scanner`, `Asynchronous Programming`, `State Management`, `Dev Log` |
 
 # 📝 DEV LOG: WEEK 1 - DAY 3
 
@@ -66,6 +60,6 @@ To prevent the common Flutter "Navigator collision" (where multiple screens pop 
 
 Day 3 successfully bridges the gap between the physical environment and the digital interface. The QR module is not only functional but architected to be user-friendly, preventing accidental multiple scans and providing clear, branching pathways for the user post-interaction. The "Fun Facts" logic is now waiting to be linked to a backend database or a local content library.
 
-![Day3.1](../screenshots/day3.1.1.png)
+![Day3.1](../../screenshots/day3.1.1.png)
 
-![Day3.2](../screenshots/day3.1.2.png)
+![Day3.2](../../screenshots/day3.1.2.png)

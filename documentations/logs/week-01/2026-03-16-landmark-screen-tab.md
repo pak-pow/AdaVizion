@@ -1,14 +1,10 @@
----
-date: 2026-03-16
-project: AdaVizion (EUventure)
-topic: Dynamic List Generation & Conditional State Styling
-Tags:
-  - "[[Flutter]]"
-  - "[[Dart]]"
-  - "[[UI Architecture]]"
-  - "[[Data Binding]]"
-  - "[[Dev Log]]"
----
+| Field | Details |
+| :--- | :--- |
+| **Date** | 2026-03-16 |
+| **Project** | EUventure |
+| **Topic** | Dynamic List Generation & Conditional State Styling |
+| **Developer** | Aguirre |
+| **Tags** | `Flutter`, `Dart`, `UI Architecture`, `Data Binding`, `Dev Log` |
 
 # 📝 DEV LOG: WEEK 1 - DAY 3
 
@@ -39,4 +35,4 @@ The UI required two distinct visual states for the same structural card componen
 
 ## 4. The Output & Result
 
-![Day3](../screenshots/day3.png)
+![Day3](../../screenshots/day3.png)

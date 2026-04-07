@@ -1,16 +1,10 @@
----
-date: 2026-03-14
-project: AdaVizion (EUventure)
-topic: Advanced Routing & Notched BottomAppBar Architecture
-dev: Aguirre
-Tags:
-  - "[[Flutter]]"
-  - "[[Dart]]"
-  - "[[Navigation]]"
-  - "[[UI Architecture]]"
-  - "[[Dev Log]]"
-  - "[[State Management]]"
----
+| Field | Details |
+| :--- | :--- |
+| **Date** | 2026-03-14 |
+| **Project** | EUventure |
+| **Topic** | Advanced Routing & Notched BottomAppBar Architecture Initialization |
+| **Developer** | Aguirre |
+| **Tags** | `Flutter`, `Dart`, `Navigation`, `UI Architecture`, `State Management`, `Dev Log` |
 
 # 📝 DEV LOG: WEEK 1 - DAY 2
 
@@ -65,10 +59,10 @@ To transition the dashboard from a conceptual design to a functional Flutter UI,
 
 Day 2 successfully establishes the core operational engine of EUventure. The interface handles secure, destructive routing transitions and provides a flawless, interactive, and fully responsive navigation skeleton. The complex geometric requirements of the center-docked scanner and notched app bar have been resolved perfectly. The frontend architecture is now fully containerized and ready to be populated with the individual gamified tab features.
 
-![Day2.1](../screenshots/day2.1.png)
+![Day2.1](../../screenshots/day2.1.png)
 
-![Day2.2](../screenshots/day2.2.png)
+![Day2.2](../../screenshots/day2.2.png)
 
-![Day2.3](../screenshots/day2.3.png)
+![Day2.3](../../screenshots/day2.3.png)
 
-![Day2.4](../screenshots/day2.4.png)
+![Day2.4](../../screenshots/day2.4.png)

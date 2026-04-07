@@ -1,30 +1,32 @@
-import { prisma } from "./lib/prisma";
+import dotenv from "dotenv";
+import express, { type Request, type Response } from "express";
+import studentRouter from "./routes/students.route";
+import landmarkRouter from "./routes/landmarks.route";
+import quizRouter from "./routes/quizzes.route";
+import achievementRouter from "./routes/achievements.route";
 
-// To run this file, execute `npm run dev` in termonal
+dotenv.config();
 
-async function main() {
-  // Create a new student with a post
-  const student = await prisma.student.create({
-    data: {
-      student_number: "A24-67676",
-      first_name: "Juan",
-      last_name: "Dela Cruz",
-      email: "a24-67676@student.mseuf.edu.ph"
-    }
+const PORT = process.env.PORT || 3000;
+
+const app = express();
+
+app.use(express.json());
+
+// To run this file, execute `npm run dev` in terminal
+
+app.get("/", (req: Request, res: Response) => {
+  res.json({
+    status: "ok",
+    message: "EUventure API is running"
   });
-  console.log("Created student:", student);
+})
 
-  // Fetch all students
-  const allStudents = await prisma.student.findMany();
-  console.log("All students:", JSON.stringify(allStudents, null, 2));
-}
+app.use("/students", studentRouter);
+app.use("/landmarks", landmarkRouter);
+app.use("/quizzes", quizRouter);
+app.use("/achievements", achievementRouter);
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+app.listen(PORT, () => {
+  console.log(`Server ready at: http://localhost:${PORT}`)
+});

@@ -1,98 +1,301 @@
 import 'package:flutter/material.dart';
-import 'dashboard_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _idController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class _AuthScreenState extends State<AuthScreen> {
+  // This boolean controls which form we are showing
+  bool _isLoginMode = true;
 
-  void login() {
-    String studentId = _idController.text;
-    String password = _passwordController.text;
+  // Controllers to grab the text the user types
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-    if (studentId == "2023-1234" && password == "password") {
-      print("LOGIN SUCCESS");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const DashboardScreen()),
-      );
-    } else {
-      print("LOGIN FAILED");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("INVALID ID or PASSWORD"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+  // new signupControllers
+  final _nameController = TextEditingController();
+  final _studentIdController = TextEditingController();
+  final _programController = TextEditingController();
+  final _yearLevelController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    _studentIdController.dispose();
+    _programController.dispose();
+    _yearLevelController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    final inputBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(color: Colors.grey.shade300),
+    );
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.school, size: 80, color: Colors.red),
-            const SizedBox(height: 20),
+      backgroundColor: const Color(0xFF5D1414),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: size.height * 0.55, // Top 55% is white
+            child: Container(color: Colors.white),
+          ),
 
-            const Text(
-              "ADAVIZION",
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.red,
-              ),
-            ),
-
-            const SizedBox(height: 40),
-
-            TextField(
-              controller: _idController,
-              decoration: const InputDecoration(
-                labelText: "Student ID",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.badge),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "Password",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
+          Positioned(
+            top: size.height * 0.55,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFB72424), Color(0xFF5D1414)],
                 ),
-                child: const Text("LOGIN TO PORTAL"),
               ),
             ),
-          ],
-        ),
+          ),
+
+          SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+
+                  // The EUventure Title Image
+                  Image.asset('assets/images/title.png', height: 90),
+
+                  // The Mascot & Card Stack
+                  Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.topCenter,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 148),
+                        child: Transform.scale(
+                          scale: 2,
+                          alignment: Alignment.bottomCenter,
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            height: 240,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                        margin: const EdgeInsets.only(
+                          top: 170,
+                          left: 24,
+                          right: 24,
+                          bottom: 40,
+                        ),
+                        padding: const EdgeInsets.only(
+                          top: 32,
+                          left: 24,
+                          right: 24,
+                          bottom: 24,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 15,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              _isLoginMode ? 'Sign in' : 'Sign up',
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF7A1D1D),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'to explore and learn in Enverga\nUniversity',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color(0xFF7A1D1D),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                            if (!_isLoginMode) ...[
+                              TextField(
+                                controller: _studentIdController,
+                                decoration: InputDecoration(
+                                  labelText: 'Student Number',
+                                  prefixIcon: const Icon(
+                                    Icons.badge_outlined,
+                                    size: 20,
+                                  ),
+                                  enabledBorder: inputBorder,
+                                  focusedBorder: inputBorder,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _nameController,
+                                decoration: InputDecoration(
+                                  labelText: 'Full Name',
+                                  prefixIcon: const Icon(
+                                    Icons.person_outline,
+                                    size: 20,
+                                  ),
+                                  enabledBorder: inputBorder,
+                                  focusedBorder: inputBorder,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _programController,
+                                decoration: InputDecoration(
+                                  labelText: 'Program (e.g., BSCS)',
+                                  prefixIcon: const Icon(
+                                    Icons.school_outlined,
+                                    size: 20,
+                                  ),
+                                  enabledBorder: inputBorder,
+                                  focusedBorder: inputBorder,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _yearLevelController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: 'Year Level (1-4)',
+                                  prefixIcon: const Icon(
+                                    Icons.format_list_numbered,
+                                    size: 20,
+                                  ),
+                                  enabledBorder: inputBorder,
+                                  focusedBorder: inputBorder,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+
+                            // Email Field
+                            TextField(
+                              controller: _emailController,
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                labelStyle: const TextStyle(fontSize: 14),
+                                prefixIcon: const Icon(
+                                  Icons.email_outlined,
+                                  size: 20,
+                                ),
+                                enabledBorder: inputBorder,
+                                focusedBorder: inputBorder,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Password Field
+                            TextField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                labelStyle: const TextStyle(fontSize: 14),
+                                prefixIcon: const Icon(
+                                  Icons.lock_outline,
+                                  size: 20,
+                                ),
+                                enabledBorder: inputBorder,
+                                focusedBorder: inputBorder,
+                              ),
+                            ),
+
+                            if (_isLoginMode)
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {},
+                                  child: const Text(
+                                    'Forgot password?',
+                                    style: TextStyle(
+                                      color: Color(0xFF7A1D1D),
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            else
+                              const SizedBox(height: 24),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF8B1A1A),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              onPressed: () {
+                                print('Email: ${_emailController.text}');
+                              },
+                              child: const Text(
+                                'Continue',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isLoginMode = !_isLoginMode;
+                                });
+                              },
+                              child: Text(
+                                _isLoginMode
+                                    ? 'Don\'t have an account? Sign up'
+                                    : 'Already have an account? Sign in',
+                                style: const TextStyle(
+                                  color: Color(0xFF7A1D1D),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

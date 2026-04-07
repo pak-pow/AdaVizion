@@ -16,7 +16,7 @@ class AdaVisionApp extends StatelessWidget {
         primaryColor: Colors.red,
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home: const AuthScreen(),
     );
   }
 }

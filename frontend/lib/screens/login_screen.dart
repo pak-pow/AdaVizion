@@ -21,8 +21,6 @@ class _AuthScreenState extends State<AuthScreen> {
   final _programController = TextEditingController();
   final _yearLevelController = TextEditingController();
 
-  // (We will add controllers for Name/Program later for sign up)
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -36,138 +34,264 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    final inputBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(color: Colors.grey.shade300),
+    );
+
     return Scaffold(
-      backgroundColor: const Color(
-        0xFF7A1D1D,
-      ), // Replace with your exact hex code
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
+      backgroundColor: const Color(0xFF5D1414),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: size.height * 0.55, // Top 55% is white
+            child: Container(color: Colors.white),
+          ),
 
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      _isLoginMode ? 'Sign in' : 'Sign up',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF7A1D1D),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'to explore and learn in Enverga University',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 30),
-
-                    if (!_isLoginMode) ...[
-                      TextField(
-                        controller: _studentIdController,
-                        decoration: const InputDecoration(
-                          labelText: 'Student Number',
-                          prefixIcon: Icon(Icons.badge_outlined),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Full Name',
-                          prefixIcon: Icon(Icons.person_outline),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _programController,
-                        decoration: const InputDecoration(
-                          labelText: 'Program (e.g., BSCS)',
-                          prefixIcon: Icon(Icons.school_outlined),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _yearLevelController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Year Level (1-4)',
-                          prefixIcon: Icon(Icons.format_list_numbered),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // Email Field
-                    TextField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Password Field
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock_outline),
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7A1D1D),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      onPressed: () {
-                        print('Email: ${_emailController.text}');
-                      },
-                      child: const Text(
-                        'Continue',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isLoginMode = !_isLoginMode;
-                        });
-                      },
-                      child: Text(
-                        _isLoginMode
-                            ? 'Don\'t have an account? Sign up'
-                            : 'Already have an account? Sign in',
-                        style: const TextStyle(color: Color(0xFF7A1D1D)),
-                      ),
-                    ),
-                  ],
+          Positioned(
+            top: size.height * 0.55, 
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFB72424), Color(0xFF5D1414)],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+
+          SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+
+                  // The EUventure Title Image
+                  Image.asset('assets/images/title.png', height: 90),
+
+                  // The Mascot & Card Stack
+                  Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 0),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          height:
+                              400, // Nice and large, matching Figma proportions
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+
+                      Container(
+                        margin: const EdgeInsets.only(
+                          top: 170,
+                          left: 24,
+                          right: 24,
+                          bottom: 40,
+                        ),
+                        padding: const EdgeInsets.only(
+                          top: 32,
+                          left: 24,
+                          right: 24,
+                          bottom: 24,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 15,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              _isLoginMode ? 'Sign in' : 'Sign up',
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF7A1D1D),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'to explore and learn in Enverga\nUniversity',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color(0xFF7A1D1D),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                            if (!_isLoginMode) ...[
+                              TextField(
+                                controller: _studentIdController,
+                                decoration: InputDecoration(
+                                  labelText: 'Student Number',
+                                  prefixIcon: const Icon(
+                                    Icons.badge_outlined,
+                                    size: 20,
+                                  ),
+                                  enabledBorder: inputBorder,
+                                  focusedBorder: inputBorder,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _nameController,
+                                decoration: InputDecoration(
+                                  labelText: 'Full Name',
+                                  prefixIcon: const Icon(
+                                    Icons.person_outline,
+                                    size: 20,
+                                  ),
+                                  enabledBorder: inputBorder,
+                                  focusedBorder: inputBorder,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _programController,
+                                decoration: InputDecoration(
+                                  labelText: 'Program (e.g., BSCS)',
+                                  prefixIcon: const Icon(
+                                    Icons.school_outlined,
+                                    size: 20,
+                                  ),
+                                  enabledBorder: inputBorder,
+                                  focusedBorder: inputBorder,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _yearLevelController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: 'Year Level (1-4)',
+                                  prefixIcon: const Icon(
+                                    Icons.format_list_numbered,
+                                    size: 20,
+                                  ),
+                                  enabledBorder: inputBorder,
+                                  focusedBorder: inputBorder,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+
+                            // Email Field
+                            TextField(
+                              controller: _emailController,
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                labelStyle: const TextStyle(fontSize: 14),
+                                prefixIcon: const Icon(
+                                  Icons.email_outlined,
+                                  size: 20,
+                                ),
+                                enabledBorder: inputBorder,
+                                focusedBorder: inputBorder,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Password Field
+                            TextField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                labelStyle: const TextStyle(fontSize: 14),
+                                prefixIcon: const Icon(
+                                  Icons.lock_outline,
+                                  size: 20,
+                                ),
+                                enabledBorder: inputBorder,
+                                focusedBorder: inputBorder,
+                              ),
+                            ),
+
+                            if (_isLoginMode)
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {},
+                                  child: const Text(
+                                    'Forgot password?',
+                                    style: TextStyle(
+                                      color: Color(0xFF7A1D1D),
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            else
+                              const SizedBox(height: 24),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF8B1A1A),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              onPressed: () {
+                                print('Email: ${_emailController.text}');
+                              },
+                              child: const Text(
+                                'Continue',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isLoginMode = !_isLoginMode;
+                                });
+                              },
+                              child: Text(
+                                _isLoginMode
+                                    ? 'Don\'t have an account? Sign up'
+                                    : 'Already have an account? Sign in',
+                                style: const TextStyle(
+                                  color: Color(0xFF7A1D1D),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

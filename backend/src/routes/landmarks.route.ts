@@ -1,173 +1,19 @@
-import express, { type Request, type Response } from "express";
-import { prisma } from "../lib/prisma";
+import express from "express";
 import { authenticateToken } from "../middleware/auth.middleware";
-import type { LandmarkVisitBody } from "../types/landmarks.types";
-import { checkLandmarkAchievements } from "../services/achievements.service";
+import * as landmarksController from "../controllers/landmarks.controller";
 
 const router = express.Router();
 
+// User must be logged in to access these routes
 router.use(authenticateToken);
 
 // LANDMARKS ROOT ENDPOINT
-router.get("/", async (req: Request, res: Response) => {
-  const studentNum = (req as any).user.studentNum;
+router.get("/", landmarksController.getLandmarkChecklist);
 
-  try {
-    const [allLandmarks, visitedLandmarks] = await Promise.all([
-      // Get all landmarks
-      prisma.landmark.findMany(),
+// LANDMARK DETAILS ENDPOINT
+router.get("/:id", landmarksController.getLandmark);
 
-      // Get landmarks that are already visited by the student
-      prisma.landmarksVisited.findMany({
-        where: { student_number: studentNum }
-      })
-    ]);
-
-    const visitedIds = new Set(visitedLandmarks.map((v) => v.landmark_id));
-
-    // Final checklist to show on the frontend
-    const checklist = allLandmarks.map((landmark) => {
-      const isVisited = visitedIds.has(landmark.landmark_id);
-
-      return {
-        landmark_id: landmark.landmark_id,
-        name: landmark.name,
-        is_visited: isVisited // Flag for frontend to visually display visited status
-      };
-    });
-
-    res.status(200).json(checklist);
-  } catch (error) {
-    res.status(500).json({
-      error: "Failed to fetch landmarks"
-    });
-  }
-})
-
-// DETAIL ENDPOINT
-router.get("/:id", async (req: Request, res: Response) => {
-  const studentNum = (req as any).user.studentNum;
-  const landmarkId = parseInt(req.params.id as string);
-
-  try {
-    const [landmark, visited] = await Promise.all([
-      // Get landmark with the given landmarkId
-      prisma.landmark.findUnique({
-        where: { landmark_id: landmarkId },
-        select: {
-          landmark_id: true,
-          name: true,
-          description: true,
-          fun_fact: true
-          // Omit qr_string
-        }
-      }),
-      // Get the entry where the student visits that landmark
-      prisma.landmarksVisited.findUnique({
-        where: {
-          student_number_landmark_id: {
-            student_number: studentNum,
-            landmark_id: landmarkId
-          }
-        }
-      })
-    ]);
-
-    if (!landmark) {
-      return res.status(404).json({
-        error: "Landmark not found"
-      });
-    }
-
-    if (!visited) {
-      const { fun_fact, ...publicData } = landmark;
-      return res.status(403).json({ ...publicData, is_unlocked: false });
-    }
-
-    return res.status(200).json({ ...landmark, is_unlocked: true });
-  } catch (error) {
-    res.status(500).json({
-      error: "Internal Server Error"
-    });
-  }
-})
-
-// VISIT ENDPOINT
-router.post("/:id/visit", async (req: Request<{id: string}, any, LandmarkVisitBody>, res: Response) => {
-  const studentNum = (req as any).user.studentNum;
-  const landmarkId = parseInt(req.params.id as string);
-  const { qr_code_scanned } = req.body;
-
-  const XP_REWARD = 20; // Fixed value for each landmark
-
-  try {
-    // Get landmark with the given landmarkId
-    const landmark = await prisma.landmark.findUnique({
-      where: { landmark_id: landmarkId }
-    });
-
-    if (!landmark) {
-      return res.status(404).json({
-        error: "Invalid landmark"
-      });
-    }
-
-    // Get the entry where the student visits that landmark
-    const existingVisit = await prisma.landmarksVisited.findUnique({
-      where: {
-        student_number_landmark_id: {
-          student_number: studentNum,
-          landmark_id: landmarkId
-        }
-      }
-    });
-
-    if (existingVisit) {
-      return res.status(400).json({
-        error: "Landmark already visited"
-      });
-    }
-
-    if (landmark.qr_string !== qr_code_scanned) {
-      return res.status(403).json({
-        error: "Invalid landmark QR code"
-      });
-    }
-
-    // If the landmark is not yet visited, create a new entry in landmarksVisited and increase the student's total XP in progress
-    const [visit, updatedProgress] = await prisma.$transaction([
-      prisma.landmarksVisited.create({
-        data: {
-          student_number: studentNum,
-          landmark_id: landmarkId
-        }
-      }),
-      prisma.progress.update({
-        where: { student_number: studentNum },
-        data: {
-          total_xp: {
-            increment: XP_REWARD
-          }
-        }
-      })
-    ]);
-
-    const achievementsEarned = await checkLandmarkAchievements(studentNum);
-
-    const { qr_string, ...publicData } = landmark; // Exclude qr_string from response
-
-    return res.status(200).json({
-      message: "Scan and visit successful",
-      ...publicData,
-      xp_earned: XP_REWARD,
-      new_total_xp: updatedProgress.total_xp,
-      new_achievements: achievementsEarned
-    });
-  } catch (error) {
-    return res.status(500).json({
-      error: "Failed to process scan"
-    });
-  }
-})
+// VISIT LANDMARK ENDPOINT
+router.post("/:id/visit", landmarksController.visitLandmark);
 
 export default router;

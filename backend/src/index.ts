@@ -1,6 +1,13 @@
+import dotenv from "dotenv";
 import express, { type Request, type Response } from "express";
-import studentRouter from "./routes/students";
-import landmarkRouter from "./routes/landmarks";
+import studentRouter from "./routes/students.route";
+import landmarkRouter from "./routes/landmarks.route";
+import quizRouter from "./routes/quizzes.route";
+import achievementRouter from "./routes/achievements.route";
+
+dotenv.config();
+
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -17,8 +24,9 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/students", studentRouter);
 app.use("/landmarks", landmarkRouter);
+app.use("/quizzes", quizRouter);
+app.use("/achievements", achievementRouter);
 
-const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server ready at: http://localhost:${PORT}`)
 });

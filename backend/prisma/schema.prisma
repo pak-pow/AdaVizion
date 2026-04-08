@@ -112,6 +112,7 @@ model QuestionResponse {
   quiz_id         Int
   question_id     Int
   selected_idx    Int
+  is_correct      Boolean
   student         Student        @relation(fields: [student_number], references: [student_number])
   question        Question       @relation(fields: [question_id], references: [question_id])
   quiz_submission QuizSubmission @relation(fields: [student_number, quiz_id], references: [student_number, quiz_id])

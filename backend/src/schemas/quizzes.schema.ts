@@ -10,7 +10,7 @@ export const SubmitQuizSchema = z.object({
       selected_idx: z.number({ error: "Selected index must be a number" })
         .int({ error: "Selected index must be a whole number" })
         .min(0, { error: "Selected index must be at least 0" })
-        .max(3, { error: "Selection index cannot exceed 3 "})
+        .max(3, { error: "Selected index cannot exceed 3 "})
     })
   )
 })

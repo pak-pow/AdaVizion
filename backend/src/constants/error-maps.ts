@@ -1,13 +1,13 @@
 const STUDENT_ERRORS: Record<string, number> = {
   "Student does not exist": 404,
-  "Invalid student number or password": 401,
+  "Incorrect student number or password": 401
 }
 
 const LANDMARK_ERRORS: Record<string, number> = {
   "Landmark not found": 404,
   "Landmark already visited": 400,
   "Invalid landmark QR code": 403,
-  "Failed to process scan": 500,
+  "Failed to process scan": 500
 }
 
 const QUIZ_ERRORS: Record<string, number> = {

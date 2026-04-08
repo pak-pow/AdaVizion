@@ -1,28 +1,97 @@
-const STUDENT_ERRORS: Record<string, number> = {
-  "Student does not exist": 404,
-  "Incorrect student number or password": 401
-}
+import type { ErrorDetails } from "../types/errors.types";
 
-const LANDMARK_ERRORS: Record<string, number> = {
-  "Landmark not found": 404,
-  "Landmark already visited": 400,
-  "Invalid landmark QR code": 403,
-  "Failed to process scan": 500
-}
+const ERRORS: ErrorDetails[] = [
+  // Student Errors
+  {
+    type: "STUDENT",
+    code: "STUDENT_NOT_FOUND",
+    status: 404,
+    message: "Student not found" 
+  },
+  {
+    type: "STUDENT",
+    code: "AUTH_FAILED",
+    status: 401,
+    message: "Incorrect student number or password" 
+  },
 
-const QUIZ_ERRORS: Record<string, number> = {
-  "Quiz not found": 404,
-  "Quiz is locked. You need more XP to unlock it.": 403,
-  "Invalid question response data format": 400,
-  "Quiz already answered": 409,
-  "Answer count does not match question count": 400,
-  "Invalid question ID provided": 400,
-  "Error evaluating quiz answers": 500,
-  "Database transaction failed to return new quiz submission and updated progress": 500
-}
+  // Landmark Errors
+  {
+    type: "LANDMARK",
+    code: "LANDMARK_NOT_FOUND",
+    status: 404,
+    message: "Landmark not found" 
+  },
+  {
+    type: "LANDMARK",
+    code: "LANDMARK_ALREADY_VISITED",
+    status: 400,
+    message: "Landmark already visited" 
+  },
+  {
+    type: "LANDMARK",
+    code: "INVALID_QR",
+    status: 403,
+    message: "Invalid landmark QR code" 
+  },
+  {
+    type: "LANDMARK",
+    code: "QR_FAILED",
+    status: 500,
+    message: "Failed to process scan" 
+  },
+
+  // Quiz Errors
+  {
+    type: "QUIZ",
+    code: "QUIZ_NOT_FOUND",
+    status: 404,
+    message: "Quiz not found" 
+  },
+  {
+    type: "QUIZ",
+    code: "QUIZ_LOCKED",
+    status: 403,
+    message: "Quiz locked due to insufficient XP" 
+  },
+  {
+    type: "QUIZ",
+    code: "INVALID_RESPONSE_FORMAT",
+    status: 400,
+    message: "Invalid question response data format" 
+  },
+  {
+    type: "QUIZ",
+    code: "QUIZ_ALREADY_ANSWERED",
+    status: 409,
+    message: "Quiz already answered" 
+  },
+  {
+    type: "QUIZ",
+    code: "ANSWER_COUNT_MISMATCH",
+    status: 400,
+    message: "Answer count does not match question count" 
+  },
+  {
+    type: "QUIZ",
+    code: "INVALID_QUESTION_ID",
+    status: 400,
+    message: "Invalid question ID" 
+  },
+  {
+    type: "QUIZ",
+    code: "QUIZ_EVALUATION_ERROR",
+    status: 500,
+    message: "Error evaluating quiz answers" 
+  },
+  {
+    type: "QUIZ",
+    code: "DB_TRANSAC_FAILED",
+    status: 500,
+    message: "Database transaction failed to return new quiz submission and updated progress" 
+  },
+];
 
 export {
-  STUDENT_ERRORS,
-  LANDMARK_ERRORS,
-  QUIZ_ERRORS
+  ERRORS
 }

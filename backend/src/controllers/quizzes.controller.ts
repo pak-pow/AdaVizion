@@ -30,15 +30,8 @@ async function getQuiz(req: Request, res: Response) {
 
 async function submitQuiz(req: Request, res: Response) {
   try {
-    const validation = SubmitQuizSchema.safeParse(req.body);
-
-    if (!validation.success) {
-      return res.status(400).json({
-        error: validation.error?.issues[0]?.message
-      });
-    }
-
-    const { answers } = validation.data;
+    const validation = SubmitQuizSchema.parse(req.body);
+    const { answers } = validation;
     const studentNum = (req as any).user.studentNum;
     const quizId = parseInt(req.params.id as string);
 

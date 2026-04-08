@@ -27,15 +27,8 @@ async function getStudentProfile(req: Request, res: Response) {
 
 async function registerStudent(req: Request, res: Response) {
   try {
-    const validation = RegistrationSchema.safeParse(req.body);
-    
-    if (!validation.success) {
-      return res.status(400).json({
-        error: validation.error?.issues[0]?.message
-      });
-    }
-
-    const studentDetails = validation.data;
+    const validation = RegistrationSchema.parse(req.body);
+    const studentDetails = validation;
 
     const newStudent = await studentsService.processStudentRegistration(studentDetails);
 
@@ -47,17 +40,10 @@ async function registerStudent(req: Request, res: Response) {
 
 async function loginStudent(req: Request, res: Response) {
   try {
-    const validation = LoginSchema.safeParse(req.body);
+    const validation = LoginSchema.parse(req.body);
+    const studentCredentials = validation;
 
-    if (!validation.success) {
-      return res.status(400).json({
-        error: validation.error?.issues[0]?.message
-      });
-    }
-
-    const studentCredentials = validation.data;
-
-    const loginDetails = await studentsService.processStudentLogin(studentCredentials);;
+    const loginDetails = await studentsService.processStudentLogin(studentCredentials);
 
     return res.status(200).json(loginDetails);
   } catch (error: any) {

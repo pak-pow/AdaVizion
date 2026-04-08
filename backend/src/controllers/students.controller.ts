@@ -40,10 +40,7 @@ async function registerStudent(req: Request, res: Response) {
 
     const newStudent = await studentsService.processStudentRegistration(studentDetails);
 
-    // Remove password from response
-    const { password, ...publicData } = newStudent;
-
-    return res.status(201).json(publicData);
+    return res.status(201).json(newStudent);
   } catch (error: any) {
     return handleControllerError(res, error, STUDENT_ERRORS);
   }
@@ -61,16 +58,9 @@ async function loginStudent(req: Request, res: Response) {
 
     const studentCredentials = validation.data;
 
-    const { student, token } = await studentsService.processStudentLogin(studentCredentials);
+    const loginDetails = await studentsService.processStudentLogin(studentCredentials);;
 
-    // Remove password from response
-    const { password, ...publicData } = student;
-
-    return res.status(200).json({
-      message: "Login successful",
-      token: token,
-      student: publicData
-    });
+    return res.status(200).json(loginDetails);
   } catch (error: any) {
     return handleControllerError(res, error, STUDENT_ERRORS);
   }

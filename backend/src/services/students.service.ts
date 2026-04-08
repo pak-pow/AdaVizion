@@ -21,7 +21,12 @@ async function processStudentRegistration(studentDetails: RegistrationBody) {
 
   studentDetails.password = hashedPassword;
 
-  return studentsRepository.createStudent(studentDetails);
+  const newStudent = await studentsRepository.createStudent(studentDetails);
+
+  // Remove password from response
+  const { password, ...publicData } = newStudent;
+
+  return publicData;
 }
 
 async function processStudentLogin(studentCredentials: LoginBody) {
@@ -29,19 +34,22 @@ async function processStudentLogin(studentCredentials: LoginBody) {
 
   const student = await studentsRepository.findStudent(studentNum);
 
-  if (!student) {
-    throw new Error("Student does not exist");
-  }
+  const isMatch = student ? await bcrypt.compare(password, student.password) : false;
 
-  const isMatch = await bcrypt.compare(student.password, password);
-
-  if (!isMatch) {
-    throw new Error("Invalid student number or password");
+  if (!student || !isMatch) {
+    throw new Error("Incorrect student number or password");
   }
 
   const token = generateAuthToken(studentNum);
 
-  return { student, token };
+  // Remove password from response
+  const { password: privatePass, ...publicData } = student;
+
+  return {
+    message: "Login successful",
+    token: token,
+    student: publicData
+  };
 }
 
 export {

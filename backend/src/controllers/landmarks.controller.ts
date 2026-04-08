@@ -20,14 +20,9 @@ async function getLandmark(req: Request, res: Response) {
     const studentNum = (req as any).user.studentNum;
     const landmarkId = parseInt(req.params.id as string);
 
-    const { landmark, visit } = await landmarksService.fetchLandmark(studentNum, landmarkId);
+    const landmark = await landmarksService.fetchLandmark(studentNum, landmarkId);
 
-    if (!visit) {
-      const { fun_fact, qr_string, ...publicData } = landmark;
-      return res.status(403).json({ ...publicData, is_unlocked: false });
-    }
-
-    return res.status(200).json({ ...landmark, is_unlocked: true });
+    return res.status(200).json(landmark);
   } catch (error: any) {
     return handleControllerError(res, error, LANDMARK_ERRORS);
   }
@@ -39,24 +34,9 @@ async function visitLandmark(req: Request, res: Response) {
     const landmarkId = parseInt(req.params.id as string);
     const { qr_code_scanned } = req.body;
 
-    const {
-      landmark,
-      newVisit,
-      updatedProgress,
-      XP_REWARD,
-      achievementsEarned
-    } = await landmarksService.processLandmarkVisit(studentNum, landmarkId, qr_code_scanned);
+    const newVisit = await landmarksService.processLandmarkVisit(studentNum, landmarkId, qr_code_scanned);
 
-    const { qr_string, ...publicData } = landmark; // Exclude qr_string from response
-
-    return res.status(200).json({
-      message: "Scan and visit successful",
-      ...publicData,
-      visited_at: newVisit.visited_at,
-      xp_earned: XP_REWARD,
-      new_total_xp: updatedProgress.total_xp,
-      new_achievements: achievementsEarned
-    });
+    return res.status(200).json(newVisit);
   } catch (error: any) {
     return handleControllerError(res, error, LANDMARK_ERRORS);
   }

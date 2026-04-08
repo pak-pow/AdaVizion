@@ -1,4 +1,4 @@
-type ErrorType = "STUDENT" | "LANDMARK" | "QUIZ" | "SERVER";
+type ErrorType = "AUTH" | "STUDENT" | "LANDMARK" | "QUIZ" | "SERVER";
 
 interface ErrorDetails {
   type: ErrorType,

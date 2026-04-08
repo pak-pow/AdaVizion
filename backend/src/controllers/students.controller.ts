@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import * as studentsService from "../services/students.service";
 import { LoginSchema, RegistrationSchema } from "../schemas/students.schema";
-import { STUDENT_ERRORS } from "../constants/error-maps";
 import { handleControllerError } from "../lib/error-handler";
 
 async function getAllStudents(req: Request, res: Response) {
@@ -10,7 +9,7 @@ async function getAllStudents(req: Request, res: Response) {
 
     return res.status(200).json(students);
   } catch (error: any) {
-    return handleControllerError(res, error, STUDENT_ERRORS);
+    return handleControllerError(res, error, "STUDENT");
   }
 }
 
@@ -22,7 +21,7 @@ async function getStudentProfile(req: Request, res: Response) {
 
     return res.status(200).json(studentProfile);
   } catch (error: any) {
-    return handleControllerError(res, error, STUDENT_ERRORS);
+    return handleControllerError(res, error, "STUDENT");
   }
 }
 
@@ -42,7 +41,7 @@ async function registerStudent(req: Request, res: Response) {
 
     return res.status(201).json(newStudent);
   } catch (error: any) {
-    return handleControllerError(res, error, STUDENT_ERRORS);
+    return handleControllerError(res, error, "STUDENT");
   }
 }
 
@@ -62,7 +61,7 @@ async function loginStudent(req: Request, res: Response) {
 
     return res.status(200).json(loginDetails);
   } catch (error: any) {
-    return handleControllerError(res, error, STUDENT_ERRORS);
+    return handleControllerError(res, error, "STUDENT");
   }
 }
 

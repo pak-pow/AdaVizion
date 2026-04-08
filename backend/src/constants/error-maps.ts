@@ -1,6 +1,20 @@
 import type { ErrorDetails } from "../types/errors.types";
 
 const ERRORS: ErrorDetails[] = [
+  // Authorization Errors
+  {
+    type: "AUTH",
+    code: "MISSING_TOKEN",
+    status: 401,
+    message: "Access denied due to missing token"
+  },
+  {
+    type: "AUTH",
+    code: "INVALID_TOKEN",
+    status: 401,
+    message: "Invalid or expired token"
+  },
+
   // Student Errors
   {
     type: "STUDENT",
@@ -10,7 +24,7 @@ const ERRORS: ErrorDetails[] = [
   },
   {
     type: "STUDENT",
-    code: "AUTH_FAILED",
+    code: "INCORRECT_CREDENTIALS",
     status: 401,
     message: "Incorrect student number or password" 
   },
@@ -89,7 +103,7 @@ const ERRORS: ErrorDetails[] = [
     code: "DB_TRANSAC_FAILED",
     status: 500,
     message: "Database transaction failed to return new quiz submission and updated progress" 
-  },
+  }
 ];
 
 export {

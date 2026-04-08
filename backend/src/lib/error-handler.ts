@@ -1,35 +1,40 @@
 import type { Response } from "express";
-import { LANDMARK_ERRORS, QUIZ_ERRORS, STUDENT_ERRORS } from "../constants/error-maps";
+import { ERRORS } from "../constants/error-maps";
+import type { ErrorType } from "../types/errors.types";
 
 function handleControllerError(
   res: Response,
   error: any,
-  errorMap: Record<string, number>
+  type: ErrorType = "SERVER"
 ) {
-  const errorMessage = error.message as string;
-  const statusCode = errorMap[errorMessage];
+  const errorDetails = ERRORS.find((err) => err.message === error.message);
 
-  if (statusCode) {
-    return res.status(statusCode).json({
-      error: errorMessage
-    });
+  if (errorDetails) {
+    const { status, ...details } = errorDetails;
+
+    return res.status(status).json(details);
   }
 
+  // Prisma uniquue cons
   if (error.code === "P2002") {
     let resourceName = "Resource";
 
-    if (error === STUDENT_ERRORS) resourceName = "Student number or email";
-    if (error === LANDMARK_ERRORS) resourceName = "Landmark visit";
-    if (error === QUIZ_ERRORS) resourceName = "Quiz submission";
+    if (type === "STUDENT") resourceName = "Student number or email";
+    if (type === "LANDMARK") resourceName = "Landmark visit";
+    if (type === "QUIZ") resourceName = "Quiz submission";
 
     return res.status(409).json({
-      error: `${resourceName} already exists`
+      type: type,
+      code: "DUPLICATE",
+      message: `${resourceName} already exists`
     });
   }
 
   console.error(error);
   return res.status(500).json({
-    error: "Internal Server Error"
+    type: "SERVER",
+    code: "INTERNAL_SERVER_ERROR",
+    message: "Internal Server Error"
   });
 }
 

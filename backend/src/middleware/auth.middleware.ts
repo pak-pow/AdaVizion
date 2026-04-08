@@ -14,7 +14,7 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
     (req as any).user = verified;
     next();
   } catch (error) {
-    res.status(403).json({
+    res.status(401).json({
       error: "Invalid or expired token"
     })
   }

@@ -61,7 +61,8 @@ async function createQuizSubmission(studentNum: string, quiz: Quiz, result: Quiz
           create: result.breakdown.map((questionResult) => ({
             student: { connect: { student_number: studentNum } },
             question: { connect: { question_id: questionResult.question_id } },
-            selected_idx: questionResult.your_answer
+            selected_idx: questionResult.your_answer,
+            is_correct: questionResult.is_correct
           }))
         }
       }

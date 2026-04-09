@@ -12,10 +12,10 @@ async function fetchLandmarkChecklist(studentNum: string) {
   // Final checklist to show on the frontend
   const landmarkList = allLandmarks.map((landmark) => {
     const isVisited = visitedIds.has(landmark.landmark_id);
+    const { fun_fact, qr_string, ...publicData } = landmark;
 
     return {
-      landmark_id: landmark.landmark_id,
-      name: landmark.name,
+      ...publicData,
       is_visited: isVisited // Flag for frontend to visually display visited status
     };
   });
@@ -33,7 +33,21 @@ async function fetchLandmark(studentNum: string, landmarkId: number) {
     throw new Error("Landmark not found");
   }
 
-  return { landmark, visit };
+  const { qr_string, ...publicData } = landmark;
+
+  if (!visit) {
+    const { fun_fact, ...lockedData } = publicData;
+    
+    return {
+      ...lockedData,
+      is_unlocked: false,
+    };
+  }
+
+  return {
+    ...publicData,
+    is_unlocked: true,
+  };
 }
 
 async function processLandmarkVisit(
@@ -43,17 +57,10 @@ async function processLandmarkVisit(
 ) {
   const XP_REWARD = 20;
 
-  const [landmark, visit] = await Promise.all([
-    landmarksRepository.findLandmark(landmarkId),
-    landmarksRepository.findLandmarkVisitedByStudent(studentNum, landmarkId)
-  ]);
+  const landmark = await landmarksRepository.findLandmark(landmarkId);
 
   if (!landmark) {
     throw new Error("Landmark not found");
-  }
-
-  if (visit) {
-    throw new Error("Landmark already visited");
   }
 
   if (landmark.qr_string !== qrCodeScanned) {
@@ -68,12 +75,15 @@ async function processLandmarkVisit(
 
   const achievementsEarned = await checkLandmarkAchievements(studentNum);
 
+  const { qr_string, ...publicData } = landmark; // Exclude qr_string from response
+
   return {
-    landmark,
-    newVisit,
-    updatedProgress,
-    XP_REWARD,
-    achievementsEarned
+    message: "Scan and visit successful",
+    ...publicData,
+    visited_at: newVisit.visited_at,
+    xp_earned: XP_REWARD,
+    new_total_xp: updatedProgress.total_xp,
+    new_achievements: achievementsEarned
   };
 }
 

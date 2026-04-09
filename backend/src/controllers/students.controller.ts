@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import * as studentsService from "../services/students.service";
 import { LoginSchema, RegistrationSchema } from "../schemas/students.schema";
-import { STUDENT_ERRORS } from "../constants/error-maps";
 import { handleControllerError } from "../lib/error-handler";
 
 async function getAllStudents(req: Request, res: Response) {
@@ -10,7 +9,7 @@ async function getAllStudents(req: Request, res: Response) {
 
     return res.status(200).json(students);
   } catch (error: any) {
-    return handleControllerError(res, error, STUDENT_ERRORS);
+    return handleControllerError(res, error, "STUDENT");
   }
 }
 
@@ -22,57 +21,33 @@ async function getStudentProfile(req: Request, res: Response) {
 
     return res.status(200).json(studentProfile);
   } catch (error: any) {
-    return handleControllerError(res, error, STUDENT_ERRORS);
+    return handleControllerError(res, error, "STUDENT");
   }
 }
 
 async function registerStudent(req: Request, res: Response) {
   try {
-    const validation = RegistrationSchema.safeParse(req.body);
-    
-    if (!validation.success) {
-      return res.status(400).json({
-        error: validation.error?.issues[0]?.message
-      });
-    }
-
-    const studentDetails = validation.data;
+    const validation = RegistrationSchema.parse(req.body);
+    const studentDetails = validation;
 
     const newStudent = await studentsService.processStudentRegistration(studentDetails);
 
-    // Remove password from response
-    const { password, ...publicData } = newStudent;
-
-    return res.status(201).json(publicData);
+    return res.status(201).json(newStudent);
   } catch (error: any) {
-    return handleControllerError(res, error, STUDENT_ERRORS);
+    return handleControllerError(res, error, "STUDENT");
   }
 }
 
 async function loginStudent(req: Request, res: Response) {
   try {
-    const validation = LoginSchema.safeParse(req.body);
+    const validation = LoginSchema.parse(req.body);
+    const studentCredentials = validation;
 
-    if (!validation.success) {
-      return res.status(400).json({
-        error: validation.error?.issues[0]?.message
-      });
-    }
+    const loginDetails = await studentsService.processStudentLogin(studentCredentials);
 
-    const studentCredentials = validation.data;
-
-    const { student, token } = await studentsService.processStudentLogin(studentCredentials);
-
-    // Remove password from response
-    const { password, ...publicData } = student;
-
-    return res.status(200).json({
-      message: "Login successful",
-      token: token,
-      student: publicData
-    });
+    return res.status(200).json(loginDetails);
   } catch (error: any) {
-    return handleControllerError(res, error, STUDENT_ERRORS);
+    return handleControllerError(res, error, "STUDENT");
   }
 }
 

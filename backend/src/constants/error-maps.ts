@@ -38,12 +38,6 @@ const ERRORS: ErrorDetails[] = [
   },
   {
     type: "LANDMARK",
-    code: "LANDMARK_ALREADY_VISITED",
-    status: 400,
-    message: "Landmark already visited" 
-  },
-  {
-    type: "LANDMARK",
     code: "INVALID_QR",
     status: 403,
     message: "Invalid landmark QR code" 
@@ -73,12 +67,6 @@ const ERRORS: ErrorDetails[] = [
     code: "INVALID_RESPONSE_FORMAT",
     status: 400,
     message: "Invalid question response data format" 
-  },
-  {
-    type: "QUIZ",
-    code: "QUIZ_ALREADY_ANSWERED",
-    status: 409,
-    message: "Quiz already answered" 
   },
   {
     type: "QUIZ",

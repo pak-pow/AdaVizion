@@ -57,17 +57,10 @@ async function processLandmarkVisit(
 ) {
   const XP_REWARD = 20;
 
-  const [landmark, visit] = await Promise.all([
-    landmarksRepository.findLandmark(landmarkId),
-    landmarksRepository.findLandmarkVisitedByStudent(studentNum, landmarkId)
-  ]);
+  const landmark = await landmarksRepository.findLandmark(landmarkId);
 
   if (!landmark) {
     throw new Error("Landmark not found");
-  }
-
-  if (visit) {
-    throw new Error("Landmark already visited");
   }
 
   if (landmark.qr_string !== qrCodeScanned) {

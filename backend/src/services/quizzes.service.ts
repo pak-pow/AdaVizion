@@ -51,7 +51,7 @@ async function fetchQuiz(studentNum: string, quizId: number) {
 
   // Checks if the student's current XP is enough to unlock the quiz
   if ((studentProgress?.total_xp ?? 0) < quiz?.required_xp) {
-    throw new Error("Quiz is locked. You need more XP to unlock it.");
+    throw new Error("Quiz locked due to insufficient XP");
   }
 
   let questions: ViewQuestion[] = await quizzesRepository.findQuestions(quizId);
@@ -88,7 +88,7 @@ async function evaluateQuestionResponses(questions: Question[], answers: Answer[
     const question = questions.find(q => q.question_id === ans.question_id);
 
     if (!question) {
-      throw new Error("Invalid question ID provided");
+      throw new Error("Invalid question ID");
     }
 
     const isCorrect = question.correct_idx === ans.selected_idx;
@@ -115,18 +115,13 @@ async function evaluateQuestionResponses(questions: Question[], answers: Answer[
 } 
 
 async function processQuizSubmission(studentNum: string, quizId: number, answers: Answer[]) {
-  const [quiz, answered, questions] = await Promise.all([
+  const [quiz, questions] = await Promise.all([
     quizzesRepository.findQuiz(quizId),
-    quizzesRepository.findQuizSubmission(studentNum, quizId),
     quizzesRepository.findQuestions(quizId)
   ]);
 
   if (!quiz) {
     throw new Error("Quiz not found");
-  }
-
-  if (answered) {
-    throw new Error("Quiz already answered");
   }
 
   if (answers.length !== questions.length) {

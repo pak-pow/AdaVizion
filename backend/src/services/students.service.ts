@@ -12,7 +12,9 @@ async function fetchStudent(studentNum: string) {
 
   if (!student) throw new Error("Student does not exist");
 
-  return student;
+  const { password, ...publicData } = student;
+
+  return publicData;
 }
 
 async function processStudentRegistration(studentDetails: RegistrationBody) {

@@ -8,13 +8,15 @@
 
 # 📝 DEV LOG: WEEK 2 - DAY 3
 
-**Core Objective:** Initialize the Express.js server and build a secure, validated authentication layer (registration and login) for students.
+## Core Objective
 
-1. **The Initiative & Context**
+Initialize the Express.js server and build a secure, validated authentication layer (registration and login) for students.
+
+## 1. The Initiative & Context
 
    Now that the database is active, the frontend requires secure endpoints to manage user sessions. Manual input validation is prone to errors and difficult to scale, so I opted for a schema-driven architecture using Zod. Additionally, raw passwords can never be stored, requiring integration with Bcrypt.
 
-2. **API Validation Layer (Zod)**
+## 2. API Validation Layer (Zod)
 
    * **Schema Definition:** Created a `RegistrationSchema` and `LoginSchema` to enforce type-safe request parsing.
 
@@ -24,7 +26,7 @@
 
    * **Data Transformation:** Set the `middleName` attribute to automatically transform empty strings into `null` to satisfy PostgreSQL database constraints.
 
-3. **Authentication Engine & Endpoints**
+## 3. Authentication Engine & Endpoints
 
    * **Server Setup:** Installed Express and initialized the base server architecture.
 

@@ -8,13 +8,15 @@
 
 # 📝 DEV LOG: WEEK 2 - DAY 4
 
-**Core Objective:** Secure the API with JWT middleware and implement the core gamified logic for scanning and visiting university landmarks.
+## Core Objective
 
-1. **The Initiative & Context**
+Secure the API with JWT middleware and implement the core gamified logic for scanning and visiting university landmarks.
+
+## 1. The Initiative & Context
 
    With authentication functioning, the endpoints required an access control mechanism to identify which student is making the request. Following this, the core objective of the app, visiting landmarks to unlock content, needed its API implementation, aligning with our conditional content requirements.
 
-2. **Security & Middleware**
+## 2. Security & Middleware
 
    * **JWT Integration:** Installed `jsonwebtoken` and its types. Updated the `/login` endpoint to issue a token containing the student's number upon successful authentication.
 
@@ -22,7 +24,7 @@
 
    * **Route Protection:** Secured the core routes (`/students`, `/landmarks`) by mounting the middleware in the main application router.
 
-3. **Landmarks & Discovery Logic**
+## 3. Landmarks & Discovery Logic
 
    * **Conditional Content Delivery:**
 
@@ -40,6 +42,6 @@
 
       * **Atomic Transactions:** Utilized `prisma.$transaction` to simultaneously log the new visit in the `LandmarksVisited` table and increment the student's `total_xp` by a fixed 20 points in the `Progress` table, ensuring data consistency.
 
-4. **Developer Experience**
+## 4. Developer Experience
 
    * **Live Reloading:** Installed and configured `tsx` in watch mode to automatically restart the server upon code changes, significantly speeding up testing.

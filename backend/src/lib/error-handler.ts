@@ -31,15 +31,28 @@ function handleControllerError(
   // Prisma unique constraint errors
   if (error.code === "P2002") {
     let resourceName = "Resource";
+    let state = "exists";
 
-    if (type === "STUDENT") resourceName = "Student number or email";
-    if (type === "LANDMARK") resourceName = "Landmark visit";
-    if (type === "QUIZ") resourceName = "Quiz submission";
+    switch(type) {
+      case "STUDENT":
+        resourceName = "Student number or email";
+        break;
+      case "LANDMARK":
+        resourceName = "Landmark";
+        state = "visited";
+        break;
+      case "QUIZ":
+        resourceName = "Quiz";
+        state = "answered";
+        break;
+      default:
+        break;
+    }
 
     return res.status(409).json({
       type: type,
       code: `DUPLICATE_${type}`,
-      message: `${resourceName} already exists`
+      message: `${resourceName} already ${state}`
     });
   }
 

@@ -12,11 +12,13 @@ interface Answer {
   selected_idx: number;
 }
 
-interface QuestionResult extends Omit<Question, "quiz_id" | "correct_idx"> {
-  correct_answer: number;
-  your_answer: number;
-  is_correct: boolean;
-  points_earned: number;
+interface QuestionResult {
+  info: Question;
+  performance: {
+    your_answer: number;
+    is_correct: boolean;
+    points_earned: number;
+  };
 }
 
 type SeedQuiz = Omit<Quiz, "quiz_id" | "max_score" | "passing_score" | "created_at"> & {

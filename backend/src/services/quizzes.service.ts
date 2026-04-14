@@ -27,7 +27,6 @@ async function fetchQuizzes(studentNum: string) {
     const { _count, ...mainQuizDetails } = quiz;
     const submission = submissionDetails.get(quiz.quiz_id);
     const isLocked = quiz.min_landmarks > landmarksVisitedCount;
-    const remainingLandmarksNeeded = Math.max(0, quiz.min_landmarks - landmarksVisitedCount);
 
     return {
       info: {
@@ -36,7 +35,7 @@ async function fetchQuizzes(studentNum: string) {
       },
       status: {
         is_locked: isLocked,
-        remaining_landmarks_needed: remainingLandmarksNeeded,
+        remaining_landmarks_needed: Math.max(0, quiz.min_landmarks - landmarksVisitedCount),
         is_completed: !!submission,
         score_achieved: submission?.score ?? null,
         is_passed: submission?.is_passed ?? false,
@@ -89,12 +88,15 @@ async function fetchQuiz(studentNum: string, quizId: number) {
   }
 
   return {
-    ...quiz,
-    is_locked: isLocked,
-    is_completed: !!answered,
-    is_passed: answered?.is_passed ?? false,
-    score_achieved: answered?.score ?? null,
-    remaining_landmarks_needed: Math.max(0, quiz.min_landmarks - landmarksVisitedCount),
+    info: quiz,
+    status: {
+      is_locked: isLocked,
+      remaining_landmarks_needed: Math.max(0, quiz.min_landmarks - landmarksVisitedCount),
+      is_completed: !!answered,
+      score_achieved: answered?.score ?? null,
+      is_passed: answered?.is_passed ?? false,
+      completed_at: answered?.completed_at ?? null
+    },
     questions
   };
 }

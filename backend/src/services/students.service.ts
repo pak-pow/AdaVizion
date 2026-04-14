@@ -9,7 +9,14 @@ async function fetchStudents() {
   const students = await studentsRepository.findStudents();
 
   // Exclude password from response
-  return students.map(({ password, ...publicData }) => publicData);
+  return students.map(({ password, ...publicData }) => {
+    const { progress, ...info } = publicData;
+
+    return {
+      info,
+      progress
+    }
+  });
 }
 
 async function fetchStudent(studentNum: string) {

@@ -17,6 +17,14 @@ async function fetchStudent(studentNum: string) {
   return publicData;
 }
 
+async function fetchStudentProgress(studentNum: string) {
+  const progress = await studentsRepository.findStudentProgress(studentNum);
+
+  if (!progress) throw new Error("Student progress does not exist");
+
+  return progress;
+}
+
 async function processStudentRegistration(studentDetails: RegistrationBody) {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(studentDetails.password, saltRounds);
@@ -57,6 +65,7 @@ async function processStudentLogin(studentCredentials: LoginBody) {
 export {
   fetchStudents,
   fetchStudent,
+  fetchStudentProgress,
   processStudentRegistration,
   processStudentLogin
 }

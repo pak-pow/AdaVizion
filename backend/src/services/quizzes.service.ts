@@ -184,12 +184,16 @@ async function processQuizSubmission(studentNum: string, quizId: number, answers
   
   return {
     message: "Quiz submitted successfully",
-    ...quiz,
-    score_achieved: result.totalScore,
-    is_passed: submission.is_passed,
-    completed_at: submission.completed_at,
-    result: result.breakdown,
-    new_total_quiz_points: updatedProgress.quiz_points,
+    quiz: {
+      info: quiz,
+      performance: {
+        score_achieved: result.totalScore,
+        is_passed: submission.is_passed,
+        new_total_quiz_points: updatedProgress.quiz_points,
+        completed_at: submission.completed_at
+      },
+      breakdown: result.breakdown
+    },
     progress: {
       xp: {
         previous: studentProgress.total_xp,

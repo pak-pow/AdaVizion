@@ -117,14 +117,12 @@ async function evaluateQuestionResponses(questions: Question[], answers: Answer[
     if (isCorrect) totalScore += question.item_points;
 
     return {
-      question_id: question.question_id,
-      question_text: question.question_text,
-      choices: question.choices,
-      your_answer: ans.selected_idx,
-      correct_answer: question.correct_idx,
-      is_correct: isCorrect,
-      item_points: question.item_points,
-      points_earned: isCorrect ? question.item_points : 0
+      info: question,
+      performance: {
+        your_answer: ans.selected_idx,
+        is_correct: isCorrect,
+        points_earned: isCorrect ? question.item_points : 0
+      }
     };
   })
 

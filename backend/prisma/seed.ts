@@ -19,13 +19,15 @@ async function seedLandmarks() {
       update: {
         name: landmark.name,
         description: landmark.description,
-        fun_fact: landmark.fun_fact
+        fun_fact: landmark.fun_fact,
+        img_path: landmark.img_path
       },
       create: {
         name: landmark.name,
         description: landmark.description,
         fun_fact: landmark.fun_fact,
-        qr_string: landmark.qr_string
+        qr_string: landmark.qr_string,
+        img_path: landmark.img_path
       }
     })
   }

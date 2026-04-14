@@ -60,6 +60,9 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/title.png
+    - assets/images/nav_logo.png
+    - assets/images/EUlogobox.png
+    - assets/images/EUlogocircle.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

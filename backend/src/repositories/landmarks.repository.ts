@@ -33,7 +33,12 @@ async function findLandmarksVisitedCount(studentNum: string) {
   });
 }
 
-async function createVisitWithXP(studentNum: string, landmarkId: number, XP_REWARD: number) {
+async function createLandmarkVisit(
+  studentNum: string,
+  landmarkId: number,
+  xpReward: number,
+  newLevel: number
+) {
   return await prisma.$transaction(async (tx) => {
     const newVisit = await tx.landmarksVisited.create({
       data: {
@@ -41,13 +46,12 @@ async function createVisitWithXP(studentNum: string, landmarkId: number, XP_REWA
         landmark_id: landmarkId
       }
     });
-
+    
     const updatedProgress = await tx.progress.update({
       where: { student_number: studentNum },
       data: {
-        total_xp: {
-          increment: XP_REWARD
-        }
+        total_xp: { increment: xpReward },
+        level: newLevel
       }
     });
 
@@ -61,5 +65,5 @@ export {
   findLandmark,
   findLandmarkVisitedByStudent,
   findLandmarksVisitedCount,
-  createVisitWithXP
+  createLandmarkVisit
 }

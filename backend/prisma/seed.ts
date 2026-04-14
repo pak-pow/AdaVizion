@@ -52,7 +52,7 @@ async function seedQuizzes() {
     await prisma.quiz.upsert({
       where: { name: quiz.name },
       update: {
-        required_xp: quiz.required_xp,
+        min_landmarks: quiz.min_landmarks,
         max_score: maxPoints,
         passing_score: passingScore,
         questions: {
@@ -62,7 +62,7 @@ async function seedQuizzes() {
       },
       create: {
         name: quiz.name,
-        required_xp: quiz.required_xp,
+        min_landmarks: quiz.min_landmarks,
         max_score: maxPoints,
         passing_score: passingScore,
         questions: {

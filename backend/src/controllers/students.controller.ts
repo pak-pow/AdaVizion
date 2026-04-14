@@ -17,16 +17,9 @@ async function getStudentProfile(req: Request, res: Response) {
   try {
     const studentNum = (req as any).user.studentNum;
 
-    const student = await studentsService.fetchStudent(studentNum);
+    const profile = await studentsService.fetchStudentProfile(studentNum);
 
-    const progress = await studentsService.fetchStudentProgress(studentNum);
-
-    const studentProfile = {
-      ...student,
-      progress
-    }
-
-    return res.status(200).json(studentProfile);
+    return res.status(200).json(profile);
   } catch (error: any) {
     return handleControllerError(res, error, "STUDENT");
   }

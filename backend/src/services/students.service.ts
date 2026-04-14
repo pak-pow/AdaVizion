@@ -6,12 +6,16 @@ import { generateAuthToken } from "./auth.services";
 import { calculateXpProgress } from "../lib/gamification-utils";
 
 async function fetchStudents() {  
-  return await studentsRepository.findStudents();
+  const students = await studentsRepository.findStudents();
+
+  // Exclude password from response
+  return students.map(({ password, ...publicData }) => publicData);
 }
 
 async function fetchStudent(studentNum: string) {
   const student = await studentsRepository.findStudent(studentNum);
 
+  // Exclude password from response
   if (!student) throw new Error("Student does not exist");
 
   const { password, ...publicData } = student;
@@ -51,7 +55,7 @@ async function processStudentRegistration(studentDetails: RegistrationBody) {
 
   const newStudent = await studentsRepository.createStudent(studentDetails);
 
-  // Remove password from response
+  // Exclude password from response
   const { password, ...publicData } = newStudent;
 
   return {
@@ -73,7 +77,7 @@ async function processStudentLogin(studentCredentials: LoginBody) {
 
   const token = generateAuthToken(studentNum);
 
-  // Remove password from response
+  // Exclude password from response
   const { password: privatePass, ...publicData } = student;
 
   return {

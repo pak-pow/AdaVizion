@@ -123,6 +123,7 @@ model QuestionResponse {
 
 model Progress {
   student_number String   @id @db.VarChar(20)
+  level          Int      @default(1)
   total_xp       Int      @default(0)
   quiz_points    Int      @default(0)
   updated_at     DateTime @updatedAt

@@ -27,6 +27,12 @@ async function findLandmarkVisitedByStudent(studentNum: string, landmarkId: numb
   });
 }
 
+async function findLandmarksVisitedCount(studentNum: string) {
+  return prisma.landmarksVisited.count({
+    where: { student_number: studentNum }
+  });
+}
+
 async function createVisitWithXP(studentNum: string, landmarkId: number, XP_REWARD: number) {
   return await prisma.$transaction(async (tx) => {
     const newVisit = await tx.landmarksVisited.create({
@@ -54,5 +60,6 @@ export {
   findLandmarksVisitedByStudent,
   findLandmark,
   findLandmarkVisitedByStudent,
+  findLandmarksVisitedCount,
   createVisitWithXP
 }

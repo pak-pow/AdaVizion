@@ -26,7 +26,7 @@ async function fetchStudentProgress(studentNum: string) {
 
   if (!progress) throw new Error("Student progress does not exist");
 
-  const { total_xp, ...otherProgress } = progress;
+  const { student_number, total_xp, ...otherProgress } = progress;
 
   const xpProgress = calculateXpProgress(progress.level, total_xp);
 

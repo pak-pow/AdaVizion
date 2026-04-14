@@ -19,7 +19,7 @@ async function getStudentProfile(req: Request, res: Response) {
 
     const student = await studentsService.fetchStudent(studentNum);
 
-    const { student_number, ...progress } = await studentsService.fetchStudentProgress(studentNum);
+    const progress = await studentsService.fetchStudentProgress(studentNum);
 
     const studentProfile = {
       ...student,

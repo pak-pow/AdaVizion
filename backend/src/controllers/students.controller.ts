@@ -17,7 +17,14 @@ async function getStudentProfile(req: Request, res: Response) {
   try {
     const studentNum = (req as any).user.studentNum;
 
-    const studentProfile = await studentsService.fetchStudent(studentNum);
+    const student = await studentsService.fetchStudent(studentNum);
+
+    const { student_number, ...progress } = await studentsService.fetchStudentProgress(studentNum);
+
+    const studentProfile = {
+      ...student,
+      progress
+    }
 
     return res.status(200).json(studentProfile);
   } catch (error: any) {

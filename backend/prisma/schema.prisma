@@ -42,7 +42,7 @@ model Landmark {
 model Quiz {
   quiz_id       Int              @id @default(autoincrement())
   name          String           @unique @db.VarChar(100)
-  required_xp   Int              @default(0)
+  min_landmarks Int
   max_score     Int              @default(0)
   passing_score Int              @default(0)
   created_at     DateTime        @default(now())

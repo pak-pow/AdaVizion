@@ -17,6 +17,7 @@ model Student {
   year_level          Int                  @db.Integer
   email               String               @unique @db.VarChar(50)
   password            String               @db.VarChar(255)
+  img_path            String?              @db.VarChar(255)
   created_at          DateTime             @default(now())
   achievements_earned AchievementsEarned[]
   landmarks_visited   LandmarksVisited[]
@@ -33,6 +34,7 @@ model Landmark {
   description String?
   fun_fact    String?
   qr_string   String             @unique
+  img_path    String?            @db.VarChar(255)
   created_at  DateTime           @default(now())
   visitors    LandmarksVisited[]
 
@@ -76,6 +78,7 @@ model Achievement {
   description    String
   category       AchievementCategory
   threshold      Int
+  img_path       String?              @db.VarChar(255)
   created_at     DateTime             @default(now())
   earners        AchievementsEarned[]
 

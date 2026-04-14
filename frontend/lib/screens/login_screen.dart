@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dashboard_screen.dart';
 
+/// Defines the primary top-level views accessible via the Top Navigation Bar.
 enum AppView { home, about, auth }
 
+/// Defines the specific sub-states within the Authentication view.
 enum AuthState { login, signup, success }
 
+/// The main entry point for the unauthenticated user experience.
+/// Handles routing between Home, About, and Auth screens within a single page architecture.
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
@@ -13,9 +17,14 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  
+  // ─── STATE VARIABLES ────────────────────────────────────────────────────────
+  // Default to the Auth view and Login state when the app launches
   AppView _currentView = AppView.auth;
   AuthState _authState = AuthState.login;
 
+  // ─── TEXT CONTROLLERS ───────────────────────────────────────────────────────
+  // Controllers read the text inputted by the user in the TextFields.
   final _emailController = TextEditingController();
   final _loginPasswordController = TextEditingController();
 
@@ -23,9 +32,12 @@ class _AuthScreenState extends State<AuthScreen> {
   final _studentIdController = TextEditingController();
   final _signupPasswordController = TextEditingController();
 
+  // Variables to hold the currently selected values from the dropdown menus
   String? _selectedProgram;
   String? _selectedSpecialization;
 
+  // ─── MOCK DATA ──────────────────────────────────────────────────────────────
+  // TODO: Replace these with dynamic API calls to the backend later
   final List<String> _programs = [
     'BS Computer Science (BSCS)',
     'BS Information Technology (BSIT)',
@@ -39,12 +51,15 @@ class _AuthScreenState extends State<AuthScreen> {
     'Generalist',
   ];
 
-  // --- Brand Colors ---
+  // ─── BRANDING COLORS ────────────────────────────────────────────────────────
+  // Static constants keep our color palette consistent and easy to update
   static const _maroon = Color(0xFF7A1D1D);
   static const _maroonDark = Color(0xFF5D1414);
   static const _gradientTop = Color(0xFFB72424);
   static const _gradientBottom = Color(0xFF5D1414);
 
+  /// Always dispose of TextEditingControllers when the widget is destroyed
+  /// to prevent severe memory leaks in the application.
   @override
   void dispose() {
     _emailController.dispose();
@@ -55,6 +70,8 @@ class _AuthScreenState extends State<AuthScreen> {
     super.dispose();
   }
 
+  /// Reusable helper method to generate the standard subtle grey border
+  /// for our input fields. Keeps our UI code DRY (Don't Repeat Yourself).
   OutlineInputBorder _border() => OutlineInputBorder(
     borderRadius: BorderRadius.circular(8),
     borderSide: BorderSide(color: Colors.grey.shade300),
@@ -62,12 +79,16 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetches the exact dimensions of the user's device screen
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      // The base background color acts as a fallback and hides the Android system bar
       backgroundColor: _gradientBottom,
       body: Stack(
         children: [
+          // 1. BACKGROUND: TOP HALF (Solid White)
+          // Occupies exactly 52% of the screen height
           Positioned(
             top: 0,
             left: 0,
@@ -76,6 +97,8 @@ class _AuthScreenState extends State<AuthScreen> {
             child: const ColoredBox(color: Colors.white),
           ),
 
+          // 2. BACKGROUND: BOTTOM HALF (Red Gradient)
+          // Starts exactly where the white half ends and fills to the bottom
           Positioned(
             top: size.height * 0.52,
             bottom: 0,
@@ -92,13 +115,21 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ),
 
+          // 3. FOREGROUND CONTENT
+          // SafeArea ensures content doesn't render under the physical device notch/status bar
           SafeArea(
             bottom: false,
             child: Column(
               children: [
+                // Persistent Top Navigation Bar
                 _buildTopNav(),
+
+                // Expanded forces the scroll view to take up all remaining vertical space
                 Expanded(
-                  child: SingleChildScrollView(child: _buildCurrentView(size)),
+                  child: SingleChildScrollView(
+                    // Dynamically renders Home, About, or Auth based on state
+                    child: _buildCurrentView(size),
+                  ),
                 ),
               ],
             ),
@@ -111,6 +142,8 @@ class _AuthScreenState extends State<AuthScreen> {
   // ==========================================
   // NAVIGATION ROUTER
   // ==========================================
+  /// Acts as a switchboard, returning the correct UI layout widget
+  /// based on the `_currentView` state variable.
   Widget _buildCurrentView(Size size) {
     switch (_currentView) {
       case AppView.home:
@@ -118,6 +151,7 @@ class _AuthScreenState extends State<AuthScreen> {
       case AppView.about:
         return _buildAboutLayout();
       case AppView.auth:
+        // If Auth view is selected, check if we need the success screen or the form
         return _authState == AuthState.success
             ? _buildSuccessLayout(size)
             : _buildAuthLayout(size);
@@ -130,6 +164,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget _buildTopNav() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      // Creates the grey-to-white-to-grey horizontal gradient matching the Figma design
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
@@ -140,12 +175,13 @@ class _AuthScreenState extends State<AuthScreen> {
             Colors.white,
             Color(0xFFEBEBEB),
           ],
-          stops: [0.0, 0.31, 0.59, 1.0],
+          stops: [0.0, 0.31, 0.59, 1.0], // Explicit color stop positions
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Nav Bar Brand Logo
           Image.asset('assets/images/nav_logo.png', height: 48),
 
           Row(
@@ -154,6 +190,7 @@ class _AuthScreenState extends State<AuthScreen> {
               const SizedBox(width: 10),
               _navTextItem('About', AppView.about),
               const SizedBox(width: 10),
+              // Sign in specifically targets the AppView.auth AND the AuthState.login
               _navTextItem(
                 'Sign in',
                 AppView.auth,
@@ -161,6 +198,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(width: 12),
 
+              // Highlighted "Sign up" Call-to-Action Button
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -179,7 +217,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  elevation: 0,
+                  elevation: 0, // Flat design to match Figma
                 ),
                 child: const Text(
                   'Sign up',
@@ -193,11 +231,14 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  /// Helper to build interactive text links in the top navigation.
+  /// Handles active state styling (red underline and bolder font).
   Widget _navTextItem(
     String text,
     AppView targetView, {
     AuthState? specificAuth,
   }) {
+    // Determine if this specific link is the currently active view
     bool isActive = _currentView == targetView;
     if (specificAuth != null && _currentView == AppView.auth) {
       isActive = _authState == specificAuth;
@@ -213,6 +254,7 @@ class _AuthScreenState extends State<AuthScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
         decoration: BoxDecoration(
+          // Applies the maroon underline only if active
           border: isActive
               ? const Border(bottom: BorderSide(color: _maroon, width: 2.0))
               : null,
@@ -257,7 +299,9 @@ class _AuthScreenState extends State<AuthScreen> {
               color: _maroon,
             ),
           ),
-          SizedBox(height: 150),
+          SizedBox(
+            height: 150,
+          ), // Ensures scroll view has enough space over red background
         ],
       ),
     );
@@ -293,7 +337,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s...',
+            'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
             textAlign: TextAlign.justify,
             style: TextStyle(fontSize: 12, color: _maroon, height: 1.5),
           ),
@@ -322,6 +366,7 @@ class _AuthScreenState extends State<AuthScreen> {
   // ==========================================
   // LAYOUT: LOGIN & SIGNUP
   // ==========================================
+  /// Builds the main authentication form (Login or Signup modes).
   Widget _buildAuthLayout(Size size) {
     final isLogin = _authState == AuthState.login;
 
@@ -329,6 +374,7 @@ class _AuthScreenState extends State<AuthScreen> {
       children: [
         const SizedBox(height: 24),
 
+        // Dynamic Titles: Renders the image logo for login, and text for signup
         if (isLogin)
           Center(child: Image.asset('assets/images/title.png', height: 100))
         else
@@ -345,10 +391,16 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 32),
 
+        // --- Z-INDEX LAYERING (Mascot & Card) ---
         Stack(
-          clipBehavior: Clip.none,
+          clipBehavior:
+              Clip.none, // Allows the massive mascot to bleed off the edges
           alignment: Alignment.topCenter,
           children: [
+            // LAYER 1 (BACK): The Mascot
+            // By enforcing left/right constraints and negative top positioning,
+            // the image is forced to span the screen. Using BoxFit.fitWidth ensures
+            // it scales proportionally without squishing, tucking behind the card below.
             Positioned(
               top: -112,
               left: 5,
@@ -359,7 +411,9 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
 
+            // LAYER 2 (FRONT): The Form Card
             Container(
+              // Pushed down exactly 150px to allow the mascot to peek out the top
               margin: const EdgeInsets.only(
                 top: 150,
                 left: 24,
@@ -389,6 +443,7 @@ class _AuthScreenState extends State<AuthScreen> {
   // ==========================================
   // LAYOUT: SUCCESS SCREEN
   // ==========================================
+  /// Renders the confirmation card shown after a successful registration.
   Widget _buildSuccessLayout(Size size) {
     return Center(
       child: Padding(
@@ -397,6 +452,7 @@ class _AuthScreenState extends State<AuthScreen> {
           clipBehavior: Clip.none,
           alignment: Alignment.topCenter,
           children: [
+            // LAYER 1 (BACK): Confirmation Card
             Container(
               margin: const EdgeInsets.only(
                 top: 60,
@@ -417,7 +473,8 @@ class _AuthScreenState extends State<AuthScreen> {
                 ],
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize
+                    .min, // Hugs the contents tightly rather than expanding
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
@@ -441,6 +498,8 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
+
+                  // Primary Confirm Button routes to the application Dashboard
                   OutlinedButton(
                     onPressed: () {
                       Navigator.pushReplacement(
@@ -470,6 +529,9 @@ class _AuthScreenState extends State<AuthScreen> {
                 ],
               ),
             ),
+
+            // LAYER 2 (FRONT): Small Mascot
+            // Sits exactly at top: 0, straddling the top edge of the confirmation card
             Positioned(
               top: 0,
               child: Image.asset(
@@ -484,6 +546,11 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  // ==========================================
+  // CARD CONTENT BUILDER (Inputs & Buttons)
+  // ==========================================
+  /// The internal contents of the white authentication card.
+  /// Dynamically inserts specific TextFields depending on the boolean [isLogin].
   Widget _buildAuthCardContent(bool isLogin) {
     final border = _border();
 
@@ -513,6 +580,9 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         const SizedBox(height: 24),
 
+        // --- DYNAMIC INJECTION: SIGN UP FIELDS ---
+        // The spread operator (...) unpacks these widgets into the Column
+        // ONLY if the user is in Sign Up mode.
         if (!isLogin) ...[
           _buildTextField(
             controller: _fullNameController,
@@ -551,6 +621,7 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 24),
         ],
 
+        // --- DYNAMIC INJECTION: LOGIN FIELDS ---
         if (isLogin) ...[
           _buildTextField(
             controller: _emailController,
@@ -573,7 +644,8 @@ class _AuthScreenState extends State<AuthScreen> {
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                tapTargetSize: MaterialTapTargetSize
+                    .shrinkWrap, // Reduces invisible touch padding
               ),
               child: const Text(
                 'Forgot password?',
@@ -584,14 +656,17 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 8),
         ],
 
+        // --- MAIN ACTION BUTTON ---
         ElevatedButton(
           onPressed: () {
+            // TODO: Add the Backend JWT integration logic here
             if (isLogin) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const DashboardScreen()),
               );
             } else {
+              // Proceed to confirmation screen upon clicking register
               setState(() => _authState = AuthState.success);
             }
           },
@@ -617,12 +692,14 @@ class _AuthScreenState extends State<AuthScreen> {
   // ==========================================
   // REUSABLE INPUT WIDGETS
   // ==========================================
+  /// Standardized TextField builder to enforce uniform styling and padding
+  /// across the application without writing boilerplate code.
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
     required OutlineInputBorder border,
     IconData? icon,
-    bool obscureText = false,
+    bool obscureText = false, // True for password fields to hide characters
   }) {
     return TextField(
       controller: controller,
@@ -648,6 +725,9 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  /// Standardized Dropdown builder.
+  /// Used to restrict user input to predefined lists (e.g., specific university programs)
+  /// and soon this will be populated with the data from the data base
   Widget _buildDropdownField({
     required String hint,
     required List<String> items,
@@ -657,7 +737,10 @@ class _AuthScreenState extends State<AuthScreen> {
   }) {
     return DropdownButtonFormField<String>(
       value: selectedValue,
-      icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey.shade400),
+      icon: Icon(
+        Icons.keyboard_arrow_down,
+        color: Colors.grey.shade400,
+      ), // Custom chevron to match Figma
       style: const TextStyle(fontSize: 14, color: Colors.black87),
       dropdownColor: Colors.white,
       decoration: InputDecoration(

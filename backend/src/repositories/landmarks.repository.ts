@@ -4,6 +4,10 @@ async function findAllLandmarks() {
   return await prisma.landmark.findMany();
 }
 
+async function findLandmarksCount() {
+  return prisma.landmark.count();
+}
+
 async function findLandmarksVisitedByStudent(studentNum: string) {
   return await prisma.landmarksVisited.findMany({
     where: { student_number: studentNum }
@@ -46,7 +50,7 @@ async function createLandmarkVisit(
         landmark_id: landmarkId
       }
     });
-    
+
     const updatedProgress = await tx.progress.update({
       where: { student_number: studentNum },
       data: {
@@ -61,6 +65,7 @@ async function createLandmarkVisit(
 
 export {
   findAllLandmarks,
+  findLandmarksCount,
   findLandmarksVisitedByStudent,
   findLandmark,
   findLandmarkVisitedByStudent,

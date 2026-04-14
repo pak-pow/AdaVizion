@@ -1,8 +1,11 @@
 import * as quizzesRepository from "../repositories/quizzes.repository";
 import * as landmarksRepository from "../repositories/landmarks.repository";
+import * as studentsRepository from "../repositories/students.repository";
 import type { Answer, ViewQuestion } from "../types/quizzes.types";
 import type { Achievement, Question } from "../../generated/prisma/client";
 import { checkQuizAchievements } from "./achievements.service";
+import { GAMIFICATION_CONFIG } from "../constants/gamification-config";
+import { calculateXpProgress, calculateNewLevel } from "../lib/gamification-utils";
 
 async function fetchQuizzes(studentNum: string) {
   const [allQuizzes, quizSubmissions, landmarksVisitedCount] = await Promise.all([
@@ -120,13 +123,18 @@ async function evaluateQuestionResponses(questions: Question[], answers: Answer[
 } 
 
 async function processQuizSubmission(studentNum: string, quizId: number, answers: Answer[]) {
-  const [quiz, questions] = await Promise.all([
+  const [quiz, questions, studentProgress] = await Promise.all([
     quizzesRepository.findQuiz(quizId),
-    quizzesRepository.findQuestions(quizId)
+    quizzesRepository.findQuestions(quizId),
+    studentsRepository.findStudentProgress(studentNum)
   ]);
 
   if (!quiz) {
     throw new Error("Quiz not found");
+  }
+
+  if (!studentProgress) {
+    throw new Error("Student progress does not exist");
   }
 
   if (answers.length !== questions.length) {
@@ -139,15 +147,22 @@ async function processQuizSubmission(studentNum: string, quizId: number, answers
     throw new Error("Error evaluating quiz answers");
   }
 
+  const xpReward = GAMIFICATION_CONFIG.XP_REWARDS.QUIZ_PASS;
+  const newLevel = calculateNewLevel(xpReward, studentProgress.total_xp);
+
   const { submission, updatedProgress } = await quizzesRepository.createQuizSubmission(
     studentNum,
     quiz,
-    result
+    result,
+    xpReward,
+    newLevel
   );
 
   if (!submission || !updatedProgress) {
     throw new Error("Database transaction failed to return new quiz submission and updated progress");
   }
+
+  const xpProgress = calculateXpProgress(newLevel, updatedProgress.total_xp);
 
   let achievementsEarned: Achievement[] = [];
 
@@ -161,8 +176,21 @@ async function processQuizSubmission(studentNum: string, quizId: number, answers
     score_achieved: result.totalScore,
     is_passed: submission.is_passed,
     completed_at: submission.completed_at,
-    new_total_quiz_points: updatedProgress.quiz_points,
     result: result.breakdown,
+    new_total_quiz_points: updatedProgress.quiz_points,
+    progress: {
+      xp: {
+        previous: studentProgress.total_xp,
+        current: updatedProgress.total_xp,
+        earned: xpReward,
+        ...xpProgress
+      },
+      level: {
+        previous: studentProgress.level,
+        current: newLevel,
+        did_level_up: newLevel > studentProgress.level
+      }
+    },
     new_achievements: achievementsEarned
   };
 }

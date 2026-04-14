@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import express, { type Request, type Response } from "express";
+import cors from "cors";
 import studentRouter from "./routes/students.route";
 import landmarkRouter from "./routes/landmarks.route";
 import quizRouter from "./routes/quizzes.route";
@@ -9,11 +10,17 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5000";
+
 const app = express();
 
-app.use(express.json());
+app.use(cors({
+  origin: FRONTEND_ORIGIN,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
-// To run this file, execute `npm run dev` in terminal
+app.use(express.json()); // Allows routes to parse the body (JSON data)
 
 app.get("/", (req: Request, res: Response) => {
   res.json({

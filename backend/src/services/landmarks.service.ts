@@ -97,8 +97,10 @@ async function processLandmarkVisit(
 
   return {
     message: "Scan and visit successful",
-    ...publicData,
-    visited_at: newVisit.visited_at,
+    landmark: {
+      ...publicData,
+      visited_at: newVisit.visited_at
+    },    
     progress: {
       xp: {
         previous: studentProgress.total_xp,

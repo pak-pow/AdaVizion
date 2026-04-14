@@ -1,7 +1,9 @@
 import bcrypt from "bcrypt";
 import * as studentsRepository from "../repositories/students.repository";
+import * as landmarksRepository from "../repositories/landmarks.repository";
 import type { LoginBody, RegistrationBody } from "../schemas/students.schema";
 import { generateAuthToken } from "./auth.services";
+import { calculateXpProgress } from "../lib/gamification-utils";
 
 async function fetchStudents() {  
   return await studentsRepository.findStudents();
@@ -19,10 +21,26 @@ async function fetchStudent(studentNum: string) {
 
 async function fetchStudentProgress(studentNum: string) {
   const progress = await studentsRepository.findStudentProgress(studentNum);
+  const landmarksVisitedCount = await landmarksRepository.findLandmarksVisitedCount(studentNum);
+  const totalLandmarks = await landmarksRepository.findLandmarksCount();
 
   if (!progress) throw new Error("Student progress does not exist");
 
-  return progress;
+  const { total_xp, ...otherProgress } = progress;
+
+  const xpProgress = calculateXpProgress(progress.level, total_xp);
+
+  return {
+    ...otherProgress,
+    landmarks: {
+      total: totalLandmarks,
+      visited: landmarksVisitedCount
+    },
+    xp: {
+      total_xp: total_xp,
+      ...xpProgress
+    }    
+  };
 }
 
 async function processStudentRegistration(studentDetails: RegistrationBody) {

@@ -23,10 +23,18 @@ async function fetchStudent(studentNum: string) {
   return publicData;
 }
 
-async function fetchStudentProgress(studentNum: string) {
-  const progress = await studentsRepository.findStudentProgress(studentNum);
-  const landmarksVisitedCount = await landmarksRepository.findLandmarksVisitedCount(studentNum);
-  const totalLandmarks = await landmarksRepository.findLandmarksCount();
+async function fetchStudentProfile(studentNum: string) {
+  const [
+    student,
+    progress,
+    landmarksVisitedCount,
+    totalLandmarks
+  ] = await Promise.all([
+    studentsRepository.findStudent(studentNum),
+    studentsRepository.findStudentProgress(studentNum),
+    landmarksRepository.findLandmarksVisitedCount(studentNum),
+    landmarksRepository.findLandmarksCount()
+  ]);
 
   if (!progress) throw new Error("Student progress does not exist");
 
@@ -35,15 +43,18 @@ async function fetchStudentProgress(studentNum: string) {
   const xpProgress = calculateXpProgress(progress.level, total_xp);
 
   return {
-    ...otherProgress,
-    landmarks: {
-      total: totalLandmarks,
-      visited: landmarksVisitedCount
-    },
-    xp: {
-      total_xp: total_xp,
-      ...xpProgress
-    }    
+    info: student,
+    profile: {
+      ...otherProgress,
+      landmarks: {
+        total: totalLandmarks,
+        visited: landmarksVisitedCount
+      },
+      xp: {
+        total_xp: total_xp,
+        ...xpProgress
+      }    
+    }
   };
 }
 
@@ -90,7 +101,7 @@ async function processStudentLogin(studentCredentials: LoginBody) {
 export {
   fetchStudents,
   fetchStudent,
-  fetchStudentProgress,
+  fetchStudentProfile,
   processStudentRegistration,
   processStudentLogin
 }

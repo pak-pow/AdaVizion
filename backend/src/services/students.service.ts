@@ -54,7 +54,10 @@ async function processStudentRegistration(studentDetails: RegistrationBody) {
   // Remove password from response
   const { password, ...publicData } = newStudent;
 
-  return publicData;
+  return {
+    message: "Sign-up successful",
+    student: publicData
+  };
 }
 
 async function processStudentLogin(studentCredentials: LoginBody) {

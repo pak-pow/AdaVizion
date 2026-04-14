@@ -14,8 +14,12 @@ async function fetchQuizzes(studentNum: string) {
     landmarksRepository.findLandmarksVisitedCount(studentNum)
   ]);
 
-  const submissionDetails = new Map(quizSubmissions.map((s) => [
-    s.quiz_id, { score: s.score, is_passed: s.is_passed }
+  const submissionDetails = new Map(quizSubmissions.map((submission) => [
+    submission.quiz_id, {
+      score: submission.score,
+      is_passed: submission.is_passed,
+      completed_at: submission.completed_at
+    }
   ]));
 
   // Final list of quizzes to show on the frontend
@@ -23,15 +27,21 @@ async function fetchQuizzes(studentNum: string) {
     const { _count, ...mainQuizDetails } = quiz;
     const submission = submissionDetails.get(quiz.quiz_id);
     const isLocked = quiz.min_landmarks > landmarksVisitedCount;
+    const remainingLandmarksNeeded = Math.max(0, quiz.min_landmarks - landmarksVisitedCount);
 
     return {
-      ...mainQuizDetails,
-      question_count: _count.questions,
-      is_locked: isLocked,
-      remaining_landmarks_needed: Math.max(0, quiz.min_landmarks - landmarksVisitedCount),
-      is_completed: !!submission,
-      score_achieved: submission ? submission.score : null,
-      is_passed: submission ? submission.is_passed : false
+      info: {
+        ...mainQuizDetails,
+        question_count: _count.questions
+      },
+      status: {
+        is_locked: isLocked,
+        remaining_landmarks_needed: remainingLandmarksNeeded,
+        is_completed: !!submission,
+        score_achieved: submission?.score ?? null,
+        is_passed: submission?.is_passed ?? false,
+        completed_at: submission?.completed_at ?? null
+      }
     }
   });
 

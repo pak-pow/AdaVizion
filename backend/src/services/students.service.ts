@@ -51,7 +51,7 @@ async function fetchStudentProfile(studentNum: string) {
 
   return {
     info: student,
-    profile: {
+    progress: {
       ...otherProgress,
       landmarks: {
         total: totalLandmarks,

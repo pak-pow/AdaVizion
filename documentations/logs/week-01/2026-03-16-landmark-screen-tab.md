@@ -35,4 +35,4 @@ The UI required two distinct visual states for the same structural card componen
 
 ## 4. The Output & Result
 
-![Day3](../../screenshots/day3.png)
+![Day3](../../screenshots/dev-logs/day3.png)

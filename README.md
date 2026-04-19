@@ -53,29 +53,7 @@
 | **Test** | [Postman](https://www.postman.com/) |
 | **Deployment** | [Vercel](https://vercel.com/) |
 
-## ⚙️ Environment Setup
-
-### 1. Pre-requisite Setup
-
-1. Open a terminal (Command Prompt, Powershell, Git Bash).
-
-2. Create or navigate to your workspace or a projects folder:
-
-```Bash
-cd projects
-```
-
-3. Clone the repository.
-
-```Bash
-git clone https://github.com/pak-pow/AdaVizion.git
-```
-
-4. Navigate to the project directory:
-
-```Bash
-cd AdaVizion
-```
+## ⚙️ Environment Setup Guide (Windows)
 
 ### 2. Flutter SDK Installation
 

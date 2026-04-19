@@ -1,44 +1,45 @@
-import { prisma } from "../lib/prisma";
-import type { AchievementCategory } from "../../generated/prisma/enums"
+import * as achievementsRepository from "../repositories/achievements.repository";
+import * as landmarksRepository from "../repositories/landmarks.repository";
+import * as studentsRepository from "../repositories/students.repository";
 import type { Achievement } from "../../generated/prisma/client";
 
-async function getEligibleAchievements(
-  studentNum: string,
-  category: AchievementCategory,
-  metric: number
-) {
-  const eligibleAchievements = await prisma.achievement.findMany({
-    where: {
-      category: category,
-      threshold: { lte: metric },
-      earners: {
-        none: { student_number: studentNum }
-      }
+async function fetchAchievementsList(studentNum: string) {
+  const [allAchievements, achievementsEarned] = await Promise.all([
+    achievementsRepository.findAchievements(),
+    achievementsRepository.findAchievementsEarned(studentNum)
+  ]);
+
+  const earnedAtMap = new Map(
+    achievementsEarned.map((achievement) => [achievement.achievement_id, achievement.earned_at])
+  );
+
+  // Final list to show on the frontend
+  return allAchievements.map((achievement) => {
+    const earnedAt = earnedAtMap.get(achievement.achievement_id);
+
+    return {
+      ...achievement,
+      is_unlocked: !!earnedAt, // Flag for frontend to visually display unlocked status
+      earned_at: earnedAt || null
     }
   });
-
-  return eligibleAchievements;
 }
 
-async function awardAchievements(studentNum: string, eligibleAchievements: Achievement[]) {
+async function awardAchievements(
+  studentNum: string,
+  eligibleAchievements: Achievement[]
+) {
+  const eligibleAchievemntsId = eligibleAchievements.map((achievement) => achievement.achievement_id);
+
   if (eligibleAchievements.length > 0) {
-    await prisma.achievementsEarned.createMany({
-      data: eligibleAchievements.map((achievement) => ({
-        student_number: studentNum,
-        achievement_id: achievement.achievement_id
-      }))
-    });
+    await achievementsRepository.createAchievementsEarned(studentNum, eligibleAchievemntsId);
   }
 }
 
 async function checkLandmarkAchievements(studentNum: string)  {
-  const visitCount = await prisma.landmarksVisited.count({
-    where: { student_number: studentNum }
-  });
+  const visitCount = await landmarksRepository.findLandmarksVisitedCount(studentNum);
 
-  if (visitCount === 0) return [];
-
-  const eligibleAchievements = await getEligibleAchievements(studentNum, "EXPLORER", visitCount);
+  const eligibleAchievements = await achievementsRepository.findEligibleAchievements(studentNum, "EXPLORER", visitCount);
 
   await awardAchievements(studentNum, eligibleAchievements);
 
@@ -46,14 +47,11 @@ async function checkLandmarkAchievements(studentNum: string)  {
 }
 
 async function checkQuizAchievements(studentNum: string) {
-  const studentProgress = await prisma.progress.findUnique({
-    where: { student_number: studentNum },
-    select: { quiz_points: true }
-  });
+  const studentProgress = await studentsRepository.findStudentProgress(studentNum);
 
   const quizPoints = studentProgress?.quiz_points || 0;
 
-  const eligibleAchievements = await getEligibleAchievements(studentNum, "SCHOLAR", quizPoints);
+  const eligibleAchievements = await achievementsRepository.findEligibleAchievements(studentNum, "SCHOLAR", quizPoints);
 
   await awardAchievements(studentNum, eligibleAchievements);
 
@@ -61,7 +59,7 @@ async function checkQuizAchievements(studentNum: string) {
 }
 
 export {
-  getEligibleAchievements,
+  fetchAchievementsList,
   awardAchievements,
   checkLandmarkAchievements,
   checkQuizAchievements

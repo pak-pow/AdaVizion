@@ -6,19 +6,22 @@ export const achievementsData: SeedAchievement[] = [
     title: "Envergan Scout", 
     description: "Your journey begins! Successfully located your first campus landmark.", 
     category: "EXPLORER", 
-    threshold: 1 
+    threshold: 1,
+    img_path: ""
   },
   { 
     title: "Wildcat Voyager", 
     description: "Becoming a local! You've successfully navigated to 5 landmarks.", 
     category: "EXPLORER", 
-    threshold: 5 
+    threshold: 5,
+    img_path: ""
   },
   { 
     title: "Luzonian Trailblazer", 
     description: "Campus Master! You've explored every corner of the university.", 
     category: "EXPLORER", 
-    threshold: 10 
+    threshold: 10,
+    img_path: ""
   },
   
   // SCHOLAR TIERS (Based on quiz points)
@@ -26,18 +29,21 @@ export const achievementsData: SeedAchievement[] = [
     title: "Envergan Aspirant", 
     description: "50 quiz points achieved.", 
     category: "SCHOLAR", 
-    threshold: 50 
+    threshold: 50,
+    img_path: ""
   },
   { 
     title: "Wildcat Seeker", 
     description: "100 quiz points achieved.", 
     category: "SCHOLAR", 
-    threshold: 100 
+    threshold: 100,
+    img_path: ""
   },
   { 
     title: "Luzonian Paragon", 
     description: "150 quiz points achieved. Hawak mo ang beat!", 
     category: "SCHOLAR", 
-    threshold: 150 
+    threshold: 150,
+    img_path: ""
   }
 ];

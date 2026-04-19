@@ -1,37 +1,46 @@
 import * as quizzesRepository from "../repositories/quizzes.repository";
-import * as studentRepository from "../repositories/students.repository";
+import * as landmarksRepository from "../repositories/landmarks.repository";
+import * as studentsRepository from "../repositories/students.repository";
 import type { Answer, ViewQuestion } from "../types/quizzes.types";
 import type { Achievement, Question } from "../../generated/prisma/client";
 import { checkQuizAchievements } from "./achievements.service";
+import { GAMIFICATION_CONFIG } from "../constants/gamification-config";
+import { calculateXpProgress, calculateNewLevel } from "../lib/gamification-utils";
 
 async function fetchQuizzes(studentNum: string) {
-  const [allQuizzes, studentProgress, quizSubmissions] = await Promise.all([
+  const [allQuizzes, quizSubmissions, landmarksVisitedCount] = await Promise.all([
     quizzesRepository.findQuizzes(),
-    studentRepository.findStudentProgress(studentNum),
-    quizzesRepository.findQuizSubmissions(studentNum)
+    quizzesRepository.findQuizSubmissions(studentNum),
+    landmarksRepository.findLandmarksVisitedCount(studentNum)
   ]);
 
-  const currentXP = studentProgress?.total_xp || 0;
-
-  const submissionDetails = new Map(quizSubmissions.map((s) => [
-    s.quiz_id, { score: s.score, is_passed: s.is_passed }
+  const submissionDetails = new Map(quizSubmissions.map((submission) => [
+    submission.quiz_id, {
+      score: submission.score,
+      is_passed: submission.is_passed,
+      completed_at: submission.completed_at
+    }
   ]));
 
   // Final list of quizzes to show on the frontend
   const quizList = allQuizzes.map((quiz) => {
+    const { _count, ...mainQuizDetails } = quiz;
     const submission = submissionDetails.get(quiz.quiz_id);
+    const isLocked = quiz.min_landmarks > landmarksVisitedCount;
 
     return {
-      quiz_id: quiz.quiz_id,
-      name: quiz.name,
-      required_xp: quiz.required_xp,
-      remaining_xp_needed: Math.max(0, quiz.required_xp - currentXP),
-      question_count: quiz._count.questions,
-      is_locked: currentXP < quiz.required_xp,
-      is_completed: !!submission,
-      max_score: quiz.max_score,
-      score_achieved: submission ? submission.score : null,
-      is_passed: submission ? submission.is_passed : false,
+      info: {
+        ...mainQuizDetails,
+        question_count: _count.questions
+      },
+      status: {
+        is_locked: isLocked,
+        remaining_landmarks_needed: Math.max(0, quiz.min_landmarks - landmarksVisitedCount),
+        is_completed: !!submission,
+        score_achieved: submission?.score ?? null,
+        is_passed: submission?.is_passed ?? false,
+        completed_at: submission?.completed_at ?? null
+      }
     }
   });
 
@@ -39,10 +48,10 @@ async function fetchQuizzes(studentNum: string) {
 }
 
 async function fetchQuiz(studentNum: string, quizId: number) {
-  const [quiz, studentProgress, answered] = await Promise.all([
+  const [quiz, answered, landmarksVisitedCount] = await Promise.all([
     quizzesRepository.findQuiz(quizId),
-    studentRepository.findStudentProgress(studentNum),
     quizzesRepository.findQuizSubmission(studentNum, quizId),
+    landmarksRepository.findLandmarksVisitedCount(studentNum)
   ]);
 
   if (!quiz) {
@@ -50,8 +59,10 @@ async function fetchQuiz(studentNum: string, quizId: number) {
   }
 
   // Checks if the student's current XP is enough to unlock the quiz
-  if ((studentProgress?.total_xp ?? 0) < quiz?.required_xp) {
-    throw new Error("Quiz locked due to insufficient XP");
+  const isLocked = quiz.min_landmarks > landmarksVisitedCount;
+
+  if (isLocked) {
+    throw new Error("Quiz requires more landmark visits to unlock");
   }
 
   let questions: ViewQuestion[] = await quizzesRepository.findQuestions(quizId);
@@ -59,6 +70,8 @@ async function fetchQuiz(studentNum: string, quizId: number) {
   // If the quiz is already taken, include previous answers but keep correct answer hidden to prevent leaking answers to others
   if (answered) {
     const responses = await quizzesRepository.findQuestionResponses(studentNum, quizId);
+
+    console.log(responses);
 
     questions = responses.map((response) => ({
       question_id: response.question_id,
@@ -75,8 +88,15 @@ async function fetchQuiz(studentNum: string, quizId: number) {
   }
 
   return {
-    ...quiz,
-    total_score: answered ? answered.score : null,
+    info: quiz,
+    status: {
+      is_locked: isLocked,
+      remaining_landmarks_needed: Math.max(0, quiz.min_landmarks - landmarksVisitedCount),
+      is_completed: !!answered,
+      score_achieved: answered?.score ?? null,
+      is_passed: answered?.is_passed ?? false,
+      completed_at: answered?.completed_at ?? null
+    },
     questions
   };
 }
@@ -97,14 +117,12 @@ async function evaluateQuestionResponses(questions: Question[], answers: Answer[
     if (isCorrect) totalScore += question.item_points;
 
     return {
-      question_id: question.question_id,
-      question_text: question.question_text,
-      choices: question.choices,
-      your_answer: ans.selected_idx,
-      correct_answer: question.correct_idx,
-      is_correct: isCorrect,
-      item_points: question.item_points,
-      points_earned: isCorrect ? question.item_points : 0
+      info: question,
+      performance: {
+        your_answer: ans.selected_idx,
+        is_correct: isCorrect,
+        points_earned: isCorrect ? question.item_points : 0
+      }
     };
   })
 
@@ -115,13 +133,18 @@ async function evaluateQuestionResponses(questions: Question[], answers: Answer[
 } 
 
 async function processQuizSubmission(studentNum: string, quizId: number, answers: Answer[]) {
-  const [quiz, questions] = await Promise.all([
+  const [quiz, questions, studentProgress] = await Promise.all([
     quizzesRepository.findQuiz(quizId),
-    quizzesRepository.findQuestions(quizId)
+    quizzesRepository.findQuestions(quizId),
+    studentsRepository.findStudentProgress(studentNum)
   ]);
 
   if (!quiz) {
     throw new Error("Quiz not found");
+  }
+
+  if (!studentProgress) {
+    throw new Error("Student progress does not exist");
   }
 
   if (answers.length !== questions.length) {
@@ -134,15 +157,22 @@ async function processQuizSubmission(studentNum: string, quizId: number, answers
     throw new Error("Error evaluating quiz answers");
   }
 
+  const xpReward = GAMIFICATION_CONFIG.XP_REWARDS.QUIZ_PASS;
+  const newLevel = calculateNewLevel(xpReward, studentProgress.total_xp);
+
   const { submission, updatedProgress } = await quizzesRepository.createQuizSubmission(
     studentNum,
     quiz,
-    result
+    result,
+    xpReward,
+    newLevel
   );
 
   if (!submission || !updatedProgress) {
     throw new Error("Database transaction failed to return new quiz submission and updated progress");
   }
+
+  const xpProgress = calculateXpProgress(newLevel, updatedProgress.total_xp);
 
   let achievementsEarned: Achievement[] = [];
 
@@ -152,12 +182,29 @@ async function processQuizSubmission(studentNum: string, quizId: number, answers
   
   return {
     message: "Quiz submitted successfully",
-    ...quiz,
-    total_score: result.totalScore,
-    is_passed: submission.is_passed,
-    completed_at: submission.completed_at,
-    new_total_quiz_points: updatedProgress.quiz_points,
-    result: result.breakdown,
+    quiz: {
+      info: quiz,
+      performance: {
+        score_achieved: result.totalScore,
+        is_passed: submission.is_passed,
+        new_total_quiz_points: updatedProgress.quiz_points,
+        completed_at: submission.completed_at
+      },
+      breakdown: result.breakdown
+    },
+    progress: {
+      xp: {
+        previous: studentProgress.total_xp,
+        current: updatedProgress.total_xp,
+        earned: xpReward,
+        ...xpProgress
+      },
+      level: {
+        previous: studentProgress.level,
+        current: newLevel,
+        did_level_up: newLevel > studentProgress.level
+      }
+    },
     new_achievements: achievementsEarned
   };
 }

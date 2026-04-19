@@ -48,7 +48,13 @@ async function findQuestionResponses(studentNum: string, quizId: number) {
   });
 }
 
-async function createQuizSubmission(studentNum: string, quiz: Quiz, result: QuizResult) {
+async function createQuizSubmission(
+  studentNum: string,
+  quiz: Quiz,
+  result: QuizResult,
+  xpReward: number,
+  newLevel: number
+) {
   return await prisma.$transaction(async (tx) => {
     // Save detailed responses for review history
     const submission = await tx.quizSubmission.create({
@@ -60,18 +66,21 @@ async function createQuizSubmission(studentNum: string, quiz: Quiz, result: Quiz
         question_responses: {
           create: result.breakdown.map((questionResult) => ({
             student: { connect: { student_number: studentNum } },
-            question: { connect: { question_id: questionResult.question_id } },
-            selected_idx: questionResult.your_answer,
-            is_correct: questionResult.is_correct
+            question: { connect: { question_id: questionResult.info.question_id } },
+            selected_idx: questionResult.performance.your_answer,
+            is_correct: questionResult.performance.is_correct
           }))
         }
       }
     });
-
-    // Save cumulative quiz points to the student profile
+    
     const updatedProgress = await tx.progress.update({
       where: { student_number: studentNum },
-      data: { quiz_points: { increment: result.totalScore } }
+      data: {
+        quiz_points: { increment: result.totalScore },
+        total_xp: { increment: xpReward },
+        level: newLevel
+      }
     });
 
     return { submission, updatedProgress }

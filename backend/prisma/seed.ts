@@ -19,13 +19,15 @@ async function seedLandmarks() {
       update: {
         name: landmark.name,
         description: landmark.description,
-        fun_fact: landmark.fun_fact
+        fun_fact: landmark.fun_fact,
+        img_path: landmark.img_path
       },
       create: {
         name: landmark.name,
         description: landmark.description,
         fun_fact: landmark.fun_fact,
-        qr_string: landmark.qr_string
+        qr_string: landmark.qr_string,
+        img_path: landmark.img_path
       }
     })
   }
@@ -52,7 +54,7 @@ async function seedQuizzes() {
     await prisma.quiz.upsert({
       where: { name: quiz.name },
       update: {
-        required_xp: quiz.required_xp,
+        min_landmarks: quiz.min_landmarks,
         max_score: maxPoints,
         passing_score: passingScore,
         questions: {
@@ -62,7 +64,7 @@ async function seedQuizzes() {
       },
       create: {
         name: quiz.name,
-        required_xp: quiz.required_xp,
+        min_landmarks: quiz.min_landmarks,
         max_score: maxPoints,
         passing_score: passingScore,
         questions: {

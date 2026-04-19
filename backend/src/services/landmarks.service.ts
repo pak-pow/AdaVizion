@@ -1,4 +1,7 @@
+import { GAMIFICATION_CONFIG } from "../constants/gamification-config";
+import { calculateXpProgress, calculateNewLevel } from "../lib/gamification-utils";
 import * as landmarksRepository from "../repositories/landmarks.repository";
+import * as studentsRepository from "../repositories/students.repository";
 import { checkLandmarkAchievements } from "./achievements.service";
 
 async function fetchLandmarkChecklist(studentNum: string) {
@@ -55,23 +58,38 @@ async function processLandmarkVisit(
   landmarkId: number,
   qrCodeScanned: string
 ) {
-  const XP_REWARD = 20;
-
-  const landmark = await landmarksRepository.findLandmark(landmarkId);
+  const [ landmark, studentProgress ] = await Promise.all([
+    landmarksRepository.findLandmark(landmarkId),
+    studentsRepository.findStudentProgress(studentNum)
+  ]);
 
   if (!landmark) {
     throw new Error("Landmark not found");
+  }
+
+  if (!studentProgress) {
+    throw new Error("Student progress does not exist");
   }
 
   if (landmark.qr_string !== qrCodeScanned) {
     throw new Error("Invalid landmark QR code");
   }
 
-  const { newVisit, updatedProgress } = await landmarksRepository.createVisitWithXP(studentNum, landmarkId, XP_REWARD);
+  const xpReward = GAMIFICATION_CONFIG.XP_REWARDS.LANDMARK_VISIT;
+  const newLevel = calculateNewLevel(xpReward, studentProgress.total_xp);
+
+  const { newVisit, updatedProgress } = await landmarksRepository.createLandmarkVisit(
+    studentNum,
+    landmarkId,
+    xpReward,
+    newLevel
+  );
 
   if (!newVisit || !updatedProgress) {
     throw new Error("Failed to process scan");
   }
+
+  const xpProgress = calculateXpProgress(newLevel, updatedProgress.total_xp);
 
   const achievementsEarned = await checkLandmarkAchievements(studentNum);
 
@@ -79,10 +97,23 @@ async function processLandmarkVisit(
 
   return {
     message: "Scan and visit successful",
-    ...publicData,
-    visited_at: newVisit.visited_at,
-    xp_earned: XP_REWARD,
-    new_total_xp: updatedProgress.total_xp,
+    landmark: {
+      ...publicData,
+      visited_at: newVisit.visited_at
+    },    
+    progress: {
+      xp: {
+        previous: studentProgress.total_xp,
+        current: updatedProgress.total_xp,
+        earned: xpReward,
+        ...xpProgress
+      },
+      level: {
+        previous: studentProgress.level,
+        current: newLevel,
+        did_level_up: newLevel > studentProgress.level
+      }
+    },
     new_achievements: achievementsEarned
   };
 }

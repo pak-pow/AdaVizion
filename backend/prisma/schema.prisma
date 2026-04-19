@@ -17,6 +17,7 @@ model Student {
   year_level          Int                  @db.Integer
   email               String               @unique @db.VarChar(50)
   password            String               @db.VarChar(255)
+  img_path            String?              @db.VarChar(255)
   created_at          DateTime             @default(now())
   achievements_earned AchievementsEarned[]
   landmarks_visited   LandmarksVisited[]
@@ -33,6 +34,7 @@ model Landmark {
   description String?
   fun_fact    String?
   qr_string   String             @unique
+  img_path    String?            @db.VarChar(255)
   created_at  DateTime           @default(now())
   visitors    LandmarksVisited[]
 
@@ -42,7 +44,7 @@ model Landmark {
 model Quiz {
   quiz_id       Int              @id @default(autoincrement())
   name          String           @unique @db.VarChar(100)
-  required_xp   Int              @default(0)
+  min_landmarks Int
   max_score     Int              @default(0)
   passing_score Int              @default(0)
   created_at     DateTime        @default(now())
@@ -76,6 +78,7 @@ model Achievement {
   description    String
   category       AchievementCategory
   threshold      Int
+  img_path       String?              @db.VarChar(255)
   created_at     DateTime             @default(now())
   earners        AchievementsEarned[]
 
@@ -123,6 +126,7 @@ model QuestionResponse {
 
 model Progress {
   student_number String   @id @db.VarChar(20)
+  level          Int      @default(1)
   total_xp       Int      @default(0)
   quiz_points    Int      @default(0)
   updated_at     DateTime @updatedAt

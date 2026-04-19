@@ -1,20 +1,68 @@
 import bcrypt from "bcrypt";
 import * as studentsRepository from "../repositories/students.repository";
+import * as landmarksRepository from "../repositories/landmarks.repository";
 import type { LoginBody, RegistrationBody } from "../schemas/students.schema";
 import { generateAuthToken } from "./auth.services";
+import { calculateXpProgress } from "../lib/gamification-utils";
 
 async function fetchStudents() {  
-  return await studentsRepository.findStudents();
+  const students = await studentsRepository.findStudents();
+
+  // Exclude password from response
+  return students.map(({ password, ...publicData }) => {
+    const { progress, ...info } = publicData;
+
+    return {
+      info,
+      progress
+    }
+  });
 }
 
 async function fetchStudent(studentNum: string) {
   const student = await studentsRepository.findStudent(studentNum);
 
+  // Exclude password from response
   if (!student) throw new Error("Student does not exist");
 
   const { password, ...publicData } = student;
 
   return publicData;
+}
+
+async function fetchStudentProfile(studentNum: string) {
+  const [
+    student,
+    progress,
+    landmarksVisitedCount,
+    totalLandmarks
+  ] = await Promise.all([
+    studentsRepository.findStudent(studentNum),
+    studentsRepository.findStudentProgress(studentNum),
+    landmarksRepository.findLandmarksVisitedCount(studentNum),
+    landmarksRepository.findLandmarksCount()
+  ]);
+
+  if (!progress) throw new Error("Student progress does not exist");
+
+  const { student_number, total_xp, ...otherProgress } = progress;
+
+  const xpProgress = calculateXpProgress(progress.level, total_xp);
+
+  return {
+    info: student,
+    progress: {
+      ...otherProgress,
+      landmarks: {
+        total: totalLandmarks,
+        visited: landmarksVisitedCount
+      },
+      xp: {
+        total_xp: total_xp,
+        ...xpProgress
+      }    
+    }
+  };
 }
 
 async function processStudentRegistration(studentDetails: RegistrationBody) {
@@ -25,10 +73,13 @@ async function processStudentRegistration(studentDetails: RegistrationBody) {
 
   const newStudent = await studentsRepository.createStudent(studentDetails);
 
-  // Remove password from response
+  // Exclude password from response
   const { password, ...publicData } = newStudent;
 
-  return publicData;
+  return {
+    message: "Sign-up successful",
+    student: publicData
+  };
 }
 
 async function processStudentLogin(studentCredentials: LoginBody) {
@@ -44,7 +95,7 @@ async function processStudentLogin(studentCredentials: LoginBody) {
 
   const token = generateAuthToken(studentNum);
 
-  // Remove password from response
+  // Exclude password from response
   const { password: privatePass, ...publicData } = student;
 
   return {
@@ -57,6 +108,7 @@ async function processStudentLogin(studentCredentials: LoginBody) {
 export {
   fetchStudents,
   fetchStudent,
+  fetchStudentProfile,
   processStudentRegistration,
   processStudentLogin
 }

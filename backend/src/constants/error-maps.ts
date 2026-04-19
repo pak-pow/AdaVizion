@@ -60,7 +60,7 @@ const ERRORS: ErrorDetails[] = [
     type: "QUIZ",
     code: "QUIZ_LOCKED",
     status: 403,
-    message: "Quiz locked due to insufficient XP" 
+    message: "Quiz requires more landmark visits to unlock" 
   },
   {
     type: "QUIZ",

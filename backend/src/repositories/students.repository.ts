@@ -17,16 +17,7 @@ async function findStudents() {
 
 async function findStudent(studentNum: string) {
   return await prisma.student.findUnique({
-    where: { student_number: studentNum },
-    include: {
-      progress: true,
-      achievements_earned: {
-        select: {
-          earned_at: true,
-          achievement: true
-        }
-      }
-    }
+    where: { student_number: studentNum }
   });
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'qrcode_screen.dart';
+import 'quiz_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -28,14 +29,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Image.asset('assets/images/nav_logo.png', height: 42),
 
-            // FUNCTIONAL: Take Quiz Button
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const QuizScreenPlaceholder(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const QuizScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -404,7 +402,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           child: ElevatedButton(
             onPressed: () {
               setState(() => _isEditing = false);
-              // TODO: Add backend API call here to save changes later!
+              // TODO: Add backend API call here
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -467,28 +465,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
 }
 
 // ============================================================================
-// TEMPORARY PLACEHOLDER SCREENS (Replace these when you build the real ones)
+// TEMPORARY PLACEHOLDER SCREENS
 // ============================================================================
-
-class QuizScreenPlaceholder extends StatelessWidget {
-  const QuizScreenPlaceholder({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Take Quiz', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF7A1D1D),
-      ),
-      body: const Center(
-        child: Text(
-          'Quiz Interface Goes Here!',
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-  }
-}
 
 class QuizScoresPlaceholder extends StatelessWidget {
   const QuizScoresPlaceholder({super.key});

@@ -2,40 +2,14 @@ import 'package:flutter/material.dart';
 
 enum QuizState { locked, unlocked, completed }
 
-class QuizScreen extends StatefulWidget {
+class QuizScreen extends StatelessWidget {
   const QuizScreen({super.key});
 
-  @override
-  State<QuizScreen> createState() => _QuizScreenState();
-}
-
-class _QuizScreenState extends State<QuizScreen> {
   // --- BRAND COLORS ---
   static const _maroon = Color(0xFF7A1D1D);
-  static const _maroonDark = Color(
-    0xFF4A0F0F,
-  ); // Dark color for the inner buttons
+  static const _maroonDark = Color(0xFF4A0F0F);
   static const _gradientTop = Color(0xFFA62121);
   static const _headerGrey = Color(0xFFF5F5F5);
-
-  // --- MOCK DATA ---
-  final List<Map<String, dynamic>> _quizzes = [
-    {
-      'title': 'Quiz Title',
-      'hint': 'Hint what to scan to unlock',
-      'state': QuizState.completed,
-    },
-    {
-      'title': 'Quiz Title',
-      'hint': 'Hint what to scan to unlock',
-      'state': QuizState.unlocked,
-    },
-    {
-      'title': 'Quiz Title',
-      'hint': 'Hint what to scan to unlock',
-      'state': QuizState.locked,
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +43,8 @@ class _QuizScreenState extends State<QuizScreen> {
                   bottomRight: Radius.circular(12),
                 ),
               ),
-              child: Column(
-                children: const [
+              child: const Column(
+                children: [
                   Text(
                     'Quiz',
                     style: TextStyle(
@@ -94,19 +68,19 @@ class _QuizScreenState extends State<QuizScreen> {
 
             const SizedBox(height: 24),
 
-            // 2. DYNAMIC QUIZ CARDS LIST
+            // 2. HARDCODED QUIZ 1 CARD — "Way of the Envergan"
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                children: _quizzes
-                    .map((quizData) => _buildQuizCard(quizData))
-                    .toList(),
+              child: _buildQuizCard(
+                state: QuizState.unlocked,
+                title: 'Way of the Envergan',
+                hint: 'Requires 3 landmark visits • 10 questions',
               ),
             ),
 
             const SizedBox(height: 32),
 
-            // 3. FOOTER: GO BACK SECTION
+            // 3. FOOTER
             const Text(
               'Go back',
               style: TextStyle(
@@ -129,9 +103,7 @@ class _QuizScreenState extends State<QuizScreen> {
             const SizedBox(height: 16),
 
             OutlinedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: _maroonDark,
@@ -147,7 +119,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
               ),
             ),
-            const SizedBox(height: 60), // Bottom padding
+            const SizedBox(height: 60),
           ],
         ),
       ),
@@ -155,11 +127,13 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   // ==========================================
-  // REUSABLE QUIZ CARD COMPONENT
+  // QUIZ CARD COMPONENT
   // ==========================================
-  Widget _buildQuizCard(Map<String, dynamic> quiz) {
-    final QuizState state = quiz['state'];
-
+  Widget _buildQuizCard({
+    required QuizState state,
+    required String title,
+    required String hint,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(16),
@@ -168,7 +142,7 @@ class _QuizScreenState extends State<QuizScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -177,11 +151,10 @@ class _QuizScreenState extends State<QuizScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // --- THE INNER DYNAMIC BUTTON ---
+          // --- THE INNER BUTTON ---
           Container(
             height: 60,
             decoration: BoxDecoration(
-              // If locked, it's grey. Otherwise, it's the dark maroon color.
               color: state == QuizState.locked
                   ? Colors.grey.shade400
                   : _maroonDark,
@@ -192,9 +165,9 @@ class _QuizScreenState extends State<QuizScreen> {
 
           const SizedBox(height: 16),
 
-          // --- THE TEXT BLOCK ---
+          // --- TEXT BLOCK ---
           Text(
-            quiz['title'],
+            title,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 24,
@@ -205,7 +178,7 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            quiz['hint'],
+            hint,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 10,
@@ -222,7 +195,6 @@ class _QuizScreenState extends State<QuizScreen> {
     if (state == QuizState.locked) {
       return const Icon(Icons.lock_outline, color: Colors.white, size: 32);
     }
-
     final buttonText = state == QuizState.completed ? 'Completed' : 'Take Quiz';
     return Text(
       buttonText,

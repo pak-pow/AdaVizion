@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'login_screen.dart';
 import 'qrcode_screen.dart';
 import 'quiz_screen.dart';
+import '../services/api/api_config.dart';
+import '../services/api/profile_api.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -29,30 +32,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Image.asset('assets/images/nav_logo.png', height: 42),
 
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const QuizScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _maroonDark,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+            Row(
+              children: [
+                // LOG OUT
+                GestureDetector(
+                  onTap: _showLogoutConfirmation,
+                  child: const Text(
+                    'Log out',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: _maroon,
+                    ),
+                  ),
                 ),
-                minimumSize: const Size(0, 32),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 0,
+                const SizedBox(width: 16),
+
+                // QUIZZES
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const QuizScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _maroonDark,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    minimumSize: const Size(0, 32),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 0,
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Quizzes',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
                 ),
-                elevation: 0,
-              ),
-              child: const Text(
-                'Take Quiz',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
+              ],
             ),
           ],
         ),
@@ -60,6 +82,52 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       // Load the Dashboard view directly
       body: const DashboardHomeView(),
+    );
+  }
+
+  // ─── LOGOUT ─────────────────────────────────────────────────────────────────
+  void _showLogoutConfirmation() {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text(
+            'Log out?',
+            style: TextStyle(fontWeight: FontWeight.w900),
+          ),
+          content: const Text(
+            'Are you sure you want to log out of EUventure?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop(); // Close dialog first
+                await ApiConfig.logout();          // Clear JWT from shared_preferences
+                if (mounted) {
+                  // Replace the entire navigation stack — the back button
+                  // cannot return to the dashboard after logout.
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AuthScreen()),
+                    (route) => false,
+                  );
+                }
+              },
+              child: const Text(
+                'Log out',
+                style: TextStyle(
+                  color: _maroon,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -76,15 +144,55 @@ class DashboardHomeView extends StatefulWidget {
 
 class _DashboardHomeViewState extends State<DashboardHomeView> {
   bool _isEditing = false;
+  bool _isLoading = true;
 
-  final _nameController = TextEditingController(text: 'Juan Dela Cruz');
-  final _studentIdController = TextEditingController(text: 'A25-40321');
-  final _courseController = TextEditingController(
-    text: 'Bachelor of Science in Computer Science',
-  );
-  final _specializationController = TextEditingController(
-    text: 'Specialization Track Software Engineering',
-  );
+  final _nameController = TextEditingController();
+  final _studentIdController = TextEditingController();
+  final _courseController = TextEditingController();
+  final _specializationController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    try {
+      final data = await ProfileApi.getProfile();
+
+      if (mounted) {
+        setState(() {
+          final info = data['info'];
+
+          if (info != null) {
+            final firstName = info['first_name'] ?? '';
+            final lastName = info['last_name'] ?? '';
+
+            _nameController.text = '$firstName $lastName'.trim();
+            _studentIdController.text = info['student_number'] ?? '';
+            _courseController.text = info['program'] ?? '';
+            _specializationController.text = info['specialization'] ?? '';
+          }
+
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceFirst('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      // Always reset the loading state so the UI never gets stuck on a spinner,
+      // even if the widget was disposed before the catch block's mounted check ran.
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   static const _maroon = Color(0xFF7A1D1D);
   static const _gradientTop = Color(0xFFA62121);
@@ -100,12 +208,15 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: _maroon));
+    }
+
     return SingleChildScrollView(
       child: Column(
         children: [
           // ─── DYNAMIC TOP SECTION (Cards) ──────────────────────────────────
           Padding(
-            // Zero top padding keeps it perfectly flush with the grey app bar
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 0),
             child: Column(
               children: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dashboard_screen.dart';
+import '../services/api/auth_api.dart';
 
 /// Defines the primary top-level views accessible via the Top Navigation Bar.
 enum AppView { home, about, auth }
@@ -17,11 +18,11 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  
   // ─── STATE VARIABLES ────────────────────────────────────────────────────────
   // Default to the Auth view and Login state when the app launches
   AppView _currentView = AppView.auth;
   AuthState _authState = AuthState.login;
+  bool _isLoading = false;
 
   // ─── TEXT CONTROLLERS ───────────────────────────────────────────────────────
   // Controllers read the text inputted by the user in the TextFields.
@@ -36,20 +37,61 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _selectedProgram;
   String? _selectedSpecialization;
 
-  // ─── MOCK DATA ──────────────────────────────────────────────────────────────
-  // TODO: Replace these with dynamic API calls to the backend later
-  final List<String> _programs = [
-    'BS Computer Science (BSCS)',
-    'BS Information Technology (BSIT)',
-    'BS Information Systems (BSIS)',
-  ];
+  // ─── TRANSLATED BACKEND DATA ────────────────────────────────────────────────
+  // These directly mirror the values in backend/src/constants/academic-maps.ts
+  final Map<String, String> _backendPrograms = {
+    "BSA": "Bachelor of Accountancy",
+    "ABCOMM": "Bachelor of Arts in Communication",
+    "ABEL": "Bachelor of Arts in English Language",
+    "ABPL": "Bachelor of Arts in Political Science",
+    "BAPSYCH": "Bachelor of Arts in Psychology",
+    "BCAED": "Bachelor of Culture and Arts Education",
+    "BEED": "Bachelor of Elementary Education",
+    "BFA": "Bachelor of Fine Arts",
+    "BLIS": "Bachelor of Library and Information Science",
+    "BMMA": "Bachelor of Multimedia Arts",
+    "BPE": "Bachelor of Physical Education",
+    "BSARCH": "Bachelor of Science in Architecture",
+    "BSBA": "Bachelor of Science in Business Administration",
+    "BSBIO": "Bachelor of Science in Biology",
+    "BSCE": "Bachelor of Science in Civil Engineering",
+    "BSCS": "Bachelor of Science in Computer Science",
+    "BSCpE": "Bachelor of Science in Computer Engineering",
+    "BSCrim": "Bachelor of Science in Criminology",
+    "BSEE": "Bachelor of Science in Electrical Engineering",
+    "BSECON": "Bachelor of Science in Economics",
+    "BSECE": "Bachelor of Science in Electronics Engineering",
+    "BSES": "Bachelor of Science in Environmental Science",
+    "BSGE": "Bachelor of Science in Geodetic Engineering",
+    "BSHM": "Bachelor of Science in Hospitality Management",
+    "BSIE": "Bachelor of Science in Industrial Engineering",
+    "BSIT": "Bachelor of Science in Information Technology",
+    "BSMA": "Bachelor of Science in Management Accounting",
+    "BSMarE": "Bachelor of Science in Marine Engineering",
+    "BSMT": "Bachelor of Science in Marine Transportation",
+    "BSME": "Bachelor of Science in Mechanical Engineering",
+    "BSMedT": "Bachelor of Science in Medical Technology",
+    "BSN": "Bachelor of Science in Nursing",
+    "BSOA": "Bachelor of Science in Office Administration",
+    "BSPA": "Bachelor of Science in Public Administration",
+    "BSED": "Bachelor of Secondary Education",
+    "BSTM": "Bachelor of Science in Tourism Management",
+  };
 
-  final List<String> _specializations = [
-    'Software Engineering',
-    'Network Administrator',
-    'Data Analytics',
-    'Generalist',
-  ];
+  final Map<String, List<String>> _backendSpecializations = {
+    "BFA": ["Visual Communication"],
+    "BSBA": [
+      "Financial Management",
+      "Human Resource Management",
+      "Marketing Management",
+      "Operations Management",
+    ],
+    "BMMA": ["Game Design", "Video Design", "Visual Design"],
+    "BSCS": ["Data Science", "Software Engineering"],
+    "BSIT": ["CISCO Networking", "Web & Mobile Application"],
+    "BSED": ["English", "Filipino", "Mathematics", "Science", "Social Studies"],
+    "BSHM": ["Cruise Management", "Culinary Arts"],
+  };
 
   // ─── BRANDING COLORS ────────────────────────────────────────────────────────
   // Static constants keep our color palette consistent and easy to update
@@ -547,10 +589,43 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
+  // SNACKBAR HELPERS
+  // ==========================================
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.red.shade800,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.green.shade700,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  // ==========================================
   // CARD CONTENT BUILDER (Inputs & Buttons)
   // ==========================================
-  /// The internal contents of the white authentication card.
-  /// Dynamically inserts specific TextFields depending on the boolean [isLogin].
   Widget _buildAuthCardContent(bool isLogin) {
     final border = _border();
 
@@ -580,9 +655,7 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         const SizedBox(height: 24),
 
-        // --- DYNAMIC INJECTION: SIGN UP FIELDS ---
-        // The spread operator (...) unpacks these widgets into the Column
-        // ONLY if the user is in Sign Up mode.
+        // --- SIGN UP FIELDS ---
         if (!isLogin) ...[
           _buildTextField(
             controller: _fullNameController,
@@ -592,26 +665,62 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 12),
           _buildTextField(
             controller: _studentIdController,
-            hint: 'Student Id',
+            hint: 'Student Id (e.g., A25-12345)',
             border: border,
           ),
           const SizedBox(height: 12),
+
+          // DYNAMIC PROGRAM DROPDOWN
           _buildDropdownField(
             hint: 'Course/Program',
-            items: _programs,
+            items: _backendPrograms.entries
+                .map(
+                  (e) => DropdownMenuItem(
+                    value: e.key, // Sends 'BSCS' to backend
+                    child: Text(
+                      e.value,
+                      style: const TextStyle(fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )
+                .toList(),
             selectedValue: _selectedProgram,
             border: border,
-            onChanged: (v) => setState(() => _selectedProgram = v),
+            onChanged: (v) {
+              setState(() {
+                _selectedProgram = v;
+                _selectedSpecialization =
+                    null; // Reset specialization if course changes
+              });
+            },
           ),
           const SizedBox(height: 12),
-          _buildDropdownField(
-            hint: 'Specialization',
-            items: _specializations,
-            selectedValue: _selectedSpecialization,
-            border: border,
-            onChanged: (v) => setState(() => _selectedSpecialization = v),
-          ),
-          const SizedBox(height: 12),
+
+          // DYNAMIC SPECIALIZATION DROPDOWN (Only shows if the selected program has specializations)
+          if (_selectedProgram != null &&
+              _backendSpecializations.containsKey(_selectedProgram)) ...[
+            _buildDropdownField(
+              hint: 'Specialization',
+              items: _backendSpecializations[_selectedProgram]!
+                  .map(
+                    (s) => DropdownMenuItem(
+                      value: s, // Sends 'Software Engineering'
+                      child: Text(
+                        s,
+                        style: const TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  )
+                  .toList(),
+              selectedValue: _selectedSpecialization,
+              border: border,
+              onChanged: (v) => setState(() => _selectedSpecialization = v),
+            ),
+            const SizedBox(height: 12),
+          ],
+
           _buildTextField(
             controller: _signupPasswordController,
             hint: 'Strong Password',
@@ -621,11 +730,11 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 24),
         ],
 
-        // --- DYNAMIC INJECTION: LOGIN FIELDS ---
+        // --- LOGIN FIELDS ---
         if (isLogin) ...[
           _buildTextField(
             controller: _emailController,
-            hint: 'Email',
+            hint: 'Student ID',
             icon: Icons.email_outlined,
             border: border,
           ),
@@ -644,8 +753,7 @@ class _AuthScreenState extends State<AuthScreen> {
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize
-                    .shrinkWrap, // Reduces invisible touch padding
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: const Text(
                 'Forgot password?',
@@ -656,22 +764,55 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 8),
         ],
 
-        // --- MAIN ACTION BUTTON ---
+        // --- SUBMIT BUTTON ---
         ElevatedButton(
-          onPressed: () {
-            // TODO: Add the Backend JWT integration logic here
-            if (isLogin) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DashboardScreen()),
-              );
-            } else {
-              // Proceed to confirmation screen upon clicking register
-              setState(() => _authState = AuthState.success);
-            }
-          },
+          onPressed: _isLoading
+              ? null
+              : () async {
+                  setState(() => _isLoading = true);
+
+                  try {
+                    if (isLogin) {
+                      await AuthApi.login(
+                        _emailController.text.trim(),
+                        _loginPasswordController.text,
+                      );
+                      if (mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DashboardScreen(),
+                          ),
+                        );
+                      }
+                    } else {
+                      final studentData = {
+                        'full_name': _fullNameController.text.trim(),
+                        'student_number': _studentIdController.text.trim(),
+                        'program':
+                            _selectedProgram, // This is now exactly what the backend expects!
+                        'specialization': _selectedSpecialization,
+                        'password': _signupPasswordController.text,
+                      };
+
+                      await AuthApi.register(studentData);
+
+                      if (mounted) {
+                        _showSuccessSnackBar('Account successfully created!');
+                        setState(() => _authState = AuthState.success);
+                      }
+                    }
+                  } catch (error) {
+                    if (mounted)
+                      _showErrorSnackBar(
+                        error.toString().replaceAll('Exception: ', ''),
+                      );
+                  } finally {
+                    if (mounted) setState(() => _isLoading = false);
+                  }
+                },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF7A1D1D),
+            backgroundColor: _maroonDark,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 12),
             minimumSize: const Size.fromHeight(45),
@@ -679,27 +820,38 @@ class _AuthScreenState extends State<AuthScreen> {
               borderRadius: BorderRadius.circular(8),
             ),
             elevation: 0,
+            disabledBackgroundColor: Colors.grey.shade400,
           ),
-          child: Text(
-            isLogin ? 'Continue' : 'Confirm',
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
+          child: _isLoading
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(
+                  isLogin ? 'Continue' : 'Confirm',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
         ),
       ],
     );
   }
 
   // ==========================================
-  // REUSABLE INPUT WIDGETS
+  // INPUT BUILDERS
   // ==========================================
-  /// Standardized TextField builder to enforce uniform styling and padding
-  /// across the application without writing boilerplate code.
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
     required OutlineInputBorder border,
     IconData? icon,
-    bool obscureText = false, // True for password fields to hide characters
+    bool obscureText = false,
   }) {
     return TextField(
       controller: controller,
@@ -725,24 +877,19 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  /// Standardized Dropdown builder.
-  /// Used to restrict user input to predefined lists (e.g., specific university programs)
-  /// and soon this will be populated with the data from the data base
   Widget _buildDropdownField({
     required String hint,
-    required List<String> items,
+    required List<DropdownMenuItem<String>> items,
     required String? selectedValue,
     required OutlineInputBorder border,
     required void Function(String?) onChanged,
   }) {
     return DropdownButtonFormField<String>(
       value: selectedValue,
-      icon: Icon(
-        Icons.keyboard_arrow_down,
-        color: Colors.grey.shade400,
-      ), // Custom chevron to match Figma
+      icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey.shade400),
       style: const TextStyle(fontSize: 14, color: Colors.black87),
       dropdownColor: Colors.white,
+      isExpanded: true,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(fontSize: 12, color: Colors.grey.shade400),
@@ -757,14 +904,7 @@ class _AuthScreenState extends State<AuthScreen> {
         filled: true,
         fillColor: Colors.white,
       ),
-      items: items
-          .map(
-            (v) => DropdownMenuItem(
-              value: v,
-              child: Text(v, style: const TextStyle(fontSize: 12)),
-            ),
-          )
-          .toList(),
+      items: items,
       onChanged: onChanged,
     );
   }

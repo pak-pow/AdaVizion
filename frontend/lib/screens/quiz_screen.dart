@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api/quiz_api.dart';
 
 enum QuizState { locked, unlocked, completed }
 
@@ -18,24 +19,52 @@ class _QuizScreenState extends State<QuizScreen> {
   static const _gradientTop = Color(0xFFA62121);
   static const _headerGrey = Color(0xFFF5F5F5);
 
-  // --- MOCK DATA ---
-  final List<Map<String, dynamic>> _quizzes = [
-    {
-      'title': 'Quiz Title',
-      'hint': 'Hint what to scan to unlock',
-      'state': QuizState.completed,
-    },
-    {
-      'title': 'Quiz Title',
-      'hint': 'Hint what to scan to unlock',
-      'state': QuizState.unlocked,
-    },
-    {
-      'title': 'Quiz Title',
-      'hint': 'Hint what to scan to unlock',
-      'state': QuizState.locked,
-    },
-  ];
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _quizzes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchQuizzes();
+  }
+
+  Future<void> _fetchQuizzes() async {
+    try {
+      final data = await QuizApi.getQuizzes();
+      if (mounted) {
+        setState(() {
+          _quizzes = data.map<Map<String, dynamic>>((q) {
+            QuizState state = QuizState.locked;
+            // Best-effort mapping since precise backend fields aren't fully known. 
+            // The README implies unlocked/locked status and completion status.
+            if (q['is_unlocked'] == true) {
+              if (q['is_completed'] == true || q['score'] != null) {
+                state = QuizState.completed;
+              } else {
+                state = QuizState.unlocked;
+              }
+            }
+            return {
+              'title': q['title'] ?? 'Quiz Title',
+              'hint': q['description'] ?? 'Hint what to scan to unlock',
+              'state': state,
+            };
+          }).toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +80,9 @@ class _QuizScreenState extends State<QuizScreen> {
         title: Image.asset('assets/images/nav_logo.png', height: 42),
       ),
 
-      body: SingleChildScrollView(
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator(color: _maroon))
+          : SingleChildScrollView(
         child: Column(
           children: [
             // 1. THE RED HEADER BOX

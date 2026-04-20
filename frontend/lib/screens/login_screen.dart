@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dashboard_screen.dart';
+import '../services/api/auth_api.dart';
 
 /// Defines the primary top-level views accessible via the Top Navigation Bar.
 enum AppView { home, about, auth }
@@ -22,6 +23,7 @@ class _AuthScreenState extends State<AuthScreen> {
   // Default to the Auth view and Login state when the app launches
   AppView _currentView = AppView.auth;
   AuthState _authState = AuthState.login;
+  bool _isLoading = false;
 
   // ─── TEXT CONTROLLERS ───────────────────────────────────────────────────────
   // Controllers read the text inputted by the user in the TextFields.
@@ -658,16 +660,47 @@ class _AuthScreenState extends State<AuthScreen> {
 
         // --- MAIN ACTION BUTTON ---
         ElevatedButton(
-          onPressed: () {
-            // TODO: Add the Backend JWT integration logic here
-            if (isLogin) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DashboardScreen()),
-              );
-            } else {
-              // Proceed to confirmation screen upon clicking register
-              setState(() => _authState = AuthState.success);
+          onPressed: _isLoading ? null : () async {
+            setState(() {
+              _isLoading = true;
+            });
+            try {
+              if (isLogin) {
+                await AuthApi.login(
+                  _emailController.text.trim(),
+                  _loginPasswordController.text,
+                );
+                if (!mounted) return;
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                );
+              } else {
+                await AuthApi.register({
+                  'full_name': _fullNameController.text.trim(),
+                  'student_number': _studentIdController.text.trim(),
+                  'program': _selectedProgram ?? '',
+                  'specialization': _selectedSpecialization ?? '',
+                  'password': _signupPasswordController.text,
+                });
+                if (!mounted) return;
+                setState(() => _authState = AuthState.success);
+              }
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(e.toString().replaceAll('Exception: ', '')),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            } finally {
+              if (mounted) {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
             }
           },
           style: ElevatedButton.styleFrom(
@@ -680,10 +713,16 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             elevation: 0,
           ),
-          child: Text(
-            isLogin ? 'Continue' : 'Confirm',
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
+          child: _isLoading 
+              ? const SizedBox(
+                  height: 20, 
+                  width: 20, 
+                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                )
+              : Text(
+                  isLogin ? 'Continue' : 'Confirm',
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
         ),
       ],
     );

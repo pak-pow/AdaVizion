@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'qrcode_screen.dart';
 import 'quiz_screen.dart';
+import '../services/api/profile_api.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -50,7 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 elevation: 0,
               ),
               child: const Text(
-                'Take Quiz',
+                'Log Out',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               ),
             ),
@@ -76,15 +77,52 @@ class DashboardHomeView extends StatefulWidget {
 
 class _DashboardHomeViewState extends State<DashboardHomeView> {
   bool _isEditing = false;
+  bool _isLoading = true;
 
-  final _nameController = TextEditingController(text: 'Juan Dela Cruz');
-  final _studentIdController = TextEditingController(text: 'A25-40321');
-  final _courseController = TextEditingController(
-    text: 'Bachelor of Science in Computer Science',
-  );
-  final _specializationController = TextEditingController(
-    text: 'Specialization Track Software Engineering',
-  );
+  final _nameController = TextEditingController();
+  final _studentIdController = TextEditingController();
+  final _courseController = TextEditingController();
+  final _specializationController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    try {
+      final data = await ProfileApi.getProfile();
+
+      if (mounted) {
+        setState(() {
+          // Combine firstName and lastName!
+          final firstName = data['firstName'] ?? '';
+          final lastName = data['lastName'] ?? '';
+          _nameController.text = '$firstName $lastName'.trim();
+
+          // Match the exact backend keys
+          _studentIdController.text = data['studentNum'] ?? '';
+          _courseController.text = data['program'] ?? '';
+          _specializationController.text = data['specialization'] ?? '';
+
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   static const _maroon = Color(0xFF7A1D1D);
   static const _gradientTop = Color(0xFFA62121);
@@ -100,12 +138,15 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: _maroon));
+    }
+
     return SingleChildScrollView(
       child: Column(
         children: [
           // ─── DYNAMIC TOP SECTION (Cards) ──────────────────────────────────
           Padding(
-            // Zero top padding keeps it perfectly flush with the grey app bar
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 0),
             child: Column(
               children: [

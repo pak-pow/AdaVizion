@@ -3,7 +3,7 @@ import path from "node:path";
 import fs from "node:fs";
 import QRCode, { type QRCodeToFileOptions } from "qrcode";
 import type { SeedLandmark } from "../src/types/landmarks.types";
-import { getDirectoryName, readJSON, writeJSON } from "../src/lib/fs-utils";
+import { createFileBaseName, getDirectoryName, readJSON, writeJSON } from "../src/lib/fs-utils";
 
 const __dirname = getDirectoryName(import.meta.url); // Get the folder name that generate-qr.ts is in (/data)
 const dataDirectory = path.join(__dirname, "data");
@@ -46,13 +46,7 @@ async function updateLandmarksData() {
 function generateQrImages(updatedLandmark: SeedLandmark) {
   const { name, qr_string } = updatedLandmark;
 
-  // Transform landmark name into a valid and conventional file name
-  const fileName = name
-    .trim()
-    .toLocaleLowerCase()
-    .replace(/['()]/g, "")
-    .replace(/[^a-z0-9]/g, "-")
-    .replace(/-+/g, "-");
+  const fileName = createFileBaseName(name);
 
   const filePath = path.join(qrFolderPath, `${fileName}.png`);
 

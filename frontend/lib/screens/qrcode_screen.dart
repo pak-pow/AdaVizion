@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import '../services/api/api_config.dart';
 import '../services/api/landmark_api.dart';
 
 /// The main entry point for the QR code scanning screen.
@@ -23,8 +22,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   // Static constants keep our color palette consistent and easy to update
   static const _maroon = Color(0xFF7A1D1D);
   static const _maroonDark = Color(0xFF5D1414);
-  static const _gradientTop = Color(0xFFB72424);
-  static const _gradientBottom = Color(0xFF5D1414);
 
   // ─── Camera Controller ────────────────────────────────────────────────────────
   @override

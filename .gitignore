@@ -66,3 +66,4 @@ landmark-thumbnails
 .packages
 .pub-cache/
 .pub/
+backend/package-lock.json

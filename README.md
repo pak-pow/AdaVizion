@@ -8,7 +8,7 @@
 
 ## About The Project
 
-**AdaVizion** is a mobile-first EdTech application designed to revolutionize the student onboarding experience at **Enverga University**. 
+**AdaVizion** is a mobile-first EdTech application designed to revolutionize the student and guest onboarding experience at **Enverga University**. 
 
 By digitizing **Euthenics courses** and university orientation, AdaVizion turns passive learning into an active, location-based adventure. Students don't just "read" about university history—they explore it, unlock it, and earn achievements for mastering it.
 
@@ -21,7 +21,6 @@ To foster a deeper connection between the student body and the university’s hi
 
 ### Campus Quest (Location-Based)
 - **Digital Scavenger Hunts:** Unlock lore by physically visiting historical landmarks on campus.
-- **Interactive Maps:** Real-time navigation to key university locations.
 
 ### Knowledge Hub (Gamified Learning)
 - **Trivia Challenges:** Test your knowledge of Enverga history to earn points.
@@ -122,9 +121,9 @@ This project is developed by the AdaVizion Team.
 
 | Role | Name | GitHub |
 | --- | --- | --- |
-| **Mobile Developer** | **Vincent Aguirre** | [@pak-pow](https://github.com/pak-pow) |
-| **Web Developer** | **Neil Tagle** | [@neophiles](https://github.com/neophiles) |
-| **UI / UIX Designer** | **Raily Laurel** | [@DaRhyliee](https://www.google.com/search?q=https://github.com/username) |
+| **Lead Mobile Developer** | **Vincent Aguirre** | [@pak-pow](https://github.com/pak-pow) |
+| **Lead Web Developer** | **Neil Tagle** | [@neophiles](https://github.com/neophiles) |
+| **Project Lead / UI / UX Designer** | **Raily Laurel** | [@DaRhyliee](https://www.google.com/search?q=https://github.com/username) |
 | **Database Developer** | **Ace Gamitin** | [@acevincent05](https://github.com/acevincent05)|
 | **Mobile Developer** | **Kyla Dequito** | [@Lapotski](https://github.com/Lapotski) |
 

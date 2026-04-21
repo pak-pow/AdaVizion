@@ -53,7 +53,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const QuizScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const QuizScreen(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -95,9 +97,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             'Log out?',
             style: TextStyle(fontWeight: FontWeight.w900),
           ),
-          content: const Text(
-            'Are you sure you want to log out of EUventure?',
-          ),
+          content: const Text('Are you sure you want to log out of EUventure?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
@@ -106,7 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             TextButton(
               onPressed: () async {
                 Navigator.of(dialogContext).pop(); // Close dialog first
-                await ApiConfig.logout();          // Clear JWT from shared_preferences
+                await ApiConfig.logout(); // Clear JWT from shared_preferences
                 if (mounted) {
                   // Replace the entire navigation stack — the back button
                   // cannot return to the dashboard after logout.
@@ -119,10 +119,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
               child: const Text(
                 'Log out',
-                style: TextStyle(
-                  color: _maroon,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: _maroon, fontWeight: FontWeight.bold),
               ),
             ),
           ],

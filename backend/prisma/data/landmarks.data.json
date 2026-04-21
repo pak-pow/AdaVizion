@@ -3,63 +3,63 @@
     "name": "Founder's Monument",
     "description": "",
     "fun_fact": "",
-    "img_path": "",
-    "qr_string": "02367a05-55f7-4375-b95f-bee42cee5d98"
+    "qr_string": "02367a05-55f7-4375-b95f-bee42cee5d98",
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/founders-monument-02367a05-55f7-4375-b95f-bee42cee5d98.jpg"
   },
   {
     "name": "Casa Segunda",
     "description": "",
     "fun_fact": "",
-    "img_path": "",
-    "qr_string": "66ade17d-3495-4429-95bc-b6399fa23e97"
+    "qr_string": "66ade17d-3495-4429-95bc-b6399fa23e97",
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/casa-segunda-66ade17d-3495-4429-95bc-b6399fa23e97.jpg"
   },
   {
     "name": "Bike Station (Gate 3)",
     "description": "",
     "fun_fact": "",
-    "img_path": "",
-    "qr_string": "bf867d82-2f2e-4438-9f20-0bb92e9e061a"
+    "qr_string": "bf867d82-2f2e-4438-9f20-0bb92e9e061a",
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/bike-station-gate-3-bf867d82-2f2e-4438-9f20-0bb92e9e061a.jpg"
   },
   {
     "name": "University Library",
     "description": "",
     "fun_fact": "",
-    "img_path": "",
-    "qr_string": "dd7ae26b-c14e-4a4e-9a12-87a11990a816"
+    "qr_string": "dd7ae26b-c14e-4a4e-9a12-87a11990a816",
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/university-library-dd7ae26b-c14e-4a4e-9a12-87a11990a816.jpg"
   },
   {
     "name": "St. Bonaventure Student Center",
     "description": "",
     "fun_fact": "",
-    "img_path": "",
-    "qr_string": "c6567935-888e-40ab-b707-3548e318e2af"
+    "qr_string": "c6567935-888e-40ab-b707-3548e318e2af",
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/st-bonaventure-student-center-c6567935-888e-40ab-b707-3548e318e2af.jpg"
   },
   {
     "name": "University Canteen",
     "description": "",
     "fun_fact": "",
-    "img_path": "",
-    "qr_string": "6a9e282d-0b5f-45bb-8644-fd36bc5b9ecf"
+    "qr_string": "6a9e282d-0b5f-45bb-8644-fd36bc5b9ecf",
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/university-canteen-6a9e282d-0b5f-45bb-8644-fd36bc5b9ecf.jpg"
   },
   {
     "name": "Banyuhay Bridge",
     "description": "",
     "fun_fact": "",
-    "img_path": "",
-    "qr_string": "5b2c3048-2787-46b1-b5af-3d133e79a7f7"
+    "qr_string": "5b2c3048-2787-46b1-b5af-3d133e79a7f7",
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/banyuhay-bridge-5b2c3048-2787-46b1-b5af-3d133e79a7f7.jpg"
   },
   {
     "name": "Vending Machine (CAS Building)",
     "description": "",
     "fun_fact": "",
-    "img_path": "",
-    "qr_string": "77d0b14c-4d3b-4488-8d56-8317d81c4f60"
+    "qr_string": "77d0b14c-4d3b-4488-8d56-8317d81c4f60",
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/vending-machine-cas-building-77d0b14c-4d3b-4488-8d56-8317d81c4f60.jpg"
   },
   {
     "name": "CCJC Building",
     "description": "",
     "fun_fact": "",
-    "img_path": "",
-    "qr_string": "53028e53-4e3e-4965-b14a-354dc70dc029"
+    "qr_string": "53028e53-4e3e-4965-b14a-354dc70dc029",
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/ccjc-building-53028e53-4e3e-4965-b14a-354dc70dc029.jpg"
   }
 ]

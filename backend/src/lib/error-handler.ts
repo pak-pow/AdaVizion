@@ -1,7 +1,8 @@
 import type { Response } from "express";
 import { ERRORS } from "../constants/error-maps";
-import type { ErrorDetails, ErrorType } from "../types/errors.types";
+import type { ErrorType } from "../types/errors.types";
 import { ZodError } from "zod";
+import { MulterError } from "multer";
 
 function handleControllerError(
   res: Response,
@@ -53,6 +54,40 @@ function handleControllerError(
       type: type,
       code: `DUPLICATE_${type}`,
       message: `${resourceName} already ${state}`
+    });
+  }
+
+  // Image file or multer errors
+  if (error instanceof MulterError) {
+    let message = "Error occurred during file upload";
+
+    switch (error.code) {
+      case "LIMIT_FILE_SIZE":
+        message = "File is too large. Maximum allowed size is 50MB."
+        break;
+      case "LIMIT_FILE_COUNT":
+        message = "Too many files uploaded at once"
+        break;
+      case "LIMIT_UNEXPECTED_FILE":
+        message = "Unexpected field name. Please use 'picture-file'."
+        break;
+      case "LIMIT_PART_COUNT":
+        message = "Request contains too many parts"
+        break;
+      case "LIMIT_FIELD_KEY":
+      case "LIMIT_FIELD_VALUE":
+      case "LIMIT_FIELD_COUNT":
+        message = "Form data field limits exceeded"
+        break;
+      case "MISSING_FIELD_NAME":
+        message = "File field name is missing"
+        break;
+    }
+
+    return res.status(400).json({
+      type: type,
+      code: error.code,
+      message: message
     });
   }
 

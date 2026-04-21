@@ -1,0 +1,344 @@
+[
+  {
+    "name": "Way of the Envergan",
+    "min_landmarks": 3,
+    "questions": [
+      {
+        "question_text": "According to the Vision, by which year is the school expected to be globally competitive?",
+        "choices": [
+          "2030",
+          "2035",
+          "2032",
+          "2040"
+        ],
+        "item_points": 10,
+        "correct_idx": 0
+      },
+      {
+        "question_text": "MSEUF is a private, non-stock, non-profit, sectarian foundation that with a three-fold function.",
+        "choices": [
+          "True",
+          "False"
+        ],
+        "item_points": 10,
+        "correct_idx": 1
+      },
+      {
+        "question_text": "Which of these is not found on the MSEUF Seal?",
+        "choices": [
+          "Map",
+          "Torch",
+          "Open Book",
+          "Wildcat"
+        ],
+        "item_points": 10,
+        "correct_idx": 3
+      },
+      {
+        "question_text": "What does the pair of coconut trees represent in the MSEUF Seal?",
+        "choices": [
+          "Represents the region in which it is located (Quezon)",
+          "Signifies the wisdom of the ages",
+          "The primary source of livelihood in the region",
+          "The resilience and life of its people"
+        ],
+        "item_points": 20,
+        "correct_idx": 2
+      },
+      {
+        "question_text": "The University Mission talks about a three-fold function, which of these is not included?",
+        "choices": [
+          "Research",
+          "Student-centered",
+          "Instruction",
+          "Community Service"
+        ],
+        "item_points": 10,
+        "correct_idx": 1
+      },
+      {
+        "question_text": "MSEUF believes in ____ and is the core of its philosophy. It states that students should learn best when they are actively engaged in the learning process.",
+        "choices": [
+          "Learning by doing",
+          "Transformative learning",
+          "Student-centered learning",
+          "Holistic learning"
+        ],
+        "item_points": 20,
+        "correct_idx": 0
+      },
+      {
+        "question_text": "In the University Goal, it states that MSEUF shall produce graduates who have research-based knowledge, leadership and ____, and ____",
+        "choices": [
+          "professionalism - managerial skills",
+          "managerial skills - professionalism",
+          "foundamental - managerial skills",
+          "adaptability - professionalism"
+        ],
+        "item_points": 20,
+        "correct_idx": 1
+      },
+      {
+        "question_text": "Which of these is not part of the values from the MSEUF acronym?",
+        "choices": [
+          "Mindfulness",
+          "Service",
+          "Expertise",
+          "Unity"
+        ],
+        "item_points": 10,
+        "correct_idx": 2
+      },
+      {
+        "question_text": "Who designed the MSEUF Seal?",
+        "choices": [
+          "Tobias Enverga",
+          "Naila Leveriza",
+          "Lucio Cabutihan",
+          "Dionisio Maniebo"
+        ],
+        "item_points": 20,
+        "correct_idx": 3
+      },
+      {
+        "question_text": "What is the title of the MSEUF Hymn?",
+        "choices": [
+          "Enverga U for Me",
+          "Wildcat Hymn",
+          "Maroon Forever",
+          "Maroon and White Forever"
+        ],
+        "item_points": 20,
+        "correct_idx": 3
+      }
+    ]
+  },
+  {
+    "name": "MSEUF Legacy and Milestones",
+    "min_landmarks": 6,
+    "questions": [
+      {
+        "question_text": "What was the original name of the institution when it was founded in 1947?",
+        "choices": [
+          "St. Bonaventure College",
+          "Manuel S. Enverga University",
+          "Luzonian Colleges",
+          "Quezon Provincial College"
+        ],
+        "item_points": 10,
+        "correct_idx": 2
+      },
+      {
+        "question_text": "What was the primary motivation for Dr. Enverga and his team to establish Luzonian Colleges shortly after World War II?",
+        "choices": [
+          "To compete directly with universities located in Manila",
+          "To provide a training ground for local politicians",
+          "To give needy students access to higher education",
+          "To establish a seminary for the local parish"
+        ],
+        "item_points": 20,
+        "correct_idx": 2
+      },
+      {
+        "question_text": "Where in Quezon was Manuel S. Enverga born and raised?",
+        "choices": [
+          "Candelaria",
+          "Lucena",
+          "Sariaya",
+          "Mauban"
+        ],
+        "item_points": 10,
+        "correct_idx": 3
+      },
+      {
+        "question_text": "Which unexpected illness forced Dr. Manuel S. Enverga to cut his musical studies short at the University of the Philippines' Conservatory of Music?",
+        "choices": [
+          "Dengue",
+          "Malaria",
+          "Polio",
+          "Tubercolosis"
+        ],
+        "item_points": 20,
+        "correct_idx": 1
+      },
+      {
+        "question_text": "When was the Luzonian Colleges founded?",
+        "choices": [
+          "February 11, 1947",
+          "February 11, 1949",
+          "February 13, 1949",
+          "February 13, 1947"
+        ],
+        "item_points": 10,
+        "correct_idx": 0
+      },
+      {
+        "question_text": "During his political career as a congressman, what controversial stance did Dr. Manuel S. Enverga campaign for that led to him being shadowed by the CIA?",
+        "choices": [
+          "Nationalizing all private universities",
+          "Banning the export of local coconut products",
+          "Declaring martial law in Quezon Province",
+          "Establishing trade relations with socialist countries"
+        ],
+        "item_points": 20,
+        "correct_idx": 3
+      },
+      {
+        "question_text": "In what year did Luzonian Colleges officially attain full university status?",
+        "choices": [
+          "1968",
+          "1983",
+          "1970",
+          "1947"
+        ],
+        "item_points": 10,
+        "correct_idx": 0
+      },
+      {
+        "question_text": "Who made up the majority of the 102 students that enrolled when the College of Liberal Arts first opened in the summer of 1947?",
+        "choices": [
+          "Children of wealthy landowners",
+          "Former high school teachers",
+          "Youthful war veterans",
+          "Scholars from Manila"
+        ],
+        "item_points": 20,
+        "correct_idx": 2
+      },
+      {
+        "question_text": "When did the Board of Trustees approve the renaming of the institution to Manuel S. Enverga University Foundation?",
+        "choices": [
+          "1981",
+          "1983",
+          "1992",
+          "1968"
+        ],
+        "item_points": 20,
+        "correct_idx": 1
+      },
+      {
+        "question_text": "Manuel S. Enverga completed his doctor of laws program with highest honors in Unibersidad Central de Madrid",
+        "choices": [
+          "True",
+          "False"
+        ],
+        "item_points": 10,
+        "correct_idx": 1
+      }
+    ]
+  },
+  {
+    "name": "MSEUF Facilities and Services",
+    "min_landmarks": 9,
+    "questions": [
+      {
+        "question_text": "Under the Library User Information System Section (LUISS) rules, how much free access time is a student allowed per semester?",
+        "choices": [
+          "35 hours",
+          "20 hours",
+          "40 hours",
+          "25 hours"
+        ],
+        "item_points": 20,
+        "correct_idx": 0
+      },
+      {
+        "question_text": "Which facility should a student organization reserve if they are planning a small assembly involving 100 to 120 participants?",
+        "choices": [
+          "St. Bonaventure Student Center",
+          "OSA Kalayaan Hall",
+          "University Covered Court",
+          "AEC Little Theater"
+        ],
+        "item_points": 20,
+        "correct_idx": 1
+      },
+      {
+        "question_text": "As part of the Medical and Dental Services, which specific dental treatment are students entitled to for free once per semester?",
+        "choices": [
+          "One set of braces",
+          "One oral surgery",
+          "One tooth extraction",
+          "One teeth whitening session"
+        ],
+        "item_points": 10,
+        "correct_idx": 2
+      },
+      {
+        "question_text": "What is considered to be the Student bible?",
+        "choices": [
+          "University Mission",
+          "Student Handbook",
+          "University Goal",
+          "University Philosophy"
+        ],
+        "item_points": 10,
+        "correct_idx": 1
+      },
+      {
+        "question_text": "Under Institutional Programs and Services, what does the 'Community Extension Service' involve?",
+        "choices": [
+          "Opening the university's classrooms for public housing",
+          "Creating a social media network exclusively for Lucena City residents",
+          "Engaging in outreach programs and social responsibility projects in the local community",
+          "Expanding the physical size of the campus into the neighborhood"
+        ],
+        "item_points": 10,
+        "correct_idx": 2
+      },
+      {
+        "question_text": "What is the grade point average to be qualified for University Scholar?",
+        "choices": [
+          "1.00-1.30",
+          "1.00-1.75",
+          "1.00-1.50",
+          "1.31-1.50"
+        ],
+        "item_points": 20,
+        "correct_idx": 0
+      },
+      {
+        "question_text": "What is the specific capacity of the AEC Little Theatre for university events?",
+        "choices": [
+          "250 to 300 persons",
+          "100 to 120 persons",
+          "500 to 600 persons",
+          "Exactly 200 persons"
+        ],
+        "item_points": 20,
+        "correct_idx": 0
+      },
+      {
+        "question_text": "According to the Student Handbook, students are completely and absolutely prohibited from using AI with no exceptions.",
+        "choices": [
+          "True",
+          "False"
+        ],
+        "item_points": 10,
+        "correct_idx": 1
+      },
+      {
+        "question_text": "Which of the following items is strictly prohibited from being photocopied inside the University Library?",
+        "choices": [
+          "Encyclopedias",
+          "Periodical back issues",
+          "Dissertations and theses",
+          "Filipiniana books"
+        ],
+        "item_points": 20,
+        "correct_idx": 2
+      },
+      {
+        "question_text": "Where is the Rodolfo B. Abadilla Hall (RBA) located?",
+        "choices": [
+          "AEC Building",
+          "OSA Building",
+          "CET Building",
+          "Beside the University Gymnasium"
+        ],
+        "item_points": 10,
+        "correct_idx": 2
+      }
+    ]
+  }
+]

@@ -105,10 +105,35 @@ async function processStudentLogin(studentCredentials: LoginBody) {
   };
 }
 
+async function processStudentPicture(studentNum: string, pictureFile: Express.Multer.File) {
+  const fileExtension = pictureFile.originalname.split(".").at(-1);
+  const fileName = `${studentNum}/${studentNum}-${Date.now()}.${fileExtension}`;
+
+  const updatedStudent = await studentsRepository.updateStudentPicture(
+    studentNum,
+    fileName,
+    pictureFile.buffer,
+    pictureFile.mimetype
+  );
+
+  if (!updatedStudent) {
+    throw new Error("Failed to link uploaded image to student profile");
+  }
+
+  const { student_number, img_path } = updatedStudent;
+
+  return {
+    message: "Profile picture uploaded successfully",
+    student_number,
+    img_path 
+  }
+}
+
 export {
   fetchStudents,
   fetchStudent,
   fetchStudentProfile,
   processStudentRegistration,
-  processStudentLogin
+  processStudentLogin,
+  processStudentPicture
 }

@@ -1,17 +1,35 @@
 import type { Prisma } from "../generated/prisma/client";
 import { prisma } from "../src/lib/prisma";
-import { landmarksData } from "./data/landmarks.data";
-import { quizzesData } from "./data/quizzes.data";
-import { achievementsData } from "./data/achievements.data";
+import path from "node:path";
+import { getDirectoryName, readJSON } from "../src/lib/fs-utils";
+import type { SeedQuiz } from "../src/types/quizzes.types";
+import type { SeedAchievement } from "../src/types/achievements.types";
+import type { SeedLandmark } from "../src/types/landmarks.types";
+import updateLandmarksData from "./generate-qr";
+
+const __dirname = getDirectoryName(import.meta.url);
+const dataDirectory = path.join(__dirname, "data");
 
 async function main() {
-  await seedLandmarks();
-  await seedQuizzes();
-  await seedAchievements();
+  try {
+    await seedLandmarks();
+    await seedQuizzes();
+    await seedAchievements();
+    console.log("Database seeded successfully");
+  } catch (error) {
+    console.error("Error seeding database:", error);
+  } finally {
+    await prisma.$disconnect();
+  }  
 }
 
 async function seedLandmarks() {
+  await updateLandmarksData();
+
   console.log("Seeding landmarks...");
+
+  const landmarksJsonFilePath = path.join(dataDirectory, "landmarks.data.json");
+  const landmarksData: SeedLandmark[] = readJSON(landmarksJsonFilePath);
 
   for (const landmark of landmarksData) {
     await prisma.landmark.upsert({
@@ -37,6 +55,9 @@ async function seedLandmarks() {
 
 async function seedQuizzes() {
   console.log("Seeding quizzes and questions...");
+
+  const quizzesJsonFilePath = path.join(dataDirectory, "quizzes.data.json");
+  const quizzesData: SeedQuiz[] = readJSON(quizzesJsonFilePath);
 
   for (const quiz of quizzesData) {
     const maxPoints = quiz.questions.reduce((sum, question) => sum + question.item_points, 0);
@@ -80,6 +101,9 @@ async function seedQuizzes() {
 async function seedAchievements() {
   console.log("Seeding achievements...");
 
+  const achievementsJsonFilePath = path.join(dataDirectory, "achievements.data.json");
+  const achievementsData: SeedAchievement[] = readJSON(achievementsJsonFilePath);
+
   for (const achievement of achievementsData) {
     await prisma.achievement.upsert({
       where: { title: achievement.title },
@@ -95,13 +119,4 @@ async function seedAchievements() {
   console.log(`${achievementsData.length} achievements seeded successfully`);
 }
 
-main()
-  .then(() => {
-    console.log("Database seeded successfully");
-  })
-  .catch((error) => {
-    console.error("Error seeding database:", error);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main();

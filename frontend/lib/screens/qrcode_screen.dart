@@ -17,6 +17,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   final MobileScannerController _cameraController = MobileScannerController();
   final double _scanAreaSize = 250.0;
   bool _isScanning = true;
+  bool _isLoading = false;
 
   // ─── BRANDING COLORS ────────────────────────────────────────────────────────
   // Static constants keep our color palette consistent and easy to update
@@ -30,6 +31,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   Widget build(BuildContext context) {
     /// Calculates the center of the screen to position the scanning frame correctly.
     /// This ensures that the scanning frame is always centered regardless of device size or orientation.
+    /// TODO: FIX BUG WHERE STILL SCANS OUTSIDE OF FRAME, MAYBE NEEDS TO BE A BIT BIGGER OR ALLOW SOME MARGIN OF ERROR
     final scanWindow = Rect.fromCenter(
       center: Offset(
         MediaQuery.of(context).size.width / 2,
@@ -143,6 +145,25 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
               ),
             ),
           ),
+
+          // 4. LOADING OVERLAY
+          if (_isLoading)
+            Container(
+              color: Colors.black.withValues(alpha: 0.6),
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: Colors.white),
+                    SizedBox(height: 16),
+                    Text(
+                      "Scanning Landmark...",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -150,44 +171,51 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 
   // ─── SCAN HANDLING ────────────────────────────────────────────────────────
   Future<void> _handleScan(String qrCode) async {
-    setState(() => _isScanning = false);
+    setState(() {
+      _isScanning = false;
+      _isLoading = true;
+    });
     _cameraController.stop();
 
     try {
       final checklist = await LandmarkApi.getChecklist();
 
-      // TODO: Redo when QR code format is finalized
-      final int? scannedId = int.tryParse(qrCode);
+      // TODO: ASK BACKEND ABOUT THIS
+      // This tries to submit the QR against each landmark until one accepts it.
+      // This might be temporary and is not ideal, need to ask neil,
+      // if its possible to have a dedicated endpoint that accepts the raw QR code and returns the matched landmark or an error if invalid.
+      Map<String, dynamic>? result;
 
-      if (scannedId == null) {
-        _showInvalidQrDialog();
-        return;
+      for (final landmark in checklist) {
+        try {
+          final id = landmark['landmark_id'] as int;
+          result = await LandmarkApi.visitLandmark(id, qrCode);
+          break; // If successful, exit the loop
+        } catch (e) {
+          final msg = e.toString();
+          if (msg.contains("already visited")) {
+            _showAlreadyVisitedDialog();
+            return;
+          }
+          // catches 403 errors from wrong landmarks and tries again
+          continue;
+        }
       }
-
-      final match = checklist.firstWhere(
-        (l) => l['landmark_id'] == scannedId,
-        orElse: () => null,
-      );
-
-      if (match == null) {
-        _showInvalidQrDialog();
-        return;
-      }
-
-      final result = await LandmarkApi.visitLandmark(scannedId, qrCode);
 
       if (!mounted) return;
+
+      if (result == null) {
+        _showInvalidQrDialog();
+        return;
+      }
+
       _showSuccessDialog(result);
     } catch (e) {
       if (!mounted) return;
-
-      final message = e.toString();
-      if (message.contains('already visited')) {
-        _showAlreadyVisitedDialog();
-      } else if (message.contains('invalid landmark')) {
-        _showInvalidQrDialog();
-      } else {
-        _showErrorDialog();
+      _showErrorDialog();
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -207,6 +235,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     setState(() => _isScanning = true);
   }
 
+  /// Shows a success dialog with details about the scanned landmark and rewards earned.
   void _showSuccessDialog(Map<String, dynamic> result) {
     final landmark = result['landmark'];
     final progress = result['progress'];
@@ -217,30 +246,116 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Landmark Detected!", textAlign: TextAlign.center),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              landmark['name'],
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        titlePadding: const EdgeInsets.all(0),
+        title: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: BoxDecoration(
+            color: _maroonDark,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
             ),
-            const SizedBox(height: 12),
-            Text(
-              "Fun Fact: ${landmark['fun_fact']}",
-              textAlign: TextAlign.center,
+          ),
+          child: const Text(
+            "Landmark Unlocked!",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
             ),
-            const SizedBox(height: 12),
-            Text(
-              "$xpEarned XP",
-              style: TextStyle(color: _maroon, fontWeight: FontWeight.bold),
-            ),
-            if (didLevelUp)
-              const Text("Level Up!", textAlign: TextAlign.center),
-            if (achievements.isNotEmpty)
-              Text("${achievements.length} new achievement(s)!"),
-          ],
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                landmark['name'].toString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  color: _maroon,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: _maroon.withValues(alpha: 0.2)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.lightbulb_outline,
+                          size: 18,
+                          color: Colors.red,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "FUN FACT",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      landmark['fun_fact'].toString(),
+                      textAlign: TextAlign.justify,
+                      style: const TextStyle(fontSize: 14, height: 1.4),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildRewardBadge(Icons.bolt, "$xpEarned XP", Colors.red),
+                  if (didLevelUp)
+                    _buildRewardBadge(
+                      Icons.trending_up,
+                      "Level Up!",
+                      Colors.green,
+                    ),
+                ],
+              ),
+
+              if (achievements.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.emoji_events_outlined,
+                      color: _maroonDark,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "${achievements.length} new achievement(s)!",
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
         ),
 
         // MODAL BUTTONS
@@ -248,11 +363,9 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pop(
-                context,
-              ); // Go back to the previous screen (e.g., dashboard)
+              Navigator.pop(context);
             },
-            style: TextButton.styleFrom(foregroundColor: _maroon),
+            style: TextButton.styleFrom(foregroundColor: _maroonDark),
             child: const Text("Close"),
           ),
           ElevatedButton(
@@ -260,10 +373,16 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
               Navigator.pop(context);
               // TODO: Navigate to landmark details screen
               // Navigator.pushNamed(context, '/landmark_details', arguments: landmark['id']);
+              // For now, just reset the scanner to encourage exploring more landmarks
+              _resetScanner();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: _maroonDark,
               foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text("View Landmark"),
           ),
@@ -278,7 +397,28 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text("Invalid QR Code:", textAlign: TextAlign.center),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        titlePadding: const EdgeInsets.all(0),
+        title: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: BoxDecoration(
+            color: _maroonDark,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: const Text(
+            "Invalid QR Code!",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ),
+        ),
+
         content: const Text(
           "This doesn't seem to be a campus landmark. Try scanning again.",
           textAlign: TextAlign.center,
@@ -292,6 +432,10 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: _maroonDark,
               foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text("Scan Again"),
           ),
@@ -306,17 +450,35 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text(
-          "Landmark Already Visited",
-          textAlign: TextAlign.center,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        titlePadding: const EdgeInsets.all(0),
+        title: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: BoxDecoration(
+            color: _maroonDark,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: const Text(
+            "Landmark Already Visited!",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ),
         ),
+        content: const SizedBox(height: 4),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            style: TextButton.styleFrom(foregroundColor: _maroon),
+            style: TextButton.styleFrom(foregroundColor: _maroonDark),
             child: const Text("Close"),
           ),
           ElevatedButton(
@@ -327,6 +489,10 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: _maroonDark,
               foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text("Scan Another"),
           ),
@@ -335,12 +501,33 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     );
   }
 
+  /// Shows an error dialog with a custom message, used for unexpected errors during the scanning process.
   void _showErrorDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text("Something went wrong", textAlign: TextAlign.center),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        titlePadding: const EdgeInsets.all(0),
+        title: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: BoxDecoration(
+            color: _maroonDark,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: const Text(
+            "Something Went Wrong!",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ),
+        ),
         content: const Text(
           "Couldn't connect to the server. Check your connection and try again.",
           textAlign: TextAlign.center,
@@ -354,6 +541,10 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: _maroonDark,
               foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text("Try Again"),
           ),
@@ -362,7 +553,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     );
   }
 
-  // Helper method to keep the button code clean
+  /// Helper method to keep the torch button code clean
   Widget _buildControlButton({
     required Widget icon,
     required VoidCallback onPressed,
@@ -373,6 +564,24 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         shape: BoxShape.circle,
       ),
       child: IconButton(iconSize: 30, onPressed: onPressed, icon: icon),
+    );
+  }
+
+  /// Helper method to build a reward badge widget, used in the success dialog to display XP earned and achievements unlocked.
+  /// TEMPORARY UNTIL ACTUAL BADGE DESIGNS ARE READY
+  Widget _buildRewardBadge(IconData icon, String text, Color color) {
+    return Column(
+      children: [
+        CircleAvatar(
+          backgroundColor: color.withValues(alpha: 0.1),
+          child: Icon(icon, color: color),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          text,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+      ],
     );
   }
 }

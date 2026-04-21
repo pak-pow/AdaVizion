@@ -106,11 +106,25 @@ async function processStudentLogin(studentCredentials: LoginBody) {
 }
 
 async function processStudentPicture(studentNum: string, pictureFile: Express.Multer.File) {
+  const student = await studentsRepository.findStudent(studentNum);
+
+  if (!student) throw new Error("Student does not exist");
+
+  const oldPublicUrl = student.img_path;
+
+  let oldFilePath = "";
+  
+  if (oldPublicUrl) {
+    const oldFileName = oldPublicUrl.split("/").at(-1);
+    oldFilePath = `${studentNum}/${oldFileName}`;
+  }
+
   const fileExtension = pictureFile.originalname.split(".").at(-1);
   const fileName = `${studentNum}/${studentNum}-${Date.now()}.${fileExtension}`;
 
   const updatedStudent = await studentsRepository.updateStudentPicture(
     studentNum,
+    oldFilePath,
     fileName,
     pictureFile.buffer,
     pictureFile.mimetype

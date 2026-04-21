@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import multer from "multer";
 import * as studentsService from "../services/students.service";
 import { LoginSchema, RegistrationSchema } from "../schemas/students.schema";
 import { handleControllerError } from "../lib/error-handler";
@@ -51,9 +52,28 @@ async function loginStudent(req: Request, res: Response) {
   }
 }
 
+async function uploadProfilePicture(req: Request, res: Response) {
+  try {
+    const studentNum = (req as any).user.studentNum;
+
+    const pictureFile = req.file;
+
+    if (!pictureFile) {
+      throw new Error("No file uploaded");
+    }
+
+    const uploadResult = await studentsService.processStudentPicture(studentNum, pictureFile);
+
+    return res.status(200).json(uploadResult);
+  } catch (error: any) {
+    return handleControllerError(res, error, "STUDENT");
+  }
+}
+
 export {
   getAllStudents,
   getStudentProfile,
   registerStudent,
-  loginStudent
+  loginStudent,
+  uploadProfilePicture
 }

@@ -53,6 +53,7 @@ app.*.map.json
 node_modules
 **/generated/prisma
 qr-codes
+landmark-thumbnails
 
 # Keep environment variables out of version control
 .env 

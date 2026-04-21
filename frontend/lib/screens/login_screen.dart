@@ -541,15 +541,12 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Primary Confirm Button routes to the application Dashboard
                   OutlinedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const DashboardScreen(),
-                        ),
+                      _showSuccessSnackBar(
+                        'Registration successful! Please log in.',
                       );
+                      setState(() => _authState = AuthState.login);
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: _maroonDark,
@@ -561,7 +558,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                     child: const Text(
-                      'Confirm',
+                      'Go to Login',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,

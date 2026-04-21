@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'login_screen.dart';
 import 'qrcode_screen.dart';
 import 'quiz_screen.dart';
@@ -140,8 +141,18 @@ class DashboardHomeView extends StatefulWidget {
 }
 
 class _DashboardHomeViewState extends State<DashboardHomeView> {
-  bool _isEditing = false;
   bool _isLoading = true;
+
+  /// True while an image upload is in progress. Overlays a spinner on the avatar.
+  bool _isUploadingPicture = false;
+
+  /// True when the user has tapped the pencil icon to enter edit mode.
+  /// In this mode, tapping the avatar opens the image picker and a camera
+  /// overlay is shown to signal interactability.
+  bool _isEditMode = false;
+
+  /// The current profile picture URL from Supabase, or null if not set.
+  String? _imgPath;
 
   final _nameController = TextEditingController();
   final _studentIdController = TextEditingController();
@@ -170,6 +181,12 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             _studentIdController.text = info['student_number'] ?? '';
             _courseController.text = info['program'] ?? '';
             _specializationController.text = info['specialization'] ?? '';
+
+            // Capture the Supabase image URL (may be null if never uploaded).
+            final rawImgPath = info['img_path'];
+            _imgPath = (rawImgPath is String && rawImgPath.isNotEmpty)
+                ? rawImgPath
+                : null;
           }
 
           _isLoading = false;
@@ -188,6 +205,54 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       // Always reset the loading state so the UI never gets stuck on a spinner,
       // even if the widget was disposed before the catch block's mounted check ran.
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // ─── PICK & UPLOAD PROFILE PICTURE ──────────────────────────────────────────
+
+  /// Opens the device gallery, uploads the selected image via Multer, then
+  /// refreshes the profile so the new Supabase URL is reflected immediately.
+  Future<void> _pickAndUploadImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    // User cancelled the picker — nothing to do.
+    if (pickedImage == null) return;
+
+    setState(() => _isUploadingPicture = true);
+
+    try {
+      // Pass the XFile directly — no dart:io File() wrapper needed.
+      // ProfileApi.uploadProfilePicture now reads bytes via XFile.readAsBytes(),
+      // which is supported on Web, Android, and iOS.
+      await ProfileApi.uploadProfilePicture(pickedImage);
+
+      // Seamlessly refresh the avatar with the new Supabase-hosted URL.
+      await _fetchProfile();
+
+      // Auto-exit edit mode now that the upload has completed successfully.
+      if (mounted) setState(() => _isEditMode = false);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile picture updated!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceFirst('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      // Always lift the upload overlay, even if the widget was disposed.
+      if (mounted) setState(() => _isUploadingPicture = false);
     }
   }
 
@@ -223,18 +288,18 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                 AnimatedSize(
                   duration: const Duration(milliseconds: 350),
                   curve: Curves.easeInOutCubic,
-                  child: SizedBox(height: _isEditing ? 0 : 16),
+                  child: SizedBox(height: _isEditMode ? 0 : 16),
                 ),
 
                 // 2. BADGES CARD
                 AnimatedOpacity(
-                  opacity: _isEditing ? 0.0 : 1.0,
+                  opacity: _isEditMode ? 0.0 : 1.0,
                   duration: const Duration(milliseconds: 200),
                   child: AnimatedSize(
                     duration: const Duration(milliseconds: 350),
                     curve: Curves.easeInOutCubic,
                     alignment: Alignment.topCenter,
-                    child: _isEditing
+                    child: _isEditMode
                         ? const SizedBox(width: double.infinity, height: 0)
                         : _buildBadgesCard(),
                   ),
@@ -319,7 +384,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             duration: const Duration(milliseconds: 350),
             curve: Curves.easeInOutCubic,
             alignment: Alignment.topCenter,
-            child: _isEditing
+            child: _isEditMode
                 ? _buildEditForm()
                 : const SizedBox(width: double.infinity),
           ),
@@ -390,17 +455,79 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 72,
-          height: 72,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.broken_image_outlined,
-            color: Colors.black87,
-            size: 36,
+        // ─── TAPPABLE AVATAR ──────────────────────────────────────────────
+        // GestureDetector is only active when _isEditMode is true, preventing
+        // accidental picks. A camera overlay signals interactability in edit
+        // mode; a spinner overlay replaces it during an active upload.
+        GestureDetector(
+          onTap: (_isUploadingPicture || !_isEditMode)
+              ? null
+              : _pickAndUploadImage,
+          child: SizedBox(
+            width: 72,
+            height: 72,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // ── AVATAR CIRCLE ──
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    image: (_imgPath != null)
+                        ? DecorationImage(
+                            image: NetworkImage(_imgPath!),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                  ),
+                  // Show the placeholder icon only when no image is available.
+                  child: (_imgPath == null)
+                      ? const Icon(
+                          Icons.broken_image_outlined,
+                          color: Colors.black87,
+                          size: 36,
+                        )
+                      : null,
+                ),
+
+                // ── UPLOAD SPINNER OVERLAY ── (shown during active upload)
+                if (_isUploadingPicture)
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.45),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                      ),
+                    ),
+                  )
+                // ── CAMERA OVERLAY ── (shown in edit mode, not while uploading)
+                else if (_isEditMode)
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: const BoxDecoration(
+                      color: Colors.black45,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
         const SizedBox(width: 16),
@@ -448,11 +575,12 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           ),
         ),
 
+        // ─── EDIT PENCIL TOGGLE ───────────────────────────────────────────
+        // Toggles _isEditMode. Icon switches to 'close' when active so the
+        // user has a clear way to cancel without uploading.
         GestureDetector(
           onTap: () {
-            setState(() {
-              _isEditing = !_isEditing;
-            });
+            setState(() => _isEditMode = !_isEditMode);
           },
           child: Container(
             padding: const EdgeInsets.all(4),
@@ -460,7 +588,11 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
               border: Border.all(color: Colors.white, width: 1.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.edit, color: Colors.white, size: 14),
+            child: Icon(
+              _isEditMode ? Icons.close : Icons.edit,
+              color: Colors.white,
+              size: 14,
+            ),
           ),
         ),
       ],
@@ -509,7 +641,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
         Center(
           child: ElevatedButton(
             onPressed: () {
-              setState(() => _isEditing = false);
+              setState(() => _isEditMode = false);
               // TODO: Add backend API call here
             },
             style: ElevatedButton.styleFrom(

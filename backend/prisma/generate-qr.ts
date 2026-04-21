@@ -30,7 +30,7 @@ async function updateLandmarksData() {
         const qrString = landmark.qr_string ?? randomUUID();
         const updatedLandmark = { ...landmark, qr_string: qrString };
         const fileName = createFileBaseName(updatedLandmark.name);
-        await generateQrImages(fileName, updatedLandmark.qr_string);
+        await generateQrImage(fileName, updatedLandmark.qr_string);
         return updatedLandmark;
       }
     ));
@@ -44,7 +44,7 @@ async function updateLandmarksData() {
   }
 }
 
-function generateQrImages(fileName: string, qrString: string) {
+function generateQrImage(fileName: string, qrString: string) {
   const filePath = path.join(qrFolderPath, `${fileName}.png`);
 
   // QR code config

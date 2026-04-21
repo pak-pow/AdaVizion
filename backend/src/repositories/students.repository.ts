@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma";
+import { supabase } from "../lib/supabase";
 import type { RegistrationBody } from "../schemas/students.schema";
 
 async function findStudents() {
@@ -55,9 +56,46 @@ async function createStudent(studentData: RegistrationBody) {
   })
 }
 
+async function updateStudentPicture(
+  studentNum: string,
+  fileName: string,
+  fileBuffer: Buffer,
+  mimeType: string
+) {
+  const { error } = await supabase
+    .storage
+    .from("student-avatars")
+    .upload(fileName, fileBuffer, {
+      contentType: mimeType,
+      upsert: true,
+    });
+  
+  if (error) {
+    console.error("Supabase Storage Error:", error);
+    throw new Error("Failed to upload profile picture");
+  };
+
+  const { data } = supabase
+    .storage
+    .from("student-avatars")
+    .getPublicUrl(fileName);
+
+  if (!data) {
+    throw new Error("Profile picture not found");
+  }
+
+  const updatedStudent = await prisma.student.update({
+    where: { student_number: studentNum },
+    data: { img_path: data.publicUrl }
+  });
+
+  return updatedStudent;
+}
+
 export {
   findStudents,
   findStudent,
   findStudentProgress,
-  createStudent
+  createStudent,
+  updateStudentPicture
 }

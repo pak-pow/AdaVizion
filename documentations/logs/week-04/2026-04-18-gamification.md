@@ -6,7 +6,7 @@
 | **Developer** | Tagle |
 | **Tags** | `Gamification`, `XP`, `Zod`, `Refactoring`, `RCSR`, `Prisma`, `CORS` |
 
-# DEV LOG: WEEK 3 - DAY 2
+# DEV LOG: WEEK 4 - DAY 2
 
 ## Core Objective
 

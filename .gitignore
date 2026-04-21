@@ -52,6 +52,7 @@ app.*.map.json
 # Backend related
 node_modules
 **/generated/prisma
+qr-codes
 
 # Keep environment variables out of version control
 .env 

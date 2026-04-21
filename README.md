@@ -124,7 +124,7 @@ This project is developed by the AdaVizion Team.
 | --- | --- | --- |
 | **Mobile Developer** | **Vincent Aguirre** | [@pak-pow](https://github.com/pak-pow) |
 | **Web Developer** | **Neil Tagle** | [@neophiles](https://github.com/neophiles) |
-| **UI / UIX Designer** | **Raily Laurel** | [@username](https://www.google.com/search?q=https://github.com/username) |
+| **UI / UIX Designer** | **Raily Laurel** | [@DaRhyliee](https://www.google.com/search?q=https://github.com/username) |
 | **Database Developer** | **Ace Gamitin** | [@acevincent05](https://github.com/acevincent05)|
 | **Mobile Developer** | **Kyla Dequito** | [@Lapotski](https://github.com/Lapotski) |
 

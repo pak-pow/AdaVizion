@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dashboard_screen.dart';
 import '../services/api/auth_api.dart';
 
@@ -658,12 +659,14 @@ class _AuthScreenState extends State<AuthScreen> {
             controller: _fullNameController,
             hint: 'Fullname',
             border: border,
+            maxLength: 50,
           ),
           const SizedBox(height: 12),
           _buildTextField(
             controller: _studentIdController,
             hint: 'Student Id (e.g., A25-12345)',
             border: border,
+            maxLength: 15,
           ),
           const SizedBox(height: 12),
 
@@ -723,6 +726,7 @@ class _AuthScreenState extends State<AuthScreen> {
             hint: 'Strong Password',
             border: border,
             obscureText: true,
+            maxLength: 64,
           ),
           const SizedBox(height: 24),
         ],
@@ -734,6 +738,7 @@ class _AuthScreenState extends State<AuthScreen> {
             hint: 'Student ID',
             icon: Icons.email_outlined,
             border: border,
+            maxLength: 15,
           ),
           const SizedBox(height: 12),
           _buildTextField(
@@ -742,6 +747,7 @@ class _AuthScreenState extends State<AuthScreen> {
             icon: Icons.lock_outline,
             border: border,
             obscureText: true,
+            maxLength: 64,
           ),
           Align(
             alignment: Alignment.centerRight,
@@ -849,10 +855,15 @@ class _AuthScreenState extends State<AuthScreen> {
     required OutlineInputBorder border,
     IconData? icon,
     bool obscureText = false,
+    int maxLength = 50,
   }) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
+      // LengthLimitingTextInputFormatter silently caps input at maxLength.
+      // We intentionally do NOT use the TextField.maxLength property because
+      // it renders a visible character counter that breaks the UI design.
+      inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
       style: const TextStyle(fontSize: 14, color: Colors.black87),
       decoration: InputDecoration(
         hintText: hint,

@@ -29,6 +29,38 @@ const ERRORS: ErrorDetails[] = [
     message: "Incorrect student number or password" 
   },
 
+  // Student Profile Picture Errors
+  {
+    type: "STUDENT",
+    code: "ONLY_IMAGES_ALLOWED",
+    status: 415,
+    message: "Only image files are allowed" 
+  },
+  {
+    type: "STUDENT",
+    code: "IMAGE_MISSING",
+    status: 400,
+    message: "No file uploaded" 
+  },
+  {
+    type: "STUDENT",
+    code: "PROFILE_PIC_NOT_FOUND",
+    status: 404,
+    message: "Profile picture not found" 
+  },
+  {
+    type: "STUDENT",
+    code: "IMAGE_URL_UPLOAD_FAILED",
+    status: 400,
+    message: "Failed to link uploaded image to student profile" 
+  },
+  {
+    type: "STUDENT",
+    code: "IMAGE_FILE_UPLOAD_FAILED",
+    status: 400,
+    message: "Failed to upload profile picture" 
+  },
+
   // Landmark Errors
   {
     type: "LANDMARK",

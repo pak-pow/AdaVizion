@@ -5,7 +5,7 @@ import { getDirectoryName, readJSON } from "../src/lib/fs-utils";
 import type { SeedQuiz } from "../src/types/quizzes.types";
 import type { SeedAchievement } from "../src/types/achievements.types";
 import type { SeedLandmark } from "../src/types/landmarks.types";
-import updateLandmarksData from "./generate-qr";
+import updateLandmarksData from "./update-landmarks-data";
 
 const __dirname = getDirectoryName(import.meta.url);
 const dataDirectory = path.join(__dirname, "data");

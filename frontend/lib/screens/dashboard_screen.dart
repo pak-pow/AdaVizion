@@ -83,8 +83,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
 
-      // Load the Dashboard view directly
-      body: const DashboardHomeView(),
+      body: SizedBox.expand(
+        child: Stack(
+          children: [
+            const DashboardHomeView(),
+
+            Positioned(
+              bottom: -224,
+              left: 0,
+              right: 0,
+              child: RepaintBoundary(
+                child: IgnorePointer(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: 500,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.topCenter,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -294,7 +315,9 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                 // 2. BADGES CARD
                 AnimatedOpacity(
                   opacity: _isEditMode ? 0.0 : 1.0,
-                  duration: const Duration(milliseconds: 200),
+                  // Synced to 350ms so the fade matches the AnimatedSize accordion
+                  // on the profile card — they disappear and reappear together.
+                  duration: const Duration(milliseconds: 350),
                   child: AnimatedSize(
                     duration: const Duration(milliseconds: 350),
                     curve: Curves.easeInOutCubic,
@@ -309,45 +332,65 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           ),
 
           // ─── BOTTOM SECTION: SCAN NOW ────────────────────────────────────
-          const SizedBox(height: 60),
-          const Text(
-            'Scan now!',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w900,
-              color: _maroon,
-            ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'to unlock quizzes and explore\nEnverga University',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: _maroon,
-            ),
-          ),
-          const SizedBox(height: 24),
+          // Hidden (and removed from layout) while the user is in edit mode
+          // so there is no empty scrollable space and no accidental QR taps.
+          if (!_isEditMode)
+            IgnorePointer(
+              ignoring: _isEditMode,
+              child: AnimatedOpacity(
+                opacity: _isEditMode ? 0.0 : 1.0,
+                duration: const Duration(milliseconds: 650),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 60),
+                    const Text(
+                      'Scan now!',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        color: _maroon,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'to unlock quizzes and explore\nEnverga University',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: _maroon,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
 
-          // FUNCTIONAL: QR Code Scanner Button
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const QRCodeScreen()),
-              );
-            },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(color: _maroon, width: 2.0),
-                borderRadius: BorderRadius.circular(12),
+                    // FUNCTIONAL: QR Code Scanner Button
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QRCodeScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: _maroon, width: 2.0),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.qr_code_2,
+                          size: 60,
+                          color: _maroon,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 200),
+                  ],
+                ),
               ),
-              child: const Icon(Icons.qr_code_2, size: 60, color: _maroon),
             ),
-          ),
-          const SizedBox(height: 60),
         ],
       ),
     );

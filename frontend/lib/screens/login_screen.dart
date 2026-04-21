@@ -194,10 +194,18 @@ class _AuthScreenState extends State<AuthScreen> {
       case AppView.about:
         return _buildAboutLayout();
       case AppView.auth:
-        // If Auth view is selected, check if we need the success screen or the form
-        return _authState == AuthState.success
-            ? _buildSuccessLayout(size)
-            : _buildAuthLayout(size);
+        final isSuccess = _authState == AuthState.success;
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 350),
+          switchInCurve: Curves.easeInOutCubic,
+          switchOutCurve: Curves.easeInOutCubic,
+          child: KeyedSubtree(
+            key: ValueKey<bool>(isSuccess),
+            child: isSuccess
+                ? _buildSuccessLayout(size)
+                : _buildAuthLayout(size),
+          ),
+        );
     }
   }
 
@@ -448,9 +456,11 @@ class _AuthScreenState extends State<AuthScreen> {
               top: -112,
               left: 5,
               right: 5,
-              child: Image.asset(
-                'assets/images/logo.png',
-                fit: BoxFit.fitWidth,
+              child: RepaintBoundary(
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
 

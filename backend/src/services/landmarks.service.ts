@@ -55,11 +55,10 @@ async function fetchLandmark(studentNum: string, landmarkId: number) {
 
 async function processLandmarkVisit(
   studentNum: string,
-  landmarkId: number,
   qrCodeScanned: string
 ) {
-  const [ landmark, studentProgress ] = await Promise.all([
-    landmarksRepository.findLandmark(landmarkId),
+  const [landmark, studentProgress ] = await Promise.all([
+    landmarksRepository.findLandmarkByQr(qrCodeScanned),
     studentsRepository.findStudentProgress(studentNum)
   ]);
 
@@ -80,7 +79,7 @@ async function processLandmarkVisit(
 
   const { newVisit, updatedProgress } = await landmarksRepository.createLandmarkVisit(
     studentNum,
-    landmarkId,
+    landmark.landmark_id,
     xpReward,
     newLevel
   );

@@ -11,6 +11,18 @@ function getDirectoryName(importMetaUrl: ImportMeta["url"]) {
   return dirname(__filename); // Get the folder name of the current file
 }
 
+function createFileBaseName(text: string) {
+  // Transform text into a valid and conventional file name
+  const baseName = text
+    .trim()
+    .toLocaleLowerCase()
+    .replace(/['()]/g, "")
+    .replace(/[^a-z0-9]/g, "-")
+    .replace(/-+/g, "-");
+
+  return baseName;
+}
+
 function readJSON(jsonFilePath: string) {
   const stringJSON = fs.readFileSync(jsonFilePath, "utf-8");
   return JSON.parse(stringJSON); // Transform string JSON into a JavaScript object
@@ -24,6 +36,7 @@ function writeJSON(jsonFilePath: string, data: any) {
 export {
   getFileName,
   getDirectoryName,
+  createFileBaseName,
   readJSON,
   writeJSON
 }

@@ -58,10 +58,12 @@ async function createStudent(studentData: RegistrationBody) {
 
 async function updateStudentPicture(
   studentNum: string,
+  oldFilePath: string | null,
   fileName: string,
   fileBuffer: Buffer,
   mimeType: string
 ) {
+  // Upload the new file first
   const { error } = await supabase
     .storage
     .from("student-avatars")
@@ -74,7 +76,8 @@ async function updateStudentPicture(
     console.error("Supabase Storage Error:", error);
     throw new Error("Failed to upload profile picture");
   };
-
+  
+  // Get the new URL
   const { data } = supabase
     .storage
     .from("student-avatars")
@@ -84,10 +87,23 @@ async function updateStudentPicture(
     throw new Error("Profile picture not found");
   }
 
+  // Update the database
   const updatedStudent = await prisma.student.update({
     where: { student_number: studentNum },
     data: { img_path: data.publicUrl }
   });
+
+  // Delete the old file only after the new one is safely linked
+  if (updatedStudent && oldFilePath) {
+    const { error } = await supabase
+      .storage
+      .from("student-avatars")
+      .remove([oldFilePath]);
+
+    if (error) {
+      console.error(`Failed to delete old file ${oldFilePath}:`, error);
+    };
+  }
 
   return updatedStudent;
 }

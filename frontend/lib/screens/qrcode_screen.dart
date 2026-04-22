@@ -309,8 +309,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 
   /// Called once per scan. Delegated entirely to the backend - no client-side validation
   /// is done on the QR code string, we just try to submit it and react to the response.
-  ///
-  /// TODO: Replace with `LandmarkApi.scanQrCode(qrCode)` once the backend exposes `POST /landmarks/scan`. Until then this stays as-is.
   Future<void> _handleScan(String qrCode) async {
     setState(() {
       _isScanning = false;
@@ -319,40 +317,22 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     _cameraController.stop();
 
     try {
-      final checklist = await LandmarkApi.getChecklist();
-
-      Map<String, dynamic>? result;
-
-      for (final landmark in checklist) {
-        try {
-          final id = landmark['landmark_id'] as int;
-          result = await LandmarkApi.visitLandmark(id, qrCode);
-          break; // If successful, exit the loop
-        } catch (e) {
-          final msg = e.toString();
-          if (msg.contains("already visited")) {
-            _showAlreadyVisitedDialog();
-            return;
-          }
-          // catches 403 errors from wrong landmarks and tries again
-          continue;
-        }
-      }
+      final result = await LandmarkApi.visitLandmark(qrCode);
 
       if (!mounted) return;
-
-      if (result == null) {
-        _showInvalidQrDialog();
-        return;
-      }
-
       _showSuccessDialog(result);
     } catch (e) {
       if (!mounted) return;
-      _showErrorDialog();
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
+
+      final errorMsg = e.toString().toLowerCase();
+
+      if (errorMsg.contains("already visited")) {
+        _showAlreadyVisitedDialog();
+      } else if (errorMsg.contains("not found") ||
+          errorMsg.contains("invalid")) {
+        _showInvalidQrDialog();
+      } else {
+        _showErrorDialog();
       }
     }
   }

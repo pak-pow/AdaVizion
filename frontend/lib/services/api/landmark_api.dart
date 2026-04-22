@@ -109,12 +109,9 @@ class LandmarkApi {
   /// Throws: [Exception] with "Invalid landmark QR code" (403) if [qrCode] doesn't
   ///   match the database record, or "Landmark already visited" (409) if the student
   ///   has scanned this QR before.
-  static Future<Map<String, dynamic>> visitLandmark(
-    int id,
-    String qrCode,
-  ) async {
+  static Future<Map<String, dynamic>> visitLandmark(String qrCode) async {
     final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}/landmarks/$id/visit'),
+      Uri.parse('${ApiConfig.baseUrl}/landmarks/visit'),
       headers: await ApiConfig.getHeaders(),
       body: jsonEncode({'qr_code_scanned': qrCode}),
     );

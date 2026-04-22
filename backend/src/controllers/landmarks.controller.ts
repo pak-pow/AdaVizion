@@ -30,10 +30,9 @@ async function getLandmark(req: Request, res: Response) {
 async function visitLandmark(req: Request, res: Response) {
   try {
     const studentNum = (req as any).user.studentNum;
-    const landmarkId = parseInt(req.params.id as string);
     const { qr_code_scanned } = req.body;
 
-    const newVisit = await landmarksService.processLandmarkVisit(studentNum, landmarkId, qr_code_scanned);
+    const newVisit = await landmarksService.processLandmarkVisit(studentNum, qr_code_scanned);
 
     return res.status(200).json(newVisit);
   } catch (error: any) {

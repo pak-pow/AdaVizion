@@ -12,32 +12,69 @@ class QRCodeScreen extends StatefulWidget {
 }
 
 class _QRCodeScreenState extends State<QRCodeScreen> {
-  // this allows us to control the camera and listen for QR code scans
-  final MobileScannerController _cameraController = MobileScannerController();
+  // ─── STATE VARIABLES ────────────────────────────────────────────────────────
   final double _scanAreaSize = 250.0;
   bool _isScanning = true;
   bool _isLoading = false;
+
+  // ─── CONTROLLERS ────────────────────────────────────────────────────────────
+  final MobileScannerController _cameraController = MobileScannerController();
+
+  // ─── PERMISSION STATE ───────────────────────────────────────────────────────
+  // null = not yet determined, true = granted, false = denied
+  bool? _cameraPermissionGranted;
 
   // ─── BRANDING COLORS ────────────────────────────────────────────────────────
   // Static constants keep our color palette consistent and easy to update
   static const _maroon = Color(0xFF7A1D1D);
   static const _maroonDark = Color(0xFF5D1414);
 
-  // ─── Camera Controller ────────────────────────────────────────────────────────
+  // ─── LIFECYCLE ────────────────────────────────────────────────────────────
+
+  @override
+  void initState() {
+    super.initState();
+    _checkCameraPermission();
+  }
+
+  /// Checks for camera permission state on startup.
+  /// Listens to the controller's value stream so the UI reacts if the user
+  /// grants/denies permission while on this screen.
+  Future<void> _checkCameraPermission() async {
+    _cameraController.addListener(_onControllerStateChanged);
+
+    // Starts the camera | mobile_scanner will automatically request permission
+    // Listens to the resulting state to know if it was granted or denied
+    await _cameraController.start();
+  }
+
+  /// Called whenever the MobileScannerController's emits a new state, which includes permission changes.
+  /// Used to react to permission changes without a third-party package.
+  void _onControllerStateChanged() {
+    final state = _cameraController.value;
+
+    if (!mounted) return;
+
+    // MobileScannerState exposes an error field when camera access fails.
+    if (state.error != null) {
+      setState(() => _cameraPermissionGranted = false);
+    } else if (state.isInitialized) {
+      setState(() => _cameraPermissionGranted = true);
+    }
+  }
+
+  /// Clean up the camera controller when the widget is disposed to free up resources.
+  @override
+  void dispose() {
+    _cameraController.removeListener(_onControllerStateChanged);
+    _cameraController.dispose();
+    super.dispose();
+  }
+
+  // ─── BUILD ──────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    /// Calculates the center of the screen to position the scanning frame correctly.
-    /// This ensures that the scanning frame is always centered regardless of device size or orientation.
-    /// TODO: FIX BUG WHERE STILL SCANS OUTSIDE OF FRAME, MAYBE NEEDS TO BE A BIT BIGGER OR ALLOW SOME MARGIN OF ERROR
-    final scanWindow = Rect.fromCenter(
-      center: Offset(
-        MediaQuery.of(context).size.width / 2,
-        MediaQuery.of(context).size.height / 2,
-      ),
-      width: _scanAreaSize,
-      height: _scanAreaSize,
-    );
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -45,128 +82,235 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         centerTitle: true,
         title: Image.asset("assets/images/nav_logo.png", height: 48),
         elevation: 1,
-        // Removed actions from here to move them to the footer
       ),
-      body: Stack(
-        children: [
-          // 1. THE CAMERA LAYER
-          MobileScanner(
-            controller: _cameraController,
-            fit: BoxFit.cover,
-            scanWindow: scanWindow,
-            onDetect: (capture) {
-              if (_isScanning) {
-                final barcode = capture.barcodes.first;
-                final value = barcode.rawValue;
-                if (value != null && value.isNotEmpty) {
-                  _handleScan(value);
-                }
-              }
-            },
-          ),
+      body: _buildBody(context),
+    );
+  }
 
-          // 2. THE SCANNING FRAME (Center)
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              height: _scanAreaSize,
-              width: _scanAreaSize,
-              decoration: BoxDecoration(
-                border: Border.all(color: _maroon, width: 4),
-                borderRadius: BorderRadius.circular(20),
+  /// Switches between camera view and permission-denied fallback.
+  Widget _buildBody(BuildContext context) {
+    // Show a neutral loading state while we wait for the controller to init.
+    if (_cameraPermissionGranted == null) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      );
+    }
+
+    if (_cameraPermissionGranted == false) {
+      return _buildPermissionDeniedUI();
+    }
+
+    return _buildScannerUI(context);
+  }
+
+  // ==========================================
+  // PERMISSION DENIED UI
+  // ==========================================
+
+  /// Displays a user-friendly message when camera permission is denied, along with instructions and a retry button.
+  Widget _buildPermissionDeniedUI() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+        child: Column(
+          children: [
+            const Icon(
+              Icons.no_photography_outlined,
+              color: Colors.white54,
+              size: 72,
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              "Camera Access Required",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-
-          // 3. THE FOOTER (Buttons and Instructions)
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-              decoration: BoxDecoration(
-                // Adding a slight gradient/fade behind buttons for readability
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.7),
-                    Colors.transparent,
-                  ],
+            const SizedBox(height: 12),
+            const Text(
+              "EUventure needs camera access to scan QR codes at campus landmarks. "
+              "Please enable it in your device settings.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white70, height: 1.5),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: _retryPermission,
+              icon: const Icon(Icons.refresh),
+              label: const Text("Try Again"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _maroonDark,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Restarts the camera controller to trigger the permission request.
+  Future<void> _retryPermission() async {
+    setState(() => _cameraPermissionGranted = null);
+
+    try {
+      await _cameraController.start();
+    } catch (e) {
+      if (mounted) setState(() => _cameraPermissionGranted = false);
+    }
+  }
+
+  // ==========================================
+  // SCANNER UI
+  // ==========================================
+
+  /// Builds the main scanner interface with the camera feed, scanning frame, and control buttons.
+  Widget _buildScannerUI(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
+    /// scanWindow must be in ABSOLUTE PIXEL coordinates relative to the full
+    /// screen (not the body). mobile_scanner compares barcode positions against
+    /// this rect | if the barcode center falls outside, it is ignored.
+    ///
+    /// The AppBar is ~56dp tall (kToolbarHeight), so we offset the vertical
+    /// center down by half that to align the visible frame drawn below.
+    const appBarHeight = kToolbarHeight;
+    final scanWindow = Rect.fromCenter(
+      center: Offset(
+        screenSize.width / 2,
+        // Center of the BODY area, converted to full screen coordinates
+        appBarHeight + (screenSize.height - appBarHeight) / 2,
+      ),
+      width: _scanAreaSize,
+      height: _scanAreaSize,
+    );
+
+    return Stack(
+      children: [
+        // 1. CAMERA LAYER
+        MobileScanner(
+          controller: _cameraController,
+          fit: BoxFit.cover,
+          scanWindow: scanWindow,
+          onDetect: (capture) {
+            if (!_isScanning) return;
+            final value = capture.barcodes.firstOrNull?.rawValue;
+            if (value != null && value.isNotEmpty) {
+              _handleScan(value);
+            }
+          },
+        ),
+
+        // 2. OVERLAY — darkens everything OUTSIDE the scan frame.
+        CustomPaint(
+          size: Size(screenSize.width, screenSize.height - appBarHeight),
+          painter: _ScanOverlayPainter(
+            scanAreaSize: _scanAreaSize,
+            borderColor: _maroon,
+          ),
+        ),
+
+        // 3. FOOTER
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.7),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Center the QR code within the frame",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildControlButton(
+                      onPressed: () => _cameraController.toggleTorch(),
+                      icon: ValueListenableBuilder(
+                        valueListenable: _cameraController,
+                        builder: (context, state, child) {
+                          switch (state.torchState) {
+                            case TorchState.on:
+                              return const Icon(
+                                Icons.flash_on,
+                                color: Colors.yellow,
+                              );
+                            case TorchState.auto:
+                              return const Icon(
+                                Icons.flash_auto,
+                                color: Colors.blue,
+                              );
+                            default:
+                              return const Icon(
+                                Icons.flash_off,
+                                color: Colors.white,
+                              );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // 4. LOADING OVERLAY
+        if (_isLoading)
+          Container(
+            color: Colors.black.withValues(alpha: 0.6),
+            child: const Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    "Center the QR code within the frame",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // --- FLASHLIGHT BUTTON ---
-                      _buildControlButton(
-                        onPressed: () => _cameraController.toggleTorch(),
-                        icon: ValueListenableBuilder(
-                          valueListenable: _cameraController,
-                          builder: (context, state, child) {
-                            switch (state.torchState) {
-                              case TorchState.on:
-                                return const Icon(
-                                  Icons.flash_on,
-                                  color: Colors.yellow,
-                                );
-                              case TorchState.auto:
-                                return const Icon(
-                                  Icons.flash_auto,
-                                  color: Colors.blue,
-                                );
-                              default:
-                                return const Icon(
-                                  Icons.flash_off,
-                                  color: Colors.white,
-                                );
-                            }
-                          },
-                        ),
-                      ),
-                    ],
+                  CircularProgressIndicator(color: Colors.white),
+                  SizedBox(height: 16),
+                  Text(
+                    "Scanning Landmark...",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ],
               ),
             ),
           ),
-
-          // 4. LOADING OVERLAY
-          if (_isLoading)
-            Container(
-              color: Colors.black.withValues(alpha: 0.6),
-              child: const Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(color: Colors.white),
-                    SizedBox(height: 16),
-                    Text(
-                      "Scanning Landmark...",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
+      ],
     );
   }
 
   // ─── SCAN HANDLING ────────────────────────────────────────────────────────
+
+  /// Called once per scan. Delegated entirely to the backend - no client-side validation
+  /// is done on the QR code string, we just try to submit it and react to the response.
+  ///
+  /// TODO: Replace with `LandmarkApi.scanQrCode(qrCode)` once the backend exposes `POST /landmarks/scan`. Until then this stays as-is.
   Future<void> _handleScan(String qrCode) async {
     setState(() {
       _isScanning = false;
@@ -177,10 +321,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     try {
       final checklist = await LandmarkApi.getChecklist();
 
-      // TODO: ASK BACKEND ABOUT THIS
-      // This tries to submit the QR against each landmark until one accepts it.
-      // This might be temporary and is not ideal, need to ask neil,
-      // if its possible to have a dedicated endpoint that accepts the raw QR code and returns the matched landmark or an error if invalid.
       Map<String, dynamic>? result;
 
       for (final landmark in checklist) {
@@ -219,17 +359,22 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 
   // ─── HELPER METHODS ────────────────────────────────────────────────────────
 
-  /// Clean up the camera controller when the widget is disposed to free up resources.
-  @override
-  void dispose() {
-    _cameraController.dispose();
-    super.dispose();
-  }
-
   /// Resets the scanner state to allow for another scan after a QR code has been processed.
   void _resetScanner() {
     _cameraController.start();
     setState(() => _isScanning = true);
+  }
+
+  /// Navigates to the Landmark Details screen for the newly scanned landmark, passing the landmark ID as an argument.
+  ///
+  /// TODO: Replace the `pushNamed` route string with the actual named route
+  ///       constant once LandmarkDetailsScreen is registered in your router.
+  void _navigateToLandmarkDetails(int landmarkId) {
+    Navigator.pushNamed(
+      context,
+      '/landmark-details',
+      arguments: {'landmarkId': landmarkId},
+    );
   }
 
   /// Shows a success dialog with details about the scanned landmark and rewards earned.
@@ -239,6 +384,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     final xpEarned = progress['xp']['earned'];
     final didLevelUp = progress['level']['did_level_up'];
     final achievements = result['new_achievements'] as List;
+    final landmarkId = landmark['landmark_id'] as int;
 
     showDialog(
       context: context,
@@ -317,7 +463,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -368,10 +513,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Navigate to landmark details screen
-              // Navigator.pushNamed(context, '/landmark_details', arguments: landmark['id']);
-              // For now, just reset the scanner to encourage exploring more landmarks
-              _resetScanner();
+              _navigateToLandmarkDetails(landmarkId);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: _maroonDark,
@@ -581,4 +723,56 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       ],
     );
   }
+}
+
+// ─── SCAN OVERLAY PAINTER ──────────────────────────────────────────────────────
+
+/// Draws a semi-transparent dark overlay over the entire camera preview,
+/// then "punches out" a clear rounded-rectangle in the center — the scan zone.
+///
+/// This gives the user a clear visual target AND prevents the temptation to
+/// scan things outside the frame (though actual detection restriction is
+/// handled by [MobileScanner.scanWindow]).
+class _ScanOverlayPainter extends CustomPainter {
+  const _ScanOverlayPainter({
+    required this.scanAreaSize,
+    required this.borderColor,
+  });
+
+  final double scanAreaSize;
+  final Color borderColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final overlayPaint = Paint()..color = Colors.black.withValues(alpha: 0.55);
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final scanRect = Rect.fromCenter(
+      center: center,
+      width: scanAreaSize,
+      height: scanAreaSize,
+    );
+    const radius = Radius.circular(20);
+    final rrect = RRect.fromRectAndRadius(scanRect, radius);
+
+    // Draw the dark overlay as a full rect with the scan window cut out
+    final overlayPath = Path()
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..addRRect(rrect)
+      ..fillType = PathFillType.evenOdd; // the overlap becomes transparent
+
+    canvas.drawPath(overlayPath, overlayPaint);
+
+    // Draw the maroon border around the scan window
+    canvas.drawRRect(rrect, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ScanOverlayPainter oldDelegate) =>
+      oldDelegate.scanAreaSize != scanAreaSize ||
+      oldDelegate.borderColor != borderColor;
 }

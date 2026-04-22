@@ -14,6 +14,6 @@ router.get("/", landmarksController.getLandmarkChecklist);
 router.get("/:id", landmarksController.getLandmark);
 
 // VISIT LANDMARK ENDPOINT
-router.post("/:id/visit", landmarksController.visitLandmark);
+router.post("/visit", landmarksController.visitLandmark);
 
 export default router;

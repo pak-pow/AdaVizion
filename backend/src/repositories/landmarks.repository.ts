@@ -31,6 +31,12 @@ async function findLandmarkVisitedByStudent(studentNum: string, landmarkId: numb
   });
 }
 
+async function findLandmarkByQr(qrString: string) {
+  return prisma.landmark.findUnique({
+    where: { qr_string: qrString }
+  });
+}
+
 async function findLandmarksVisitedCount(studentNum: string) {
   return prisma.landmarksVisited.count({
     where: { student_number: studentNum }
@@ -69,6 +75,7 @@ export {
   findLandmarksVisitedByStudent,
   findLandmark,
   findLandmarkVisitedByStudent,
+  findLandmarkByQr,
   findLandmarksVisitedCount,
   createLandmarkVisit
 }

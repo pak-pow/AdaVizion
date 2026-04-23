@@ -24,6 +24,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   // ─── BRANDING COLORS ──────────────────────────────────────────────────────
   static const _maroon = Color(0xFF7A1D1D);
   static const _maroonDark = Color(0xFF5D1414);
+  static const _headerGrey = Color(0xFFF5F5F5);
 
   // ─── LIFECYCLE ────────────────────────────────────────────────────────────
 
@@ -86,7 +87,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: _headerGrey,
         centerTitle: true,
         title: Image.asset("assets/images/nav_logo.png", height: 48),
         elevation: 1,

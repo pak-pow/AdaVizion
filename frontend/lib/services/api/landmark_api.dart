@@ -81,8 +81,6 @@ class LandmarkApi {
   /// Auth required: ✅ Bearer token
   ///
   /// Parameters:
-  ///   [id]     — The landmark's database ID. This must match the landmark
-  ///              the QR code physically belongs to.
   ///   [qrCode] — The raw string value decoded from the QR code scan.
   ///              The backend compares this against `landmark.qr_string` in the
   ///              database. If they don't match, a 403 error is returned.

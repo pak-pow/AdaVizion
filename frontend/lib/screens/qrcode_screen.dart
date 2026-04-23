@@ -13,18 +13,18 @@ class QRCodeScreen extends StatefulWidget {
 }
 
 class _QRCodeScreenState extends State<QRCodeScreen> {
-  // ─── FIELDS ───────────────────────────────────────────────────────────────
+  // ─── BRANDING COLORS ──────────────────────────────────────────────────────
+  static const _maroon = Color(0xFF7A1D1D);
+  static const _maroonDark = Color(0xFF5D1414);
+  static const _headerGrey = Color(0xFFF5F5F5);
+
+  // ─── STATE VARIABLES ───────────────────────────────────────────────────────
   Key _scannerKey = UniqueKey();
   late MobileScannerController _cameraController;
   final double _scanAreaSize = 250.0;
   bool? _cameraPermissionGranted;
   bool _isScanning = true;
   bool _isLoading = false;
-
-  // ─── BRANDING COLORS ──────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _maroonDark = Color(0xFF5D1414);
-  static const _headerGrey = Color(0xFFF5F5F5);
 
   // ─── LIFECYCLE ────────────────────────────────────────────────────────────
 
@@ -86,10 +86,12 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+
+      // --- APP BAR ---
       appBar: AppBar(
         backgroundColor: _headerGrey,
         centerTitle: true,
-        title: Image.asset("assets/images/nav_logo.png", height: 48),
+        title: Image.asset("assets/images/nav_logo.png", height: 75),
         elevation: 1,
       ),
       body: _buildBody(context),

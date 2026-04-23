@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'login_screen.dart';
 import 'qrcode_screen.dart';
-import 'quiz_screen.dart';
+import 'quiz/quiz_list_screen.dart';
 import '../services/api/api_config.dart';
 import '../services/api/profile_api.dart';
 
@@ -55,7 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const QuizScreen(),
+                        builder: (context) => const QuizListScreen(),
                       ),
                     );
                   },

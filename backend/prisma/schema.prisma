@@ -33,7 +33,7 @@ model Landmark {
   name        String             @unique @db.VarChar(100)
   description String?
   fun_fact    String?
-  qr_string   String             @unique
+  qr_string   String             @unique @db.VarChar(255)
   img_path    String?            @db.VarChar(255)
   created_at  DateTime           @default(now())
   visitors    LandmarksVisited[]

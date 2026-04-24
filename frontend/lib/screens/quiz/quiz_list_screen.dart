@@ -96,7 +96,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
-        title: Image.asset('assets/images/nav_logo.png', height: 75),
+        title: Image.asset('assets/images/nav_logo.png', height: 52),
       ),
 
       body: RefreshIndicator(

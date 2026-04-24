@@ -156,20 +156,10 @@ class _ProgressDashboardViewState extends State<ProgressDashboardView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F4F6),
-      appBar: AppBar(
-        backgroundColor: _maroon,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'My Progress',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-      ),
+      backgroundColor: Colors.white,
+      // The maroon nested AppBar has been removed — it clashed with the
+      // global DashboardScreen AppBar. 'My Progress' is now an inline
+      // heading rendered at the top of the scroll body below.
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: _maroon))
           : _error != null
@@ -181,10 +171,20 @@ class _ProgressDashboardViewState extends State<ProgressDashboardView>
                 onRefresh: _fetchScoringData,
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 120),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // Inline page title replacing the removed AppBar.
+                      const Text(
+                        'My Progress',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1A1A1A),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                       _buildHeroCard(),
                       const SizedBox(height: 14),
                       _buildMilestoneCard(),

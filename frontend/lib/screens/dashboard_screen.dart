@@ -63,20 +63,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Image.asset('assets/images/nav_logo.png', height: 42),
-            // The "Quizzes" shortcut button has been removed — it is now the
-            // dedicated Quizzes tab in the BottomAppBar.
-            GestureDetector(
-              onTap: _showLogoutConfirmation,
-              child: const Text(
-                'Log out',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: _maroon,
+            // Hide the logo on the Quizzes tab (index 2) since QuizListScreen
+            // renders its own centered logo in its own AppBar header.
+            if (_selectedIndex != 2)
+              Image.asset('assets/images/nav_logo.png', height: 42)
+            else
+              const SizedBox.shrink(),
+
+            // Log out is only relevant on the Home tab.
+            if (_selectedIndex == 0)
+              GestureDetector(
+                onTap: _showLogoutConfirmation,
+                child: const Text(
+                  'Log out',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: _maroon,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -87,28 +93,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         index: _selectedIndex,
         children: [
           // ── Tab 0: Home ─────────────────────────────────────────────────────
-          // Wrapped in a Stack to layer the decorative mascot watermark under
-          // the scroll content without interfering with touch events.
-          Stack(
-            children: [
-              const DashboardHomeView(),
-              Positioned(
-                bottom: -224,
-                left: 0,
-                right: 0,
-                child: RepaintBoundary(
-                  child: IgnorePointer(
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      height: 500,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.topCenter,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Step 3: The decorative mascot watermark Stack has been removed —
+          // it was obscuring the BottomAppBar area at the bottom of the screen.
+          const DashboardHomeView(),
 
           // ── Tab 1: Landmarks ─────────────────────────────────────────────────
           // Placeholder until LandmarkScreen is implemented.

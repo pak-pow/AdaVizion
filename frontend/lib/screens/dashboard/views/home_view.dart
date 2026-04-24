@@ -165,9 +165,11 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       return const Center(child: CircularProgressIndicator(color: _maroon));
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
         // ─── TOP SECTION: Cards ─────────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 0),
@@ -201,9 +203,10 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           ),
         ),
 
-        // Bottom padding gives scroll clearance above the BottomAppBar + FAB.
-        const SizedBox(height: 120),
-      ],
+          // Bottom padding gives scroll clearance above the BottomAppBar + FAB.
+          const SizedBox(height: 120),
+        ],
+      ),
     );
   }
 

@@ -12,6 +12,7 @@ class AdaVisionApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'AdaVizion',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.red,
         useMaterial3: true,

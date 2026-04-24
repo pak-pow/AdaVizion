@@ -80,6 +80,12 @@ const ERRORS: ErrorDetails[] = [
     status: 500,
     message: "Failed to process scan" 
   },
+  {
+    type: "LANDMARK",
+    code: "LANDMARK_LOCKED",
+    status: 423,
+    message: "Scan landmark QR first" 
+  },
 
   // Quiz Errors
   {

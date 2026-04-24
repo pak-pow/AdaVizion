@@ -3,6 +3,7 @@ import 'quiz/quiz_list_screen.dart';
 import 'dashboard/views/home_view.dart';
 import 'dashboard/views/settings_view.dart';
 import 'qrcode_screen.dart';
+import 'landmark_screen.dart';
 
 // ============================================================================
 // DASHBOARD SCREEN (Shell)
@@ -11,7 +12,7 @@ import 'qrcode_screen.dart';
 //
 // Tab routing:
 //   0 → DashboardHomeView  (profile + badges + progress feed)
-//   1 → _LandmarksPlaceholder (stub)
+//   1 → LandmarkScreen (placeholder)
 //   2 → QuizListScreen
 //   3 → SettingsView (Profile & Settings)
 //   FAB → QRCodeScreen (push navigation, NOT a tab)
@@ -77,7 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           // ── Tab 1: Landmarks ──────────────────────────────────────────────
           // Placeholder until LandmarkScreen is implemented.
-          const _LandmarksPlaceholder(),
+          const LandmarkScreen(),
 
           // ── Tab 2: Quizzes ───────────────────────────────────────────────
           const QuizListScreen(),
@@ -176,56 +177,3 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-// ============================================================================
-// LANDMARKS PLACEHOLDER
-//
-// Temporary stub rendered in the Landmarks tab until the real LandmarkScreen
-// widget is implemented. Replace by importing and referencing the real screen.
-// ============================================================================
-
-class _LandmarksPlaceholder extends StatelessWidget {
-  const _LandmarksPlaceholder();
-
-  static const _maroon = Color(0xFF7A1D1D);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: _maroon.withValues(alpha: 0.08),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.place_rounded,
-              size: 56,
-              color: _maroon,
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Landmarks',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              color: _maroon,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Coming soon',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade500,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

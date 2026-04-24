@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../services/api/landmark_api.dart';
@@ -12,73 +13,149 @@ class QRCodeScreen extends StatefulWidget {
 }
 
 class _QRCodeScreenState extends State<QRCodeScreen> {
-  // this allows us to control the camera and listen for QR code scans
-  final MobileScannerController _cameraController = MobileScannerController();
+  // ─── BRANDING COLORS ──────────────────────────────────────────────────────
+  static const _maroon = Color(0xFF7A1D1D);
+  static const _maroonDark = Color(0xFF5D1414);
+  static const _headerGrey = Color(0xFFF5F5F5);
+
+  // ─── STATE VARIABLES ───────────────────────────────────────────────────────
+  Key _scannerKey = UniqueKey();
+  late MobileScannerController _cameraController;
   final double _scanAreaSize = 250.0;
+  bool? _cameraPermissionGranted;
   bool _isScanning = true;
   bool _isLoading = false;
 
-  // ─── BRANDING COLORS ────────────────────────────────────────────────────────
-  // Static constants keep our color palette consistent and easy to update
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _maroonDark = Color(0xFF5D1414);
+  // ─── LIFECYCLE ────────────────────────────────────────────────────────────
 
-  // ─── Camera Controller ────────────────────────────────────────────────────────
+  @override
+  void initState() {
+    super.initState();
+    _initController();
+  }
+
+  @override
+  void dispose() {
+    _disposeController();
+    super.dispose();
+  }
+
+  void _initController() {
+    _cameraController = MobileScannerController();
+    _cameraController.addListener(_onControllerStateChanged);
+  }
+
+  void _disposeController() {
+    _cameraController.removeListener(_onControllerStateChanged);
+    _cameraController.dispose();
+  }
+
+  /// Called whenever the MobileScannerController emits a new state.
+  ///
+  /// Note: on web, permission denial may not reliably surface as state.error
+  /// in the listener — it can arrive as an exception thrown inside the
+  /// MobileScanner widget's build cycle instead. That case is handled by
+  /// [_onScannerError] via the widget's errorBuilder parameter.
+  void _onControllerStateChanged() {
+    final state = _cameraController.value;
+    if (!mounted) return;
+
+    if (state.isInitialized) {
+      setState(() => _cameraPermissionGranted = true);
+    } else if (state.error != null && _cameraPermissionGranted != true) {
+      setState(() => _cameraPermissionGranted = false);
+    }
+  }
+
+  /// Called by MobileScanner's errorBuilder when the widget itself encounters
+  /// an error — most commonly a NotAllowedError (permission denied) on web.
+  Widget _onScannerError(BuildContext context, MobileScannerException error) {
+    if (_cameraPermissionGranted != false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _cameraPermissionGranted != false) {
+          setState(() => _cameraPermissionGranted = false);
+        }
+      });
+    }
+    return const SizedBox.expand();
+  }
+
+  // ─── BUILD ────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    /// Calculates the center of the screen to position the scanning frame correctly.
-    /// This ensures that the scanning frame is always centered regardless of device size or orientation.
-    /// TODO: FIX BUG WHERE STILL SCANS OUTSIDE OF FRAME, MAYBE NEEDS TO BE A BIT BIGGER OR ALLOW SOME MARGIN OF ERROR
-    final scanWindow = Rect.fromCenter(
-      center: Offset(
-        MediaQuery.of(context).size.width / 2,
-        MediaQuery.of(context).size.height / 2,
-      ),
-      width: _scanAreaSize,
-      height: _scanAreaSize,
-    );
-
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        title: Image.asset("assets/images/nav_logo.png", height: 48),
-        elevation: 1,
-        // Removed actions from here to move them to the footer
-      ),
-      body: Stack(
-        children: [
-          // 1. THE CAMERA LAYER
-          MobileScanner(
-            controller: _cameraController,
-            fit: BoxFit.cover,
-            scanWindow: scanWindow,
-            onDetect: (capture) {
-              if (_isScanning) {
-                final barcode = capture.barcodes.first;
-                final value = barcode.rawValue;
-                if (value != null && value.isNotEmpty) {
-                  _handleScan(value);
-                }
-              }
-            },
-          ),
 
-          // 2. THE SCANNING FRAME (Center)
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              height: _scanAreaSize,
-              width: _scanAreaSize,
-              decoration: BoxDecoration(
-                border: Border.all(color: _maroon, width: 4),
-                borderRadius: BorderRadius.circular(20),
-              ),
+      // --- APP BAR ---
+      appBar: AppBar(
+        backgroundColor: _headerGrey,
+        centerTitle: true,
+        title: Image.asset("assets/images/nav_logo.png", height: 75),
+        elevation: 1,
+      ),
+      body: _buildBody(context),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    const appBarHeight = kToolbarHeight;
+
+    final scanWindow = kIsWeb
+        ? null
+        : Rect.fromCenter(
+            center: Offset(
+              screenSize.width / 2,
+              appBarHeight + (screenSize.height - appBarHeight) / 2,
+            ),
+            width: _scanAreaSize,
+            height: _scanAreaSize,
+          );
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // ── 1. CAMERA LAYER — always mounted ────────────────────────────────
+        MobileScanner(
+          key: _scannerKey,
+          controller: _cameraController,
+          fit: BoxFit.cover,
+          scanWindow: scanWindow,
+          errorBuilder: _onScannerError,
+          onDetect: (capture) {
+            if (!_isScanning || _cameraPermissionGranted != true) return;
+            final value = capture.barcodes.firstOrNull?.rawValue;
+            if (value != null && value.isNotEmpty) {
+              _handleScan(value);
+            }
+          },
+        ),
+
+        // ── 2. SCAN OVERLAY — visual guide, shown only when camera is active
+        if (_cameraPermissionGranted == true)
+          CustomPaint(
+            painter: _ScanOverlayPainter(
+              scanAreaSize: _scanAreaSize,
+              borderColor: _maroon,
             ),
           ),
 
-          // 3. THE FOOTER (Buttons and Instructions)
+        // ── 3. PERMISSION PENDING — spinner while browser popup is open ─────
+        if (_cameraPermissionGranted == null)
+          const ColoredBox(
+            color: Colors.black,
+            child: Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+          ),
+
+        // ── 4. PERMISSION DENIED — covers camera layer entirely ─────────────
+        if (_cameraPermissionGranted == false)
+          ColoredBox(color: Colors.black, child: _buildPermissionDeniedUI()),
+
+        // ── 5. FOOTER — torch button, only when camera is active ────────────
+        if (_cameraPermissionGranted == true)
           Positioned(
             bottom: 0,
             left: 0,
@@ -86,7 +163,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
               decoration: BoxDecoration(
-                // Adding a slight gradient/fade behind buttons for readability
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
@@ -110,7 +186,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // --- FLASHLIGHT BUTTON ---
                       _buildControlButton(
                         onPressed: () => _cameraController.toggleTorch(),
                         icon: ValueListenableBuilder(
@@ -143,102 +218,232 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             ),
           ),
 
-          // 4. LOADING OVERLAY
-          if (_isLoading)
-            Container(
-              color: Colors.black.withValues(alpha: 0.6),
-              child: const Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(color: Colors.white),
-                    SizedBox(height: 16),
-                    Text(
-                      "Scanning Landmark...",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ],
+        // ── 6. LOADING OVERLAY ───────────────────────────────────────────────
+        if (_isLoading)
+          ColoredBox(
+            color: Colors.black.withValues(alpha: 0.6),
+            child: const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(color: Colors.white),
+                  SizedBox(height: 16),
+                  Text(
+                    "Scanning Landmark...",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // ─── PERMISSION DENIED UI ─────────────────────────────────────────────────
+
+  Widget _buildPermissionDeniedUI() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.no_photography_outlined,
+              color: Colors.white54,
+              size: 72,
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              "Camera Access Required",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "EUventure needs camera access to scan QR codes at campus landmarks. "
+              "Please enable it in your device/browser settings.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white70, height: 1.5),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: _retryPermission,
+              icon: const Icon(Icons.refresh),
+              label: const Text("Try Again"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _maroonDark,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   // ─── SCAN HANDLING ────────────────────────────────────────────────────────
+
   Future<void> _handleScan(String qrCode) async {
+    if (!mounted) return;
+
     setState(() {
       _isScanning = false;
       _isLoading = true;
     });
+
     _cameraController.stop();
 
     try {
-      final checklist = await LandmarkApi.getChecklist();
-
-      // TODO: ASK BACKEND ABOUT THIS
-      // This tries to submit the QR against each landmark until one accepts it.
-      // This might be temporary and is not ideal, need to ask neil,
-      // if its possible to have a dedicated endpoint that accepts the raw QR code and returns the matched landmark or an error if invalid.
-      Map<String, dynamic>? result;
-
-      for (final landmark in checklist) {
-        try {
-          final id = landmark['landmark_id'] as int;
-          result = await LandmarkApi.visitLandmark(id, qrCode);
-          break; // If successful, exit the loop
-        } catch (e) {
-          final msg = e.toString();
-          if (msg.contains("already visited")) {
-            _showAlreadyVisitedDialog();
-            return;
-          }
-          // catches 403 errors from wrong landmarks and tries again
-          continue;
-        }
-      }
-
+      final result = await LandmarkApi.visitLandmark(qrCode);
       if (!mounted) return;
-
-      if (result == null) {
-        _showInvalidQrDialog();
-        return;
-      }
-
       _showSuccessDialog(result);
     } catch (e) {
       if (!mounted) return;
-      _showErrorDialog();
+      _onScanError(e);
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  // ─── HELPER METHODS ────────────────────────────────────────────────────────
-
-  /// Clean up the camera controller when the widget is disposed to free up resources.
-  @override
-  void dispose() {
-    _cameraController.dispose();
-    super.dispose();
+  void _onScanError(Object e) {
+    final msg = e.toString().toLowerCase();
+    if (msg.contains("already visited")) {
+      return _showAlreadyVisitedDialog();
+    }
+    if (msg.contains("not found") || msg.contains("invalid")) {
+      return _showInvalidQrDialog();
+    }
+    _showErrorDialog();
   }
 
-  /// Resets the scanner state to allow for another scan after a QR code has been processed.
+  /// Resets state to null (spinner) then restart the controller.
+  /// On web, restarting re-calls getUserMedia which re-triggers the browser popup.
+  void _retryPermission() {
+    _disposeController();
+    _initController();
+    setState(() {
+      _cameraPermissionGranted = null;
+      _scannerKey = UniqueKey();
+    });
+  }
+
   void _resetScanner() {
     _cameraController.start();
     setState(() => _isScanning = true);
   }
 
-  /// Shows a success dialog with details about the scanned landmark and rewards earned.
+  // ─── DIALOGS ───────────────────────────────────────────────────────
+
+  /// Shows a dialog with a title, optional content, and action buttons.
+  ///
+  /// Parameters:
+  ///   [title] — The main heading of the dialog.
+  ///   [content] — Optional widget to display below the title (e.g. error message or fun fact).
+  ///   [actions] — A list of buttons to show at the bottom of the dialog.
+  ///
+  /// Note: For the "Landmark Unlocked!" dialog, the [result] from the API call is used
+  /// to populate the content and rewards shown in the dialog. For error dialogs,
+  Future<T?> _showScanDialog<T>({
+    required String title,
+    Widget? content,
+    required List<Widget> actions,
+  }) {
+    return showDialog<T>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        titlePadding: EdgeInsets.zero,
+        title: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: BoxDecoration(
+            color: _maroonDark,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        content: content,
+        actions: actions,
+      ),
+    );
+  }
+
+  /// Dialog button builder to reduce boilerplate in dialog definitions. Can create either
+  /// a filled ElevatedButton or a TextButton based on [isText].
+  ///
+  /// Parameters:
+  ///  [label] — The text to display on the button.
+  ///  [onPressed] — The callback to execute when the button is pressed.
+  ///  [isText] — If true, creates a TextButton; otherwise, creates an ElevatedButton with maroon styling.
+  ///
+  Widget _dialogButton({
+    required String label,
+    required VoidCallback onPressed,
+    bool isText = false,
+  }) {
+    if (isText) {
+      return TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(foregroundColor: _maroonDark),
+        child: Text(label),
+      );
+    }
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: _maroonDark,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Text(label),
+    );
+  }
+
+  /// Closes the currently open dialog and then executes the provided [action].
+  /// This is used to ensure that when a dialog button is pressed, the dialog is dismissed before performing any state changes or navigation.
+  ///
+  /// Parameters:
+  ///   [action] — The callback function to execute after the dialog is closed.
+  void _closeDialogAnd(VoidCallback action) {
+    Navigator.pop(context);
+    action();
+  }
+
+  /// Shows the "Landmark Unlocked!" dialog after a successful scan, displaying the landmark's name,
+  /// fun fact, XP earned, level-up status, and any new achievements.
+  /// The dialog includes buttons to either close the dialog or navigate to the landmark details page.
   void _showSuccessDialog(Map<String, dynamic> result) {
     final landmark = result['landmark'];
     final progress = result['progress'];
     final xpEarned = progress['xp']['earned'];
     final didLevelUp = progress['level']['did_level_up'];
     final achievements = result['new_achievements'] as List;
+    final landmarkId = landmark['landmark_id'] as int;
 
     showDialog(
       context: context,
@@ -272,7 +477,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                 landmark['name'].toString(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 18,
                   fontWeight: FontWeight.w900,
                   color: _maroon,
                   letterSpacing: 1.2,
@@ -301,7 +506,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                           "FUN FACT",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: 14,
                             color: Colors.red,
                           ),
                         ),
@@ -317,7 +522,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -330,7 +534,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                     ),
                 ],
               ),
-
               if (achievements.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 const Divider(),
@@ -354,203 +557,84 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             ],
           ),
         ),
-
-        // MODAL BUTTONS
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            style: TextButton.styleFrom(foregroundColor: _maroonDark),
-            child: const Text("Close"),
+          _dialogButton(
+            label: "Close",
+            isText: true,
+            onPressed: () => _closeDialogAnd(_resetScanner),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Navigate to landmark details screen
-              // Navigator.pushNamed(context, '/landmark_details', arguments: landmark['id']);
-              // For now, just reset the scanner to encourage exploring more landmarks
-              _resetScanner();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _maroonDark,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text("View Landmark"),
+          _dialogButton(
+            label: "View Landmark",
+            onPressed: () =>
+                _closeDialogAnd(() => _navigateToLandmarkDetails(landmarkId)),
           ),
         ],
       ),
     ).then((_) => _resetScanner());
   }
 
-  /// Shows an error dialog with a custom message, used for unexpected errors during the scanning process.
+  /// Shows an error dialog when the scanned QR code is not recognized as a valid landmark code.
+  /// This is triggered when the backend returns a 403 error indicating an invalid QR code, which means
+  /// the scanned code does not match any landmark's `qr_string` in the database, or the QR code is malformed.
   void _showInvalidQrDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        titlePadding: const EdgeInsets.all(0),
-        title: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          decoration: BoxDecoration(
-            color: _maroonDark,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: const Text(
-            "Invalid QR Code!",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
-        ),
-
-        content: const Text(
-          "This doesn't seem to be a campus landmark. Try scanning again.",
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _resetScanner();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _maroonDark,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text("Scan Again"),
-          ),
-        ],
+    _showScanDialog(
+      title: "Invalid QR Code",
+      content: const Text(
+        "This doesn't seem to be a valid landmark QR code. Please try scanning again.",
+        textAlign: TextAlign.center,
       ),
+      actions: [
+        _dialogButton(
+          label: "Scan Again",
+          onPressed: () => _closeDialogAnd(_resetScanner),
+        ),
+      ],
     );
   }
 
-  /// Shows a dialog indicating that the landmark has already been visited, preventing duplicate scans.
   void _showAlreadyVisitedDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        titlePadding: const EdgeInsets.all(0),
-        title: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          decoration: BoxDecoration(
-            color: _maroonDark,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: const Text(
-            "Landmark Already Visited!",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
+    _showScanDialog(
+      title: "Landmark Already Visited!",
+      content: const SizedBox(height: 4),
+      actions: [
+        _dialogButton(
+          label: "Close",
+          isText: true,
+          onPressed: () => _closeDialogAnd(() => Navigator.pop(context)),
         ),
-        content: const SizedBox(height: 4),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            style: TextButton.styleFrom(foregroundColor: _maroonDark),
-            child: const Text("Close"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _resetScanner();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _maroonDark,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text("Scan Another"),
-          ),
-        ],
-      ),
+        _dialogButton(
+          label: "Scan Another",
+          onPressed: () => _closeDialogAnd(_resetScanner),
+        ),
+      ],
     );
   }
 
-  /// Shows an error dialog with a custom message, used for unexpected errors during the scanning process.
   void _showErrorDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        titlePadding: const EdgeInsets.all(0),
-        title: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          decoration: BoxDecoration(
-            color: _maroonDark,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: const Text(
-            "Something Went Wrong!",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        content: const Text(
-          "Couldn't connect to the server. Check your connection and try again.",
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _resetScanner();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _maroonDark,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text("Try Again"),
-          ),
-        ],
+    _showScanDialog(
+      title: "Something Went Wrong!",
+      content: const Text(
+        "Couldn't connect to the server. Check your connection and try again.",
+        textAlign: TextAlign.center,
       ),
+      actions: [
+        _dialogButton(
+          label: "Try Again",
+          onPressed: () => _closeDialogAnd(_resetScanner),
+        ),
+      ],
     );
   }
 
-  /// Helper method to keep the torch button code clean
+  // ─── WIDGET HELPERS ─────────────────────────────────────────────────────────
+
+  /// Navigates to the landmark details screen for the given [landmarkId].
+  /// This is called after a successful scan when the user taps "View Landmark" in the success dialog.
+  /// TODO: Reroute to the correct details screen once the new details page is implemented.
+  void _navigateToLandmarkDetails(int landmarkId) {
+    Navigator.pushNamed(context, '/landmark_details', arguments: landmarkId);
+  }
+
   Widget _buildControlButton({
     required Widget icon,
     required VoidCallback onPressed,
@@ -564,8 +648,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     );
   }
 
-  /// Helper method to build a reward badge widget, used in the success dialog to display XP earned and achievements unlocked.
-  /// TEMPORARY UNTIL ACTUAL BADGE DESIGNS ARE READY
   Widget _buildRewardBadge(IconData icon, String text, Color color) {
     return Column(
       children: [
@@ -581,4 +663,54 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       ],
     );
   }
+}
+
+// ─── SCAN OVERLAY PAINTER ──────────────────────────────────────────────────────
+
+/// Draws a semi-transparent dark overlay over the entire camera preview,
+/// then "punches out" a clear rounded-rectangle in the center — the scan zone.
+///
+/// On web this is a visual guide only — mobile_scanner's web implementation
+/// does not honour scanWindow, so the full camera frame is always scanned.
+/// On native (iOS/Android) this aligns with the scanWindow rect passed to
+/// MobileScanner, which restricts actual barcode detection to the box.
+class _ScanOverlayPainter extends CustomPainter {
+  const _ScanOverlayPainter({
+    required this.scanAreaSize,
+    required this.borderColor,
+  });
+
+  final double scanAreaSize;
+  final Color borderColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final overlayPaint = Paint()..color = Colors.black.withValues(alpha: 0.55);
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final scanRect = Rect.fromCenter(
+      center: center,
+      width: scanAreaSize,
+      height: scanAreaSize,
+    );
+    const radius = Radius.circular(20);
+    final rrect = RRect.fromRectAndRadius(scanRect, radius);
+
+    final overlayPath = Path()
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..addRRect(rrect)
+      ..fillType = PathFillType.evenOdd;
+
+    canvas.drawPath(overlayPath, overlayPaint);
+    canvas.drawRRect(rrect, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ScanOverlayPainter oldDelegate) =>
+      oldDelegate.scanAreaSize != scanAreaSize ||
+      oldDelegate.borderColor != borderColor;
 }

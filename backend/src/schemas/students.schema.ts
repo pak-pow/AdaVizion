@@ -115,7 +115,7 @@ export const EditProfileSchema = z.object({
   path: ["specialization"]
 })
 
-export const EditPasswordSchema = z.object({
+export const ChangePasswordSchema = z.object({
   oldPassword: z.string({ error: "Old password must be a string" })
     .min(1, { error: "Old password is required" })
     .max(255, { error: "Old password is too long" }),
@@ -137,11 +137,11 @@ export const EditPasswordSchema = z.object({
 type RegistrationBody = z.infer<typeof RegistrationSchema>;
 type LoginBody = z.infer<typeof LoginSchema>;
 type EditProfileBody = z.infer<typeof EditProfileSchema>;
-type EditPasswordBody = z.infer<typeof EditPasswordSchema>;
+type ChangePasswordBody = z.infer<typeof ChangePasswordSchema>;
 
 export type {
   RegistrationBody,
   LoginBody,
   EditProfileBody,
-  EditPasswordBody
+  ChangePasswordBody
 }

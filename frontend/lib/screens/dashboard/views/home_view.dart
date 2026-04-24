@@ -104,6 +104,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           SnackBar(
             content: Text(e.toString().replaceFirst('Exception: ', '')),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
           ),
         );
       }

@@ -84,7 +84,9 @@ class AuthLayoutView extends StatelessWidget {
     required this.emailController,
     required this.loginPasswordController,
     // Signup fields
-    required this.fullNameController,
+    required this.firstNameController,
+    required this.middleNameController,
+    required this.lastNameController,
     required this.studentIdController,
     required this.signupPasswordController,
     // Dropdown state
@@ -104,7 +106,9 @@ class AuthLayoutView extends StatelessWidget {
   final TextEditingController loginPasswordController;
 
   // Signup
-  final TextEditingController fullNameController;
+  final TextEditingController firstNameController;
+  final TextEditingController middleNameController;
+  final TextEditingController lastNameController;
   final TextEditingController studentIdController;
   final TextEditingController signupPasswordController;
 
@@ -226,8 +230,22 @@ class AuthLayoutView extends StatelessWidget {
         // --- SIGN UP FIELDS ---
         if (!isLogin) ...[
           AuthTextField(
-            controller: fullNameController,
-            hint: 'Fullname',
+            controller: firstNameController,
+            hint: 'First Name',
+            border: border,
+            maxLength: 50,
+          ),
+          const SizedBox(height: 12),
+          AuthTextField(
+            controller: middleNameController,
+            hint: 'Middle Name (Optional)',
+            border: border,
+            maxLength: 50,
+          ),
+          const SizedBox(height: 12),
+          AuthTextField(
+            controller: lastNameController,
+            hint: 'Last Name',
             border: border,
             maxLength: 50,
           ),

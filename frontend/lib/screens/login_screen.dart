@@ -54,7 +54,9 @@ class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _loginPasswordController = TextEditingController();
 
-  final _fullNameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _middleNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _studentIdController = TextEditingController();
   final _signupPasswordController = TextEditingController();
 
@@ -72,7 +74,9 @@ class _AuthScreenState extends State<AuthScreen> {
   void dispose() {
     _emailController.dispose();
     _loginPasswordController.dispose();
-    _fullNameController.dispose();
+    _firstNameController.dispose();
+    _middleNameController.dispose();
+    _lastNameController.dispose();
     _studentIdController.dispose();
     _signupPasswordController.dispose();
     super.dispose();
@@ -173,7 +177,9 @@ class _AuthScreenState extends State<AuthScreen> {
                     isLoading: _isLoading,
                     emailController: _emailController,
                     loginPasswordController: _loginPasswordController,
-                    fullNameController: _fullNameController,
+                    firstNameController: _firstNameController,
+                    middleNameController: _middleNameController,
+                    lastNameController: _lastNameController,
                     studentIdController: _studentIdController,
                     signupPasswordController: _signupPasswordController,
                     selectedProgram: _selectedProgram,
@@ -213,8 +219,14 @@ class _AuthScreenState extends State<AuthScreen> {
           );
         }
       } else {
+        final full = [
+          _firstNameController.text.trim(),
+          _middleNameController.text.trim(),
+          _lastNameController.text.trim(),
+        ].where((s) => s.isNotEmpty).join(' ');
+
         final studentData = {
-          'full_name': _fullNameController.text.trim(),
+          'full_name': full,
           'student_number': _studentIdController.text.trim(),
           'program': _selectedProgram,
           'specialization': _selectedSpecialization,
@@ -252,6 +264,7 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         backgroundColor: Colors.red.shade800,
         behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
       ),
     );
   }
@@ -268,6 +281,7 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         backgroundColor: Colors.green.shade700,
         behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
       ),
     );
   }

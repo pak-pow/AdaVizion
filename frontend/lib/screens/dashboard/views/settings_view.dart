@@ -44,10 +44,20 @@ class _SettingsViewState extends State<SettingsView> {
 
   // ── Display / editable fields ─────────────────────────────────────────────
   String? _imgPath;
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _middleNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _studentIdController = TextEditingController();
   final _courseController = TextEditingController();
   final _specializationController = TextEditingController();
+
+  String get _fullName {
+    final first = _firstNameController.text.trim();
+    final middle = _middleNameController.text.trim();
+    final last = _lastNameController.text.trim();
+    if (first.isEmpty && middle.isEmpty && last.isEmpty) return '';
+    return [first, middle, last].where((s) => s.isNotEmpty).join(' ');
+  }
 
   @override
   void initState() {
@@ -57,7 +67,9 @@ class _SettingsViewState extends State<SettingsView> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _middleNameController.dispose();
+    _lastNameController.dispose();
     _studentIdController.dispose();
     _courseController.dispose();
     _specializationController.dispose();
@@ -74,7 +86,28 @@ class _SettingsViewState extends State<SettingsView> {
           if (info != null) {
             final firstName = info['first_name'] ?? '';
             final lastName = info['last_name'] ?? '';
-            _nameController.text = '$firstName $lastName'.trim();
+            final middleName = info['middle_name'] ?? '';
+            
+            _firstNameController.text = firstName;
+            _lastNameController.text = lastName;
+            _middleNameController.text = middleName;
+
+            // Fallback: If DB only has single string name
+            final fullNameStr = info['full_name'] ?? info['name'];
+            if (firstName.isEmpty && lastName.isEmpty && fullNameStr is String && fullNameStr.isNotEmpty) {
+              final parts = fullNameStr.trim().split(RegExp(r'\s+'));
+              if (parts.length == 1) {
+                _firstNameController.text = parts[0];
+              } else if (parts.length == 2) {
+                _firstNameController.text = parts[0];
+                _lastNameController.text = parts[1];
+              } else if (parts.length > 2) {
+                _firstNameController.text = parts[0];
+                _lastNameController.text = parts.last;
+                _middleNameController.text = parts.sublist(1, parts.length - 1).join(' ');
+              }
+            }
+
             _studentIdController.text = info['student_number'] ?? '';
             _courseController.text = info['program'] ?? '';
             _specializationController.text = info['specialization'] ?? '';
@@ -106,6 +139,8 @@ class _SettingsViewState extends State<SettingsView> {
           const SnackBar(
             content: Text('Profile picture updated!'),
             backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
           ),
         );
       }
@@ -115,6 +150,8 @@ class _SettingsViewState extends State<SettingsView> {
           SnackBar(
             content: Text(e.toString().replaceFirst('Exception: ', '')),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
           ),
         );
       }
@@ -170,6 +207,8 @@ class _SettingsViewState extends State<SettingsView> {
       const SnackBar(
         content: Text('Feature coming soon!'),
         duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
       ),
     );
   }
@@ -411,9 +450,7 @@ class _SettingsViewState extends State<SettingsView> {
                   children: [
                     const SizedBox(height: 2),
                     Text(
-                      _nameController.text.isEmpty
-                          ? 'Student'
-                          : _nameController.text,
+                      _fullName.isEmpty ? 'Student' : _fullName,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -515,7 +552,9 @@ class _SettingsViewState extends State<SettingsView> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildEditField(controller: _nameController, hint: 'Full Name'),
+          _buildEditField(controller: _firstNameController, hint: 'First Name'),
+          _buildEditField(controller: _middleNameController, hint: 'Middle Name (Optional)'),
+          _buildEditField(controller: _lastNameController, hint: 'Last Name'),
           _buildEditField(
             controller: _studentIdController,
             hint: 'Student ID',
@@ -588,9 +627,9 @@ class _SettingsViewState extends State<SettingsView> {
       child: TextField(
         controller: controller,
         readOnly: readOnly,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 13,
-          color: Color(0xFF1A1A1A),
+          color: readOnly ? Colors.grey.shade600 : const Color(0xFF1A1A1A),
           fontWeight: FontWeight.w500,
         ),
         decoration: InputDecoration(

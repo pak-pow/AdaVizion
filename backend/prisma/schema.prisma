@@ -57,7 +57,7 @@ model Quiz {
 model Question {
   question_id   Int    @id @default(autoincrement())
   quiz_id       Int
-  question_text String
+  question_text String @unique
   choices       Json
   correct_idx   Int
   item_points   Int    @default(10)

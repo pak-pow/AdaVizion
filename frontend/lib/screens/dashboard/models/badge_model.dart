@@ -13,12 +13,16 @@ class BadgeConfig {
   final String sublabel;
   final BadgeCategory category;
   final bool isLocked;
+  final String? imgPath;
+  final int threshold;
 
   const BadgeConfig({
     required this.label,
     required this.sublabel,
     required this.category,
-    required this.isLocked,
+    this.isLocked = true,
+    this.imgPath,
+    required this.threshold,
   });
 }
 
@@ -34,36 +38,42 @@ const List<BadgeConfig> kAchievementBadges = [
     label: 'Scout',
     sublabel: 'Visit 1 landmark',
     category: BadgeCategory.explorer,
-    isLocked: true,
+    threshold: 1,
+    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-1.svg',
   ),
   BadgeConfig(
     label: 'Voyager',
     sublabel: 'Visit 5 landmarks',
     category: BadgeCategory.explorer,
-    isLocked: true,
+    threshold: 5,
+    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-2.svg',
   ),
   BadgeConfig(
     label: 'Trailblazer',
     sublabel: 'Visit all landmarks',
     category: BadgeCategory.explorer,
-    isLocked: true,
+    threshold: 10,
+    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.svg',
   ),
   BadgeConfig(
     label: 'Aspirant',
     sublabel: '50 quiz pts',
     category: BadgeCategory.scholar,
-    isLocked: true,
+    threshold: 50,
+    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.svg',
   ),
   BadgeConfig(
     label: 'Seeker',
     sublabel: '100 quiz pts',
     category: BadgeCategory.scholar,
-    isLocked: true,
+    threshold: 100,
+    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.svg',
   ),
   BadgeConfig(
     label: 'Paragon',
     sublabel: '150 quiz pts',
     category: BadgeCategory.scholar,
-    isLocked: true,
+    threshold: 150,
+    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.svg',
   ),
 ];

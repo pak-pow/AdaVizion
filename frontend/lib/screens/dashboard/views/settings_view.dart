@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../services/api/api_config.dart';
 import '../../../services/api/profile_api.dart';
+import '../../auth/views/auth_layout_view.dart';
 import '../../login_screen.dart';
 import '../../../utils/toast_service.dart';
 
@@ -541,14 +542,108 @@ class _SettingsViewState extends State<SettingsView> {
             hint: 'Student ID',
             readOnly: true,
           ),
-          _buildEditField(
-            controller: _courseController,
-            hint: 'Course / Program',
+          // Course / Program Dropdown
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: DropdownButtonFormField<String>(
+              isExpanded: true,
+              value: kBackendPrograms.containsKey(_courseController.text)
+                  ? _courseController.text
+                  : null,
+              decoration: InputDecoration(
+                labelText: 'Course / Program',
+                labelStyle: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                filled: true,
+                fillColor: const Color(0xFFF7F7F9),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: _maroon, width: 1.5),
+                ),
+              ),
+              items: kBackendPrograms.entries.map((e) {
+                return DropdownMenuItem<String>(
+                  value: e.key,
+                  child: Text(
+                    e.value,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF1A1A1A),
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    _courseController.text = newValue;
+                    _specializationController.text = ''; // Reset on program change
+                  });
+                }
+              },
+            ),
           ),
-          _buildEditField(
-            controller: _specializationController,
-            hint: 'Specialization',
-          ),
+          // Specialization Dropdown
+          if (kBackendSpecializations.containsKey(_courseController.text))
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: DropdownButtonFormField<String>(
+                isExpanded: true,
+                value: kBackendSpecializations[_courseController.text]!.contains(_specializationController.text)
+                    ? _specializationController.text
+                    : null,
+                decoration: InputDecoration(
+                  labelText: 'Specialization',
+                  labelStyle: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  filled: true,
+                  fillColor: const Color(0xFFF7F7F9),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey.shade200),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey.shade200),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: _maroon, width: 1.5),
+                  ),
+                ),
+                items: kBackendSpecializations[_courseController.text]!.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF1A1A1A),
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _specializationController.text = newValue;
+                    });
+                  }
+                },
+              ),
+            ),
           const SizedBox(height: 4),
           Row(
             children: [

@@ -151,45 +151,6 @@ class _QuizListScreenState extends State<QuizListScreen> {
 
               const SizedBox(height: 32),
 
-              // 3. FOOTER
-              const Text(
-                'Go back',
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.w900,
-                  color: _maroon,
-                  height: 1.0,
-                ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'to unlock quizzes and explore\nEnverga University',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: _maroon,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              OutlinedButton(
-                onPressed: () => Navigator.pop(context),
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: _maroonDark,
-                  side: const BorderSide(color: _maroonDark, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  minimumSize: const Size(180, 45),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                ),
-                child: const Text(
-                  'Return to Dashboard',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
-                ),
-              ),
               const SizedBox(height: 60),
             ],
           ),

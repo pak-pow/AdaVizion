@@ -88,10 +88,39 @@ export const LoginSchema = z.object({
   password: passwordBase
 })
 
+export const EditProfileSchema = z.object({
+  firstName: firstNameBase,
+  middleName: middleNameBase,
+  lastName: lastNameBase,
+  program: programBase,
+  specialization: specializationBase,
+  yearLevel: yearLevelBase,
+})
+
+// Verify program exists in the university curriculum
+.refine((data) => {
+  return Object.keys(PROGRAM_ABBREVIATIONS).includes(data.program);
+}, {
+  error: "Please select a valid MSEUF academic program",
+  path: ["program"]
+})
+
+// Verify specialization belongs to the selected program
+.refine((data) => {
+  if (!data.specialization) return true;
+  const validSpecializations = PROGRAM_SPECIALIZATIONS[data.program] || [];
+  return validSpecializations.includes(data.specialization);
+}, {
+  error: "Invalid specialization for the selected program",
+  path: ["specialization"]
+})
+
 type RegistrationBody = z.infer<typeof RegistrationSchema>;
 type LoginBody = z.infer<typeof LoginSchema>;
+type EditProfileBody = z.infer<typeof EditProfileSchema>;
 
 export type {
   RegistrationBody,
-  LoginBody
+  LoginBody,
+  EditProfileBody
 }

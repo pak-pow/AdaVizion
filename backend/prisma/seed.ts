@@ -66,34 +66,41 @@ async function seedQuizzes() {
     const passingPercent = 0.75;
     const passingScore = Math.ceil(maxPoints * passingPercent);
 
-    const questionData = quiz.questions.map((question) => ({
-      question_text: question.question_text,
-      choices: question.choices as Prisma.InputJsonValue,
-      correct_idx: question.correct_idx,
-      item_points: question.item_points
-    }))
-
-    await prisma.quiz.upsert({
+    const upsertedQuiz = await prisma.quiz.upsert({
       where: { name: quiz.name },
       update: {
         min_landmarks: quiz.min_landmarks,
         max_score: maxPoints,
         passing_score: passingScore,
-        questions: {
-          deleteMany: {},
-          create: questionData
-        }
       },
       create: {
         name: quiz.name,
         min_landmarks: quiz.min_landmarks,
         max_score: maxPoints,
         passing_score: passingScore,
-        questions: {
-          create: questionData
-        }
       }
-    })
+    });
+
+    for (const question of quiz.questions) {
+      await prisma.question.upsert({
+        where: {  
+          quiz_id: upsertedQuiz.quiz_id,
+          question_text: question.question_text
+         },
+        update: {
+          choices: question.choices as Prisma.InputJsonValue,
+          correct_idx: question.correct_idx,
+          item_points: question.item_points
+        },
+        create: {
+          quiz_id: upsertedQuiz.quiz_id,
+          question_text: question.question_text,
+          choices: question.choices as Prisma.InputJsonValue,
+          correct_idx: question.correct_idx,
+          item_points: question.item_points
+        }
+      });
+    }
   }
 
   console.log(`${quizzesData.length} quizzes seeded successfully`);

@@ -3,42 +3,48 @@
     "title": "Envergan Scout",
     "description": "Your journey begins! Successfully located your first campus landmark.",
     "category": "EXPLORER",
+    "tier": 1,
     "threshold": 1,
-    "img_path": ""
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-1.svg"
   },
   {
     "title": "Wildcat Voyager",
     "description": "Becoming a local! You've successfully navigated to 5 landmarks.",
     "category": "EXPLORER",
+    "tier": 2,
     "threshold": 5,
-    "img_path": ""
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-2.svg"
   },
   {
     "title": "Luzonian Trailblazer",
     "description": "Campus Master! You've explored every corner of the university.",
     "category": "EXPLORER",
+    "tier": 3,
     "threshold": 10,
-    "img_path": ""
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.svg"
   },
   {
     "title": "Envergan Aspirant",
     "description": "50 quiz points achieved.",
     "category": "SCHOLAR",
+    "tier": 1,
     "threshold": 50,
-    "img_path": ""
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.svg"
   },
   {
     "title": "Wildcat Seeker",
     "description": "100 quiz points achieved.",
     "category": "SCHOLAR",
+    "tier": 2,
     "threshold": 100,
-    "img_path": ""
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.svg"
   },
   {
     "title": "Luzonian Paragon",
     "description": "150 quiz points achieved. Hawak mo ang beat!",
     "category": "SCHOLAR",
+    "tier": 3,
     "threshold": 150,
-    "img_path": ""
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.svg"
   }
 ]

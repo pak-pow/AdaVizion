@@ -1,64 +1,64 @@
 [
   {
     "name": "Founder's Monument",
-    "description": "",
-    "fun_fact": "",
+    "description": "This monument honors the university's founder, Dr. Manuel S. Enverga, a nationalist, philanthropist, and congressman who contributed to education in Quezon province and to the institution's conversion into an educational foundation.",
+    "fun_fact": "The MSE monument was first unveiled by the National Historical Commission of the Philippines (NHCP) on February 11, 2009, by NHCP Deputy Executive Director Emelota V. Almosara and MSEUF Chairman/CEO Atty. Wilfrido L. Enverga as part of the founder's birth centennial anniversary.",
     "qr_string": "02367a05-55f7-4375-b95f-bee42cee5d98",
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/founders-monument-02367a05-55f7-4375-b95f-bee42cee5d98.jpg"
   },
   {
     "name": "Casa Segunda",
-    "description": "",
-    "fun_fact": "",
+    "description": "One of the iconic ancestral houses of Lucena City, Casa Segunda is a place where students, faculty, and visitors can explore the richness of Filipino identity and engage in dialogues about history, art, and nationhood.",
+    "fun_fact": "Casa Segunda stood in Lucena's vibrant past, when it was located at the corner of Tagarao Street and Quezon Avenue, until MSEUF committed to relocating and restoring the house to ensure cultural preservation and education.",
     "qr_string": "66ade17d-3495-4429-95bc-b6399fa23e97",
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/casa-segunda-66ade17d-3495-4429-95bc-b6399fa23e97.jpg"
   },
   {
     "name": "Bike Station (Gate 3)",
-    "description": "",
-    "fun_fact": "",
+    "description": "Cutting carbon footprint and supporting wellness through daily cycling, the \"Bisig-LETAS\" bike project promotes a sustainable transport initiative as students, employees, and visitors hop on a bike and enjoy a ride around the campus.",
+    "fun_fact": "MSEUF was the first university to launch a campus-based bicycle project in Quezon on August 14, 2025. This project had over 5,874 users, 1,400 hours of usage, 1,700 kilometers traveled, and 600,000 kilocalories burned as of February 21, 2026.",
     "qr_string": "bf867d82-2f2e-4438-9f20-0bb92e9e061a",
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/bike-station-gate-3-bf867d82-2f2e-4438-9f20-0bb92e9e061a.jpg"
   },
   {
     "name": "University Library",
-    "description": "",
-    "fun_fact": "",
+    "description": "Dedicated to enhancing access to information, supporting research, and promoting lifelong learning, the University library partners with academic departments, other libraries, and external organizations to help students, faculty, and researchers achieve academic excellence by providing the necessary resources and tools.",
+    "fun_fact": "Before being the biggest library in the Southern Tagalog Region, it started as a small room that used to be a garage, and was organized only by Carmen Forcadela. Being a one-woman show, Forcadela managed the catalog of all the books, donated and loaned by the founder at that time, and made things work to turn the garage into an actual library.",
     "qr_string": "dd7ae26b-c14e-4a4e-9a12-87a11990a816",
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/university-library-dd7ae26b-c14e-4a4e-9a12-87a11990a816.jpg"
   },
   {
     "name": "St. Bonaventure Student Center",
-    "description": "",
-    "fun_fact": "",
+    "description": "The St. Bonaventure Student Center is a space for students, faculty, and staff who are welcomed to gather for campus religious services, student assemblies and general meetings, and university-wide programs and formation events.",
+    "fun_fact": "Dr. Tobias Y. Enverga told Dr. Manuel S. Enverga that St. Bonaventure is the ideal role model for students, becoming the University's patron saint for his saintly life, divine teachings, and inspiring academic achievements.",
     "qr_string": "c6567935-888e-40ab-b707-3548e318e2af",
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/st-bonaventure-student-center-c6567935-888e-40ab-b707-3548e318e2af.jpg"
   },
   {
     "name": "University Canteen",
-    "description": "",
-    "fun_fact": "",
+    "description": "Whether you need to eat lunch or grab some snacks to get through the day, the main cafeteria has your back, offering a variety of foods that are, of course, affordable to students. Serving Filipino home-style dishes to vegetarian-friendly meals, every student will surely find something healthy and delicious.",
+    "fun_fact": "The University Canteen currently has 19 food stalls to choose from, along with its nicest vendors you will meet every time you wanna grab a quick bite.",
     "qr_string": "6a9e282d-0b5f-45bb-8644-fd36bc5b9ecf",
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/university-canteen-6a9e282d-0b5f-45bb-8644-fd36bc5b9ecf.jpg"
   },
   {
     "name": "Banyuhay Bridge",
-    "description": "",
-    "fun_fact": "",
+    "description": "Spanning across a mini lake giving way to the rest of the campus to the AEC Building, Banyuhay Bridge, the University's most symbolic and romantic feature.",
+    "fun_fact": "\"Banyuhay\" is short for \"bagong anyong buhay,\" referring to \"Metamorphosis\" or \"New Way of Life.\" This symbolizes the transition, growth, and the journey Envergans undergo.",
     "qr_string": "5b2c3048-2787-46b1-b5af-3d133e79a7f7",
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/banyuhay-bridge-5b2c3048-2787-46b1-b5af-3d133e79a7f7.jpg"
   },
   {
     "name": "Vending Machine (CAS Building)",
-    "description": "",
-    "fun_fact": "",
+    "description": "A quick and convenient way to get snacks and drinks anytime. These vending machines are located in the Admin and AEC Building, which offers various drinks and snacks for you to easily get with just a few clicks.",
+    "fun_fact": "The university vending machines accept cashless payment by tapping your school ID. With a minimum amount of 200 pesos, you can load it by just visiting the Sustainability Department Office located at the back of the St. Bonaventure Student Center.",
     "qr_string": "77d0b14c-4d3b-4488-8d56-8317d81c4f60",
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/vending-machine-cas-building-77d0b14c-4d3b-4488-8d56-8317d81c4f60.jpg"
   },
   {
     "name": "CCJC Building",
-    "description": "",
-    "fun_fact": "",
+    "description": "Having the only CHED Center of Excellence in Criminology Education in Quezon Province, the three-storey CCJC building provides quality facilities, including a moot court, a dark room, an interrogation and polygraph room, and a crime scene room for students to prepare for real-world scenarios.",
+    "fun_fact": "The College of Criminal Justice and Criminology (formerly School of Criminology) started as a part of the College of Arts and Sciences in 1986. It had twenty-five students, three of whom were females, in its first year of operations.",
     "qr_string": "53028e53-4e3e-4965-b14a-354dc70dc029",
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/landmarks/thumbnails/ccjc-building-53028e53-4e3e-4965-b14a-354dc70dc029.jpg"
   }

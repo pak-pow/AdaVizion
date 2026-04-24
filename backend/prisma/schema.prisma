@@ -33,7 +33,7 @@ model Landmark {
   name        String             @unique @db.VarChar(100)
   description String?
   fun_fact    String?
-  qr_string   String             @unique
+  qr_string   String             @unique @db.VarChar(255)
   img_path    String?            @db.VarChar(255)
   created_at  DateTime           @default(now())
   visitors    LandmarksVisited[]
@@ -57,7 +57,7 @@ model Quiz {
 model Question {
   question_id   Int    @id @default(autoincrement())
   quiz_id       Int
-  question_text String
+  question_text String @unique
   choices       Json
   correct_idx   Int
   item_points   Int    @default(10)
@@ -77,6 +77,7 @@ model Achievement {
   title          String               @unique @db.VarChar(100)
   description    String
   category       AchievementCategory
+  tier           Int
   threshold      Int
   img_path       String?              @db.VarChar(255)
   created_at     DateTime             @default(now())

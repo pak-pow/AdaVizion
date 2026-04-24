@@ -39,12 +39,7 @@ async function fetchLandmark(studentNum: string, landmarkId: number) {
   const { qr_string, ...publicData } = landmark;
 
   if (!visit) {
-    const { fun_fact, ...lockedData } = publicData;
-    
-    return {
-      ...lockedData,
-      is_unlocked: false,
-    };
+    throw new Error("Scan landmark QR first");
   }
 
   return {

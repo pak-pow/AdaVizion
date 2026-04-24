@@ -15,7 +15,7 @@ async function fetchLandmarkChecklist(studentNum: string) {
   // Final checklist to show on the frontend
   const landmarkList = allLandmarks.map((landmark) => {
     const isVisited = visitedIds.has(landmark.landmark_id);
-    const { fun_fact, qr_string, ...publicData } = landmark;
+    const { description, fun_fact, qr_string, ...publicData } = landmark;
 
     return {
       ...publicData,

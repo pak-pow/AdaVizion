@@ -62,7 +62,7 @@ async function uploadBadge(baseName: string) {
       .storage
       .from("achievement-badges")
       .upload(fileName, fileBuffer, {
-        contentType: "image/svg",
+        contentType: "image/svg+xml",
         upsert: true,
       });
     

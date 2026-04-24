@@ -562,6 +562,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             progress: _explorerProgress,
             barColor: _amber,
           ),
+
         ],
       ),
     );

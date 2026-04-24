@@ -15,6 +15,9 @@ class BadgeConfig {
   final bool isLocked;
   final String? imgPath;
   final int threshold;
+  final int? tier;
+  final String? description;
+  final String? fun_fact;
 
   const BadgeConfig({
     required this.label,
@@ -23,6 +26,9 @@ class BadgeConfig {
     this.isLocked = true,
     this.imgPath,
     required this.threshold,
+    this.tier,
+    this.description,
+    this.fun_fact,
   });
 }
 
@@ -40,6 +46,8 @@ const List<BadgeConfig> kAchievementBadges = [
     category: BadgeCategory.explorer,
     threshold: 1,
     imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-1.svg',
+    tier: 1,
+    description: "Your journey begins! Successfully located your first campus landmark.",
   ),
   BadgeConfig(
     label: 'Voyager',
@@ -47,6 +55,8 @@ const List<BadgeConfig> kAchievementBadges = [
     category: BadgeCategory.explorer,
     threshold: 5,
     imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-2.svg',
+    tier: 2,
+    description: "Becoming a local! You've successfully navigated to 5 landmarks.",
   ),
   BadgeConfig(
     label: 'Trailblazer',
@@ -54,6 +64,8 @@ const List<BadgeConfig> kAchievementBadges = [
     category: BadgeCategory.explorer,
     threshold: 10,
     imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.svg',
+    tier: 3,
+    description: "Campus Master! You've explored every corner of the university.",
   ),
   BadgeConfig(
     label: 'Aspirant',
@@ -61,6 +73,8 @@ const List<BadgeConfig> kAchievementBadges = [
     category: BadgeCategory.scholar,
     threshold: 50,
     imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.svg',
+    tier: 1,
+    description: "50 quiz points achieved.",
   ),
   BadgeConfig(
     label: 'Seeker',
@@ -68,6 +82,8 @@ const List<BadgeConfig> kAchievementBadges = [
     category: BadgeCategory.scholar,
     threshold: 100,
     imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.svg',
+    tier: 2,
+    description: "100 quiz points achieved.",
   ),
   BadgeConfig(
     label: 'Paragon',
@@ -75,5 +91,7 @@ const List<BadgeConfig> kAchievementBadges = [
     category: BadgeCategory.scholar,
     threshold: 150,
     imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.svg',
+    tier: 3,
+    description: "150 quiz points achieved. Hawak mo ang beat!",
   ),
 ];

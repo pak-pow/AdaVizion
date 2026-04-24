@@ -71,10 +71,12 @@ class _BadgesCardState extends State<BadgesCard> {
         isLocked: isLocked,
         imgPath: badge.imgPath,
         threshold: badge.threshold,
+        tier: badge.tier,
+        description: badge.description,
+        fun_fact: badge.fun_fact,
       );
     }).toList();
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(

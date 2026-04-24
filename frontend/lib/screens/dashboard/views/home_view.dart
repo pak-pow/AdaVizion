@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../services/api/profile_api.dart';
 import '../widgets/badges_card.dart';
-import '../../qrcode_screen.dart';
+// qrcode_screen.dart import removed — QR navigation is now handled
+// by the global center-docked FAB in DashboardScreen.
 
 // ============================================================================
 // DASHBOARD HOME VIEW
@@ -12,7 +13,6 @@ import '../../qrcode_screen.dart';
 // This widget is the main scrollable body of the dashboard. It shows:
 //   1. The profile card (with edit mode + avatar upload)
 //   2. The badge carousel (BadgesCard — self-contained)
-//   3. The "Scan now!" QR code entry point
 //
 // State removed versus the original:
 //   - _selectedBadgeFilter → moved into BadgesCard
@@ -201,69 +201,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           ),
         ),
 
-        // ─── BOTTOM SECTION: SCAN NOW ────────────────────────────────────────
-        // Expands to fill remaining screen space so the QR prompt sits
-        // centred below the cards without the page needing to scroll.
-        // Hidden entirely during edit mode to remove the empty gap.
-        if (!_isEditMode)
-          Expanded(
-            child: IgnorePointer(
-              ignoring: _isEditMode,
-              child: AnimatedOpacity(
-                opacity: _isEditMode ? 0.0 : 1.0,
-                duration: const Duration(milliseconds: 650),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Scan now!',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                        color: _maroon,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'to unlock quizzes and explore\nEnverga University',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: _maroon,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // FUNCTIONAL: QR Code Scanner Button
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const QRCodeScreen(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: _maroon, width: 2.0),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.qr_code_2,
-                          size: 60,
-                          color: _maroon,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        const SizedBox(height: 160),
+        // Bottom padding gives scroll clearance above the BottomAppBar + FAB.
+        const SizedBox(height: 120),
       ],
     );
   }

@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../../services/api/profile_api.dart';
 import '../widgets/badges_card.dart';
 
 // ============================================================================
-// DASHBOARD HOME VIEW  (Consolidated)
+// DASHBOARD HOME VIEW  (Consolidated + Hero Card)
 //
-// One scrollable feed showing:
-//   1. Profile card  (with edit mode + avatar upload)
-//   2. Badge carousel  (BadgesCard — self-contained state)
-//   3. Scholar milestone progress bar
+// Scrollable feed:
+//   1. Combined Hero Card  — Avatar · Name · Program / Points · Rank · Level
+//   2. Badge carousel      — BadgesCard (self-contained state)
+//   3. Scholar milestone card
 //   4. Exploration + XP progress bars
 //   5. 2×2 stat grid
 //
-// Progress data is co-fetched with profile from GET /students/me so both
-// datasets share a single network round-trip.
-//
-// Progress UI migrated from the now-deleted progress_view.dart.
+// Profile + progress data are co-fetched from GET /students/me in a single
+// round-trip.  Edit state (controllers, _isEditMode) lives in SettingsView.
 // ============================================================================
 
 class DashboardHomeView extends StatefulWidget {
@@ -27,19 +24,13 @@ class DashboardHomeView extends StatefulWidget {
 }
 
 class _DashboardHomeViewState extends State<DashboardHomeView> {
-  // ── Loading / edit flags ──────────────────────────────────────────────────
+  // ── Loading ───────────────────────────────────────────────────────────────
   bool _isLoading = true;
-  bool _isUploadingPicture = false;
-  bool _isEditMode = false;
 
-  /// Current profile picture URL (Supabase), or null if not set.
+  // ── Display-only profile fields ───────────────────────────────────────────
+  String _name = '';
+  String _program = '';
   String? _imgPath;
-
-  // ── Text controllers ──────────────────────────────────────────────────────
-  final _nameController = TextEditingController();
-  final _studentIdController = TextEditingController();
-  final _courseController = TextEditingController();
-  final _specializationController = TextEditingController();
 
   // ── Progress state (GET /students/me → data['progress']) ─────────────────
   int _level = 0;
@@ -70,39 +61,25 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
     _fetchProfile();
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _studentIdController.dispose();
-    _courseController.dispose();
-    _specializationController.dispose();
-    super.dispose();
-  }
-
-  // ─── Data fetch ─────────────────────────────────────────────────────────────
-  // Single API call populates both profile info AND all progress stats.
+  // ─── Data fetch ──────────────────────────────────────────────────────────────
   Future<void> _fetchProfile() async {
     try {
       final data = await ProfileApi.getProfile();
 
       if (mounted) {
         setState(() {
-          // ── Profile / identity fields ───────────────────────────────────
           final info = data['info'];
           if (info != null) {
             final firstName = info['first_name'] ?? '';
             final lastName = info['last_name'] ?? '';
-            _nameController.text = '$firstName $lastName'.trim();
-            _studentIdController.text = info['student_number'] ?? '';
-            _courseController.text = info['program'] ?? '';
-            _specializationController.text = info['specialization'] ?? '';
+            _name = '$firstName $lastName'.trim();
+            _program = info['program'] ?? '';
             final rawImgPath = info['img_path'];
             _imgPath = (rawImgPath is String && rawImgPath.isNotEmpty)
                 ? rawImgPath
                 : null;
           }
 
-          // ── Progress fields (migrated from ProgressDashboardView) ───────
           final progress = data['progress'];
           if (progress != null) {
             final xp = progress['xp'] as Map<String, dynamic>?;
@@ -131,48 +108,11 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
         );
       }
     } finally {
-      // Always reset loading so the UI never gets stuck on a spinner,
-      // even if the widget was disposed before the catch block ran.
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  // ─── Profile picture upload ──────────────────────────────────────────────────
-  /// Opens the device gallery, uploads the selected image via Multer, then
-  /// refreshes the profile so the new Supabase URL is reflected immediately.
-  Future<void> _pickAndUploadImage() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedImage == null) return;
-
-    setState(() => _isUploadingPicture = true);
-    try {
-      await ProfileApi.uploadProfilePicture(pickedImage);
-      await _fetchProfile();
-      if (mounted) setState(() => _isEditMode = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile picture updated!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceFirst('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isUploadingPicture = false);
-    }
-  }
-
-  // ─── Progress helpers ────────────────────────────────────────────────────────
+  // ─── Progress helpers ─────────────────────────────────────────────────────
   ({int pts, String rank})? get _nextMilestone {
     for (final m in _scholarMilestones) {
       if (_quizPoints < m.pts) return m;
@@ -205,7 +145,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
     return ((_nextThreshold - _toNextLevel) / _nextThreshold).clamp(0.0, 1.0);
   }
 
-  // ─── Build ──────────────────────────────────────────────────────────────────
+  // ─── Build ────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -217,55 +157,37 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── 1. Profile card + Badges ────────────────────────────────────
+          // ── 1. Combined Hero Card ──────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 0),
-            child: Column(
-              children: [
-                _buildMainProfileCard(),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: _buildCombinedHeroCard(),
+          ),
+          const SizedBox(height: 16),
 
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeInOutCubic,
-                  child: SizedBox(height: _isEditMode ? 0 : 16),
-                ),
-
-                AnimatedOpacity(
-                  opacity: _isEditMode ? 0.0 : 1.0,
-                  duration: const Duration(milliseconds: 350),
-                  child: AnimatedSize(
-                    duration: const Duration(milliseconds: 350),
-                    curve: Curves.easeInOutCubic,
-                    alignment: Alignment.topCenter,
-                    child: _isEditMode
-                        ? const SizedBox(width: double.infinity, height: 0)
-                        : const BadgesCard(),
-                  ),
-                ),
-              ],
-            ),
+          // ── 2. Badge carousel ─────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: const BadgesCard(),
           ),
 
-          // ── 2. Progress sections (hidden during profile edit mode) ───────
-          if (!_isEditMode) ...[
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildMilestoneCard(),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildProgressCard(),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildStatGrid(),
-            ),
-          ],
+          // ── 3 – 5. Progress sections ──────────────────────────────────
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildMilestoneCard(),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildProgressCard(),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildStatGrid(),
+          ),
 
-          // Bottom clearance above the BottomAppBar + FAB.
+          // Bottom clearance above BottomAppBar + FAB.
           const SizedBox(height: 120),
         ],
       ),
@@ -273,269 +195,182 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   }
 
   // ==========================================================================
-  // CARD 1: MAIN PROFILE CARD
+  // COMBINED HERO CARD
+  //
+  // Top section : Avatar · Name · Program/Course  (no edit icon, no student ID)
+  // Divider     : Faint white hairline
+  // Bottom row  : Gold Rank chip · "X Points" counter · "Level X · Y XP total"
   // ==========================================================================
-  Widget _buildMainProfileCard() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeInOutCubic,
+  Widget _buildCombinedHeroCard() {
+    final xpEarned = _nextThreshold - _toNextLevel;
+
+    return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 24, 20, 24),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [_gradientTop, _maroon],
         ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(12),
-          bottomRight: Radius.circular(12),
-        ),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProfileHeader(),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 350),
-            curve: Curves.easeInOutCubic,
-            alignment: Alignment.topCenter,
-            child: _isEditMode
-                ? _buildEditForm()
-                : const SizedBox(width: double.infinity),
+          // ── Top row: Avatar + Name + Program ─────────────────────────
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Avatar
+              Container(
+                width: 68,
+                height: 68,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.25),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.60),
+                    width: 2,
+                  ),
+                  image: _imgPath != null
+                      ? DecorationImage(
+                          image: NetworkImage(_imgPath!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                child: _imgPath == null
+                    ? const Icon(
+                        Icons.person_outline,
+                        color: Colors.white,
+                        size: 32,
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 16),
+
+              // Name + program
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _name.isEmpty ? 'Student' : _name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        height: 1.15,
+                      ),
+                    ),
+                    if (_program.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        _program,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.75),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 22),
+
+          // ── Bottom row: Rank chip · Points · Level · XP ───────────────
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Gold rank chip
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _gold.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: _gold.withValues(alpha: 0.55),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.military_tech_rounded,
+                      color: _gold,
+                      size: 13,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _currentRank,
+                      style: const TextStyle(
+                        color: _gold,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const Spacer(),
+
+              // Points + Level + XP
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Points counter
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '$_quizPoints',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            height: 1,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: ' pts',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Level $_level  ·  $xpEarned XP',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.65),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildProfileHeader() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // ── Tappable avatar (active only in edit mode) ──────────────────
-        GestureDetector(
-          onTap: (_isUploadingPicture || !_isEditMode)
-              ? null
-              : _pickAndUploadImage,
-          child: SizedBox(
-            width: 72,
-            height: 72,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    image: (_imgPath != null)
-                        ? DecorationImage(
-                            image: NetworkImage(_imgPath!),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                  ),
-                  child: (_imgPath == null)
-                      ? const Icon(
-                          Icons.broken_image_outlined,
-                          color: Colors.black87,
-                          size: 36,
-                        )
-                      : null,
-                ),
-                if (_isUploadingPicture)
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.45),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2.5,
-                      ),
-                    ),
-                  )
-                else if (_isEditMode)
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: const BoxDecoration(
-                      color: Colors.black45,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.camera_alt, color: Colors.white, size: 30),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              Text(
-                _studentIdController.text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                _nameController.text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                _courseController.text,
-                style: const TextStyle(color: Colors.white, fontSize: 10, height: 1.2),
-              ),
-              Text(
-                _specializationController.text,
-                style: const TextStyle(color: Colors.white, fontSize: 10, height: 1.2),
-              ),
-            ],
-          ),
-        ),
-
-        // ── Edit pencil toggle ─────────────────────────────────────────
-        GestureDetector(
-          onTap: () => setState(() => _isEditMode = !_isEditMode),
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white, width: 1.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              _isEditMode ? Icons.close : Icons.edit,
-              color: Colors.white,
-              size: 14,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEditForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: 32),
-        const Center(
-          child: Text(
-            'Edit Profile',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-        _buildEditField(controller: _nameController, hint: 'Fullname'),
-        _buildEditField(
-          controller: _studentIdController,
-          hint: 'Student Id',
-          readOnly: true,
-        ),
-        _buildEditField(controller: _courseController, hint: 'Course/Program'),
-        _buildEditField(
-          controller: _specializationController,
-          hint: 'Specialization',
-        ),
-        const SizedBox(height: 16),
-        const Center(
-          child: Text(
-            'Click to save changes',
-            style: TextStyle(color: Colors.white, fontSize: 11),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Center(
-          child: ElevatedButton(
-            onPressed: () {
-              setState(() => _isEditMode = false);
-              // TODO: Add backend API call here
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: _maroon,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              minimumSize: const Size(100, 36),
-              elevation: 0,
-            ),
-            child: const Text(
-              'Confirm',
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEditField({
-    required TextEditingController controller,
-    required String hint,
-    bool readOnly = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14.0),
-      child: SizedBox(
-        height: 40,
-        child: TextField(
-          controller: controller,
-          readOnly: readOnly,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-          ),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 0,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   // ==========================================================================
   // PROGRESS SECTION BUILDERS
-  // Migrated from the now-deleted progress_view.dart.
   // ==========================================================================
 
   Widget _buildMilestoneCard() {

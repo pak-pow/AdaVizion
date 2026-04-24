@@ -6,6 +6,7 @@ import type { SeedQuiz } from "../src/types/quizzes.types";
 import type { SeedAchievement } from "../src/types/achievements.types";
 import type { SeedLandmark } from "../src/types/landmarks.types";
 import updateLandmarksData from "./update-landmarks-data";
+import updateAchievementsData from "./update-achievements-data";
 
 const __dirname = getDirectoryName(import.meta.url);
 const dataDirectory = path.join(__dirname, "data");
@@ -99,6 +100,8 @@ async function seedQuizzes() {
 }
 
 async function seedAchievements() {
+  await updateAchievementsData();
+
   console.log("Seeding achievements...");
 
   const achievementsJsonFilePath = path.join(dataDirectory, "achievements.data.json");
@@ -110,7 +113,9 @@ async function seedAchievements() {
       update: {
         description: achievement.description,
         category: achievement.category,
-        threshold: achievement.threshold
+        threshold: achievement.threshold,
+        tier: achievement.tier,
+        img_path: achievement.img_path
       },
       create: achievement
     })

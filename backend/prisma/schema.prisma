@@ -19,6 +19,7 @@ model Student {
   password            String               @db.VarChar(255)
   img_path            String?              @db.VarChar(255)
   created_at          DateTime             @default(now())
+  updated_at          DateTime             @default(now()) @updatedAt
   achievements_earned AchievementsEarned[]
   landmarks_visited   LandmarksVisited[]
   progress            Progress?

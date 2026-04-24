@@ -123,7 +123,14 @@ async function updateStudentProfile(
       year_level: updatedProfileData.yearLevel
     }
   });
-} 
+}
+
+async function updateStudentPassword(studentNum: string, newPassword: string) {
+  return await prisma.student.update({
+    where: { student_number: studentNum },
+    data: { password: newPassword }
+  });
+}
 
 export {
   findStudents,
@@ -131,5 +138,6 @@ export {
   findStudentProgress,
   createStudent,
   updateStudentPicture,
-  updateStudentProfile
+  updateStudentProfile,
+  updateStudentPassword
 }

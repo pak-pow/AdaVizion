@@ -55,11 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-<<<<<<< HEAD
-                        builder: (context) => const QuizScreen(),
-=======
                         builder: (context) => const QuizListScreen(),
->>>>>>> develop
                       ),
                     );
                   },

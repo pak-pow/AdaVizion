@@ -7,11 +7,15 @@ import '../dashboard/views/home_view.dart';
 class QuizResultScreen extends StatelessWidget {
   final String quizName;
   final Map<String, dynamic> result;
+  final List<dynamic> questions; // ordered question list from taking screen
+  final Map<int, int> selectedAnswers; // question_id → selected choice index
 
   const QuizResultScreen({
     super.key,
     required this.quizName,
     required this.result,
+    required this.questions,
+    required this.selectedAnswers,
   });
 
   // ─── BRANDING COLORS ───────────────────────────────────────────────────────
@@ -180,14 +184,11 @@ class QuizResultScreen extends StatelessWidget {
   Widget _buildActionsRow(BuildContext context) {
     return Row(
       children: [
-        // Go to Quiz Scores
+        // See Quiz Scores → Home tab (index 0)
         Expanded(
           child: OutlinedButton(
-            onPressed: () => Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const DashboardHomeView()),
-              (route) => false,
-            ),
+            onPressed: () =>
+                Navigator.popUntil(context, (route) => route.isFirst),
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: _maroonDark,
@@ -207,14 +208,11 @@ class QuizResultScreen extends StatelessWidget {
 
         const SizedBox(width: 12),
 
-        // Back to Quizzes
+        // Back to Quizzes → just pop back to QuizListScreen (already in stack)
         Expanded(
           child: ElevatedButton(
-            onPressed: () => Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const QuizListScreen()),
-              (route) => false,
-            ),
+            onPressed: () =>
+                Navigator.popUntil(context, (route) => route.isFirst),
             style: ElevatedButton.styleFrom(
               backgroundColor: _maroonDark,
               foregroundColor: Colors.white,
@@ -234,9 +232,19 @@ class QuizResultScreen extends StatelessWidget {
     );
   }
 
-  // ─── ANSWER REVIEW ───────────────────────────────────────────────────────────────────────────
+  // ─── ANSWER REVIEW ─────────────────────────────────────────────────────────
   Widget _buildAnswerReview() {
-    if (_breakdown.isEmpty) return const SizedBox.shrink();
+    if (questions.isEmpty) return const SizedBox.shrink();
+
+    // Build a lookup: question_id → is_correct, from the breakdown
+    final Map<int, bool> correctnessById = {};
+    for (final item in _breakdown) {
+      final m = item as Map<String, dynamic>;
+      final info = m['info'] as Map<String, dynamic>;
+      final perf = m['performance'] as Map<String, dynamic>;
+      final qId = info['question_id'] as int? ?? -1;
+      correctnessById[qId] = perf['is_correct'] == true;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,24 +258,33 @@ class QuizResultScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
+        ...List.generate(questions.length, (index) {
+          final q = questions[index] as Map<String, dynamic>;
+          final int questionId = q['question_id'] as int;
+          final String questionText = q['question_text'] as String? ?? '';
+          final List<dynamic> choices = q['choices'] as List<dynamic>? ?? [];
+          final int selectedIdx = selectedAnswers[questionId] ?? -1;
+          final bool wasCorrect = correctnessById[questionId] ?? false;
 
-        ...List.generate(_breakdown.length, (index) {
-          final info =
-              (_breakdown[index] as Map<String, dynamic>)['info']
-                  as Map<String, dynamic>;
-          return _buildReviewQuestion(index, info);
+          return _buildReviewQuestion(
+            index,
+            questionText,
+            choices,
+            selectedIdx,
+            wasCorrect,
+          );
         }),
       ],
     );
   }
 
-  Widget _buildReviewQuestion(int index, Map<String, dynamic> info) {
-    final String questionText = info['question_text'] as String? ?? '';
-    final List<dynamic> choices = info['choices'] as List<dynamic>? ?? [];
-    final int correctIdx = info['correct_idx'] as int? ?? -1;
-    final int selectedIdx = info['selected_idx'] as int? ?? -1;
-    final bool wasCorrect = selectedIdx == correctIdx;
-
+  Widget _buildReviewQuestion(
+    int index,
+    String questionText,
+    List<dynamic> choices,
+    int selectedIdx,
+    bool wasCorrect,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(16),
@@ -291,7 +308,7 @@ class QuizResultScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Question number + text + correct/wrong badge
+          // Question number + text
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -310,11 +327,6 @@ class QuizResultScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(
-                wasCorrect ? Icons.check_circle : Icons.cancel,
-                color: wasCorrect ? _passAndCorrectGreen : _failAndWrongRed,
-                size: 20,
-              ),
             ],
           ),
 
@@ -326,13 +338,11 @@ class QuizResultScreen extends StatelessWidget {
             final bool isSelected = choiceIndex == selectedIdx;
 
             if (!isSelected) {
-              // Unselected choice - show as plain text with empty circle
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Empty circle
                     Container(
                       width: 20,
                       height: 20,
@@ -345,7 +355,6 @@ class QuizResultScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Choice text
                     Expanded(
                       child: Text(
                         choiceText,
@@ -358,59 +367,54 @@ class QuizResultScreen extends StatelessWidget {
                   ],
                 ),
               );
-            } else {
-              // Selected choice - show with status (correct or wrong)
-              final bool wasCorrect = selectedIdx == correctIdx;
-              final Color statusColor = wasCorrect
-                  ? _passAndCorrectGreen
-                  : _failAndWrongRed;
-
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Filled circle
-                    Container(
-                      width: 20,
-                      height: 20,
-                      margin: const EdgeInsets.only(right: 10),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: statusColor, width: 1.5),
-                      ),
-                      child: Center(
-                        child: Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: statusColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Choice text
-                    Expanded(
-                      child: Text(
-                        choiceText,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: statusColor,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    // Status icon (checkmark or X)
-                    Icon(
-                      wasCorrect ? Icons.check_circle : Icons.cancel,
-                      color: statusColor,
-                      size: 16,
-                    ),
-                  ],
-                ),
-              );
             }
+
+            final Color statusColor = wasCorrect
+                ? _passAndCorrectGreen
+                : _failAndWrongRed;
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: statusColor, width: 1.5),
+                    ),
+                    child: Center(
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: statusColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      choiceText,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: statusColor,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    wasCorrect ? Icons.check_circle : Icons.cancel,
+                    color: statusColor,
+                    size: 16,
+                  ),
+                ],
+              ),
+            );
           }),
         ],
       ),

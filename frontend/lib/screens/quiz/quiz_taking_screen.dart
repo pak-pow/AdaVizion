@@ -33,7 +33,20 @@ class _QuizTakingScreenState extends State<QuizTakingScreen> {
   String? _errorMessage;
 
   // ─── GETTERS ───────────────────────────────────────────────────────────────
-  List<dynamic> get _questions => widget.quizData['questions'] as List<dynamic>;
+  //List<dynamic> get _questions => widget.quizData['questions'] as List<dynamic>; // uncomment when fixed
+
+  // temp solution
+  // TODO: find a fix for this bc smth is fucking it up
+  /// Sorted by question_id — guarantees display order regardless of cache/server ordering.
+  List<dynamic> get _questions {
+    final list = List<dynamic>.from(
+      widget.quizData['questions'] as List<dynamic>,
+    );
+    list.sort(
+      (a, b) => (a['question_id'] as int).compareTo(b['question_id'] as int),
+    );
+    return list;
+  }
 
   String get _quizName =>
       (widget.quizData['info'] as Map<String, dynamic>)['name'] as String? ??
@@ -84,7 +97,12 @@ class _QuizTakingScreenState extends State<QuizTakingScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => QuizResultScreen(quizName: _quizName, result: result),
+          builder: (_) => QuizResultScreen(
+            quizName: _quizName,
+            result: result,
+            questions: _questions,
+            selectedAnswers: Map.unmodifiable(_selectedAnswers),
+          ),
         ),
       );
     } catch (e) {

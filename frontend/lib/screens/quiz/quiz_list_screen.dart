@@ -16,7 +16,9 @@ class _QuizListScreenState extends State<QuizListScreen> {
   // ─── BRANDING COLORS ───────────────────────────────────────────────────────
   static const _maroon = Color(0xFF7A1D1D);
   static const _maroonDark = Color(0xFF4A0F0F);
-  static const _gradientTop = Color(0xFFA62121);
+  static const _gradientTop = Color(0xFFB11C1C);
+  static const _gradientBottom = Color(0xFF4B0C0C);
+  static const _takeColor = Color(0xFF700000);
 
   // ─── STATE VARIABLES ───────────────────────────────────────────────────────
   List<dynamic> _quizzes = [];
@@ -135,7 +137,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [_gradientTop, _maroon],
+                  colors: [_gradientTop, _gradientBottom],
                 ),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(12),
@@ -297,7 +299,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
                   child: Container(
                     height: 60,
                     decoration: BoxDecoration(
-                      color: isLocked ? Colors.grey.shade400 : _maroonDark,
+                      color: isLocked ? Colors.grey.shade400 : _takeColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
@@ -546,17 +548,23 @@ class _QuizListScreenState extends State<QuizListScreen> {
           // ── START QUIZ BUTTON ──
           if (!isCompleted)
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) =>
                         QuizTakingScreen(quizId: quizId, quizData: data),
                   ),
                 );
+                if (!mounted) return;
+                setState(() {
+                  _detailData.remove(quizId);
+                  _expandedQuizId = null;
+                });
+                _loadQuizzes();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: _maroonDark,
+                backgroundColor: _takeColor,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -586,33 +594,6 @@ class _QuizListScreenState extends State<QuizListScreen> {
                 ),
               ),
             ),
-
-          const SizedBox(height: 12),
-
-          // ── RETURN TO DASHBOARD ──
-          OutlinedButton(
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DashboardScreen(),
-                ),
-                (route) => false,
-              );
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: _maroonDark,
-              side: const BorderSide(color: _maroonDark, width: 1.5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              minimumSize: const Size(double.infinity, 45),
-            ),
-            child: const Text(
-              'Return to Dashboard',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-            ),
-          ),
         ],
       ),
     );

@@ -77,7 +77,7 @@ class LandmarkApi {
 
   /// Records a QR code scan visit for the logged-in student at a specific landmark.
   ///
-  /// Endpoint: `POST /landmarks/:id/visit`
+  /// Endpoint: `POST /landmarks/visit`
   /// Auth required: ✅ Bearer token
   ///
   /// Parameters:

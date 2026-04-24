@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/api/quiz_api.dart';
-// import 'quiz_detail_screen.dart'; // Uncomment when created
+import 'quiz_detail_screen.dart';
+import '../dashboard_screen.dart';
 
 enum QuizState { locked, unlocked, completed }
 
@@ -32,8 +33,6 @@ class _QuizListScreenState extends State<QuizListScreen> {
   // ─── PRIVATE METHODS ───────────────────────────────────────────────────────
   /// Loads the quiz list from the backend and updates the state.
   /// Handles loading and error states appropriately.
-  /// On success: sets `_quizzes` to the fetched list and `_isLoading` to false.
-  /// On failure: sets `_errorMessage` to the error string and `_isLoading` to false.
   Future<void> _loadQuizzes() async {
     try {
       setState(() {
@@ -174,7 +173,15 @@ class _QuizListScreenState extends State<QuizListScreen> {
               const SizedBox(height: 16),
 
               OutlinedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DashboardScreen(),
+                    ),
+                    (route) => false,
+                  );
+                },
                 style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: _maroonDark,
@@ -292,13 +299,12 @@ class _QuizListScreenState extends State<QuizListScreen> {
       onTap: isLocked
           ? null
           : () {
-              // TODO: Navigate to QuizDetailScreen when created
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (_) => QuizDetailScreen(quizId: quizId),
-              //   ),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => QuizDetailScreen(quizId: quizId),
+                ),
+              );
             },
       child: Container(
         margin: const EdgeInsets.only(bottom: 24),

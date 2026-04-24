@@ -35,7 +35,7 @@ router.post("/login", studentsController.loginStudent);
 
 // UPLOAD PROFILE PICTURE ENDPOINT
 router.patch(
-  "/me/picture/upload",
+  "/me/picture",
   authenticateToken,
   upload.single("picture-file"),
   studentsController.uploadProfilePicture

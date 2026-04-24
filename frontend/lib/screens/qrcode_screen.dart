@@ -408,7 +408,10 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     if (isText) {
       return TextButton(
         onPressed: onPressed,
-        style: TextButton.styleFrom(foregroundColor: _maroonDark),
+        style: TextButton.styleFrom(
+          foregroundColor: _maroonDark,
+          minimumSize: const Size(120, 45),
+        ),
         child: Text(label),
       );
     }
@@ -418,6 +421,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         backgroundColor: _maroonDark,
         foregroundColor: Colors.white,
         elevation: 0,
+        minimumSize: const Size(120, 45),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       child: Text(label),
@@ -487,9 +491,11 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.05),
+                  color: Colors.green.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _maroon.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: Colors.greenAccent.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,7 +505,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                         Icon(
                           Icons.lightbulb_outline,
                           size: 18,
-                          color: Colors.red,
+                          color: Colors.green,
                         ),
                         SizedBox(width: 8),
                         Text(
@@ -507,7 +513,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
-                            color: Colors.red,
+                            color: Colors.green,
                           ),
                         ),
                       ],
@@ -557,16 +563,29 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             ],
           ),
         ),
+
         actions: [
-          _dialogButton(
-            label: "Close",
-            isText: true,
-            onPressed: () => _closeDialogAnd(_resetScanner),
-          ),
-          _dialogButton(
-            label: "View Landmark",
-            onPressed: () =>
-                _closeDialogAnd(() => _navigateToLandmarkDetails(landmarkId)),
+          Container(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _dialogButton(
+                  label: "Close",
+                  isText: true,
+                  onPressed: () => _closeDialogAnd(_resetScanner),
+                ),
+
+                const SizedBox(width: 16),
+
+                _dialogButton(
+                  label: "View Landmark",
+                  onPressed: () => _closeDialogAnd(
+                    () => _navigateToLandmarkDetails(landmarkId),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -597,14 +616,22 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       title: "Landmark Already Visited!",
       content: const SizedBox(height: 4),
       actions: [
-        _dialogButton(
-          label: "Close",
-          isText: true,
-          onPressed: () => _closeDialogAnd(() => Navigator.pop(context)),
-        ),
-        _dialogButton(
-          label: "Scan Another",
-          onPressed: () => _closeDialogAnd(_resetScanner),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _dialogButton(
+              label: "Close",
+              isText: true,
+              onPressed: () => _closeDialogAnd(() => Navigator.pop(context)),
+            ),
+
+            const SizedBox(width: 16),
+
+            _dialogButton(
+              label: "Scan Another",
+              onPressed: () => _closeDialogAnd(_resetScanner),
+            ),
+          ],
         ),
       ],
     );

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
 import 'quiz/quiz_list_screen.dart';
-import '../services/api/api_config.dart';
 import 'dashboard/views/home_view.dart';
-import 'dashboard/views/progress_view.dart';
+import 'dashboard/views/settings_view.dart';
 import 'qrcode_screen.dart';
 
 // ============================================================================
@@ -12,16 +10,16 @@ import 'qrcode_screen.dart';
 // Architecture: Center-docked FAB + BottomAppBar with notch + 4-tab IndexedStack.
 //
 // Tab routing:
-//   0 → DashboardHomeView  (profile card + badges)
-//   1 → _LandmarksPlaceholder (stub — pending LandmarkScreen implementation)
+//   0 → DashboardHomeView  (profile + badges + progress feed)
+//   1 → _LandmarksPlaceholder (stub)
 //   2 → QuizListScreen
-//   3 → ProgressDashboardView
+//   3 → SettingsView (Profile & Settings)
 //   FAB → QRCodeScreen (push navigation, NOT a tab)
 //
 // Extracted modules (unchanged):
 //   dashboard/models/badge_model.dart    — BadgeCategory, BadgeConfig, kAchievementBadges
-//   dashboard/views/home_view.dart       — DashboardHomeView
-//   dashboard/views/progress_view.dart   — ProgressDashboardView
+//   dashboard/views/home_view.dart       — DashboardHomeView (consolidated home + progress)
+//   dashboard/views/settings_view.dart   — SettingsView
 //   dashboard/widgets/badges_card.dart   — BadgesCard
 // ============================================================================
 
@@ -47,7 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     (icon: Icons.home_rounded, label: 'Home'),
     (icon: Icons.place_rounded, label: 'Landmarks'),
     (icon: Icons.quiz_rounded, label: 'Quizzes'),
-    (icon: Icons.military_tech_rounded, label: 'Progress'),
+    (icon: Icons.person_outline, label: 'Profile'),
   ];
 
   @override
@@ -60,31 +58,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: _headerGrey,
         elevation: 0,
         titleSpacing: 16,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Hide the logo on the Quizzes tab (index 2) since QuizListScreen
-            // renders its own centered logo in its own AppBar header.
-            if (_selectedIndex != 2)
-              Image.asset('assets/images/nav_logo.png', height: 42)
-            else
-              const SizedBox.shrink(),
-
-            // Log out is only relevant on the Home tab.
-            if (_selectedIndex == 0)
-              GestureDetector(
-                onTap: _showLogoutConfirmation,
-                child: const Text(
-                  'Log out',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: _maroon,
-                  ),
-                ),
-              ),
-          ],
-        ),
+        centerTitle: false,
+        // Logo hidden on Quizzes tab (index 2) since QuizListScreen renders
+        // its own centred logo. Absent on all other tabs without conditions.
+        title: _selectedIndex != 2
+            ? Image.asset('assets/images/nav_logo.png', height: 42)
+            : null,
       ),
 
       // ── BODY: IndexedStack keeps every tab widget alive, preserving their
@@ -93,21 +72,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
         index: _selectedIndex,
         children: [
           // ── Tab 0: Home ─────────────────────────────────────────────────────
-          // Step 3: The decorative mascot watermark Stack has been removed —
-          // it was obscuring the BottomAppBar area at the bottom of the screen.
+          // Consolidated: profile + badges + milestone/progress/stat feed.
           const DashboardHomeView(),
 
-          // ── Tab 1: Landmarks ─────────────────────────────────────────────────
+          // ── Tab 1: Landmarks ──────────────────────────────────────────────
           // Placeholder until LandmarkScreen is implemented.
           const _LandmarksPlaceholder(),
 
-          // ── Tab 2: Quizzes ───────────────────────────────────────────────────
-          // QuizListScreen manages its own Scaffold + AppBar within the tab body.
+          // ── Tab 2: Quizzes ───────────────────────────────────────────────
           const QuizListScreen(),
 
-          // ── Tab 3: Progress ──────────────────────────────────────────────────
-          // ProgressDashboardView manages its own Scaffold + AppBar within the tab body.
-          const ProgressDashboardView(),
+          // ── Tab 3: Profile & Settings ──────────────────────────────────
+          // onEditProfile switches _selectedIndex to 0 so the user lands on
+          // the Home tab where the profile edit pencil icon lives.
+          SettingsView(
+            onEditProfile: () => setState(() => _selectedIndex = 0),
+          ),
         ],
       ),
 
@@ -192,50 +172,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  // ─── Logout dialog ──────────────────────────────────────────────────────────
-  void _showLogoutConfirmation() {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text(
-            'Log out?',
-            style: TextStyle(fontWeight: FontWeight.w900),
-          ),
-          content: const Text(
-            'Are you sure you want to log out of EUventure?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                await ApiConfig.logout();
-                if (mounted) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AuthScreen()),
-                    (route) => false,
-                  );
-                }
-              },
-              child: const Text(
-                'Log out',
-                style: TextStyle(
-                  color: _maroon,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

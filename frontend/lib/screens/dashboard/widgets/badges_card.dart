@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/badge_model.dart';
-import '../views/progress_view.dart';
 
 // ============================================================================
 // BADGES CARD WIDGET
@@ -16,7 +15,7 @@ import '../views/progress_view.dart';
 /// Self-contained achievements badge carousel card shown on the dashboard.
 ///
 /// Manages its own filter-tab state and scroll controller.
-/// Navigates to [ProgressDashboardView] when the "Quiz Scores" button is tapped.
+/// Progress stats are now visible by scrolling down the Home feed.
 class BadgesCard extends StatefulWidget {
   const BadgesCard({super.key});
 
@@ -70,30 +69,6 @@ class _BadgesCardState extends State<BadgesCard> {
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                ),
-              ),
-              OutlinedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProgressDashboardView(),
-                    ),
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black87,
-                  side: BorderSide.none,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  minimumSize: const Size(0, 30),
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                ),
-                child: const Text(
-                  'Quiz Scores',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
                 ),
               ),
             ],

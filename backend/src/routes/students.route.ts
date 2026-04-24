@@ -36,6 +36,9 @@ router.post("/login", studentsController.loginStudent);
 // EDIT PROFILE ENDPOINT
 router.patch("/me", authenticateToken, studentsController.editStudentProfile);
 
+// CHANGE PASSWORD ENDPOINT
+router.patch("/me/password", authenticateToken, studentsController.changeStudentPassword);
+
 // UPLOAD PROFILE PICTURE ENDPOINT
 router.patch(
   "/me/picture",

@@ -54,3 +54,12 @@ To improve the Developer Experience (DX) for the frontend team, I’ve refined o
 * **Services:** Built `processStudentProfileEdit` and `processStudentPasswordChange` to isolate business logic from the HTTP layer.
 
 * **Repositories:** Updated `students.repository.ts` with dedicated functions for atomic profile and credential updates, ensuring that primary/uniqe identifiers (student number and email) remain immutable.
+
+## Tested Endpoints
+
+| Endpoint | Method | Scenario | Screenshot |
+| --- | --- | --- | --- |
+| `/students/me` | `PATCH` | Successfully editing profile | ![Edit Profile](../../screenshots/edit-profile-tests/1-edit-profile.png) |
+| `/students/me/password` | `PATCH` | Successfully changing password | ![Change Password](../../screenshots/edit-profile-tests/2-change-password.png) |
+| `/students/me/password` | `PATCH` | New password and confirmation password mismatched | ![New and Confirm Passwords Mismatch](../../screenshots/edit-profile-tests/3-new-confirm-mismatch.png) |
+| `/students/me/password` | `PATCH` | Incorrect old password | ![Incorrect Old Password](../../screenshots/edit-profile-tests/4-incorrect-old-password.png) |

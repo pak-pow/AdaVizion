@@ -54,6 +54,7 @@ node_modules
 **/generated/prisma
 qr-codes
 landmark-thumbnails
+achievement-badges
 
 # Keep environment variables out of version control
 .env 

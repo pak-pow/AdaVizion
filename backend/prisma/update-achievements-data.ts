@@ -17,7 +17,7 @@ async function updateAchievementsData() {
     const updatedAchievementsData = await Promise.all(rawAchievementsData.map(
       async (achievement: SeedAchievement) => {
         // Create a sanitized base file name for landmark thumbnail and QR code files
-        const baseName = `${achievement.category}-level-${achievement.tier}`;
+        const baseName = `${achievement.category.toLowerCase()}-level-${achievement.tier}`;
 
         // Get the URL of the new uploaded thumbnail
         const publicUrl = await uploadBadge(baseName);

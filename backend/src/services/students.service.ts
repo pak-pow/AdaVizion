@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import * as studentsRepository from "../repositories/students.repository";
 import * as landmarksRepository from "../repositories/landmarks.repository";
-import type { LoginBody, RegistrationBody } from "../schemas/students.schema";
+import type { EditProfileBody, LoginBody, RegistrationBody } from "../schemas/students.schema";
 import { generateAuthToken } from "./auth.services";
 import { calculateXpProgress } from "../lib/gamification-utils";
 
@@ -143,11 +143,31 @@ async function processStudentPicture(studentNum: string, pictureFile: Express.Mu
   }
 }
 
+async function processStudentProfileEdit(
+  studentNum: string,
+  updatedProfileData: EditProfileBody)
+{
+  const updatedStudent = await studentsRepository.updateStudentProfile(
+    studentNum,
+    updatedProfileData
+  );
+
+  if (!updatedStudent) {
+    throw new Error("Failed to edit student profile");
+  }
+
+  return {
+    message: "Student profile updated successfully",
+    student: updatedStudent
+  }
+}
+
 export {
   fetchStudents,
   fetchStudent,
   fetchStudentProfile,
   processStudentRegistration,
   processStudentLogin,
-  processStudentPicture
+  processStudentPicture,
+  processStudentProfileEdit
 }

@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import multer from "multer";
 import * as studentsService from "../services/students.service";
 import { ChangePasswordSchema, EditProfileSchema, LoginSchema, RegistrationSchema } from "../schemas/students.schema";
 import { handleControllerError } from "../lib/error-handler";

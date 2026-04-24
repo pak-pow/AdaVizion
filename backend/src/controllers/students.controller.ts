@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import multer from "multer";
 import * as studentsService from "../services/students.service";
-import { EditProfileSchema, LoginSchema, RegistrationSchema } from "../schemas/students.schema";
+import { ChangePasswordSchema, EditProfileSchema, LoginSchema, RegistrationSchema } from "../schemas/students.schema";
 import { handleControllerError } from "../lib/error-handler";
 
 async function getAllStudents(req: Request, res: Response) {
@@ -88,11 +88,30 @@ async function editStudentProfile(req: Request, res: Response) {
   }
 }
 
+async function changeStudentPassword(req: Request, res: Response) {
+  try {
+    const studentNum = (req as any).user.studentNum;
+
+    const validation = ChangePasswordSchema.parse(req.body);
+    const changedPasswordData = validation;
+
+    const changeResult = await studentsService.processStudentPasswordChange(
+      studentNum,
+      changedPasswordData
+    );
+
+    return res.status(200).json(changeResult);
+  } catch (error: any) {
+    return handleControllerError(res, error, "STUDENT");
+  }
+}
+
 export {
   getAllStudents,
   getStudentProfile,
   registerStudent,
   loginStudent,
   uploadProfilePicture,
-  editStudentProfile
+  editStudentProfile,
+  changeStudentPassword
 }

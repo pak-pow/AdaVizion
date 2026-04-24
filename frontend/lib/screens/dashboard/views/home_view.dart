@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/api/profile_api.dart';
 import '../widgets/badges_card.dart';
+import '../../../utils/toast_service.dart';
 
 // ============================================================================
 // DASHBOARD HOME VIEW  (Consolidated + Hero Card)
@@ -100,14 +101,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceFirst('Exception: ', '')),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
-          ),
-        );
+        ToastService.showError(
+            context, e.toString().replaceFirst('Exception: ', ''));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

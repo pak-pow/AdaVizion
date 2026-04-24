@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../services/api/api_config.dart';
 import '../../../services/api/profile_api.dart';
 import '../../login_screen.dart';
+import '../../../utils/toast_service.dart';
 
 // ============================================================================
 // SETTINGS VIEW  (Profile & Settings — tab 3)
@@ -135,25 +136,12 @@ class _SettingsViewState extends State<SettingsView> {
       await _fetchProfile();
       if (mounted) setState(() => _isEditMode = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile picture updated!'),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
-          ),
-        );
+        ToastService.showSuccess(context, 'Profile picture updated!');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceFirst('Exception: ', '')),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
-          ),
-        );
+        ToastService.showError(
+            context, e.toString().replaceFirst('Exception: ', ''));
       }
     } finally {
       if (mounted) setState(() => _isUploadingPicture = false);
@@ -203,14 +191,7 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   void _showComingSoon() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Feature coming soon!'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
-      ),
-    );
+    ToastService.showInfo(context, 'Feature coming soon!');
   }
 
   // ─── Build ─────────────────────────────────────────────────────────────────

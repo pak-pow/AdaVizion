@@ -62,9 +62,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         centerTitle: false,
         // Logo hidden on Quizzes tab (index 2) since QuizListScreen renders
         // its own centred logo. Absent on all other tabs without conditions.
-        title: _selectedIndex != 2
-            ? Image.asset('assets/images/nav_logo.png', height: 42)
-            : null,
+        title: Image.asset('assets/images/nav_logo.png', height: 42),
       ),
 
       // ── BODY: IndexedStack keeps every tab widget alive, preserving their
@@ -86,9 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // ── Tab 3: Profile & Settings ──────────────────────────────────
           // onEditProfile switches _selectedIndex to 0 so the user lands on
           // the Home tab where the profile edit pencil icon lives.
-          SettingsView(
-            onEditProfile: () => setState(() => _selectedIndex = 0),
-          ),
+          SettingsView(onEditProfile: () => setState(() => _selectedIndex = 0)),
         ],
       ),
 
@@ -165,8 +161,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               item.label,
               style: TextStyle(
                 fontSize: 10,
-                fontWeight:
-                    isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 color: isSelected ? _maroon : Colors.grey,
               ),
             ),
@@ -176,4 +171,3 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
-

@@ -86,120 +86,58 @@ class _QuizListScreenState extends State<QuizListScreen> {
   // ─── BUILD METHOD ──────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-
-      // --- APP BAR ---
-      appBar: AppBar(
-        backgroundColor: _headerGrey,
-        elevation: 0,
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        title: Image.asset('assets/images/nav_logo.png', height: 52),
-      ),
-
-      body: RefreshIndicator(
-        color: _maroon,
-        onRefresh: _loadQuizzes,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              // 1. RED GRADIENT HEADER
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 32),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [_gradientTop, _maroon],
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(12),
-                    bottomRight: Radius.circular(12),
-                  ),
+    return RefreshIndicator(
+      color: _maroon,
+      onRefresh: _loadQuizzes,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            // 1. RED GRADIENT HEADER
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [_gradientTop, _maroon],
                 ),
-                child: const Column(
-                  children: [
-                    Text(
-                      'Quiz',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 36,
-                        fontWeight: FontWeight.w900,
-                        height: 1.0,
-                      ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+              child: const Column(
+                children: [
+                  Text(
+                    'Quiz',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      height: 1.0,
                     ),
-                    Text(
-                      'answer and earn points',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // 2. QUIZ CARDS - loading / error/ list
-              _buildBody(),
-
-              const SizedBox(height: 32),
-
-              // 3. FOOTER
-              const Text(
-                'Go back',
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.w900,
-                  color: _maroon,
-                  height: 1.0,
-                ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'to unlock quizzes and explore\nEnverga University',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: _maroon,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              OutlinedButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DashboardScreen(),
-                    ),
-                    (route) => false,
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: _maroonDark,
-                  side: const BorderSide(color: _maroonDark, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
                   ),
-                  minimumSize: const Size(180, 45),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                ),
-                child: const Text(
-                  'Return to Dashboard',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
-                ),
+                  Text(
+                    'answer and earn points',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 60),
-            ],
-          ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 2. QUIZ CARDS - loading / error/ list
+            _buildBody(),
+
+            const SizedBox(height: 32),
+          ],
         ),
       ),
     );

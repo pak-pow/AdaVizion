@@ -1,6 +1,8 @@
+import 'package:adavizion/screens/dashboard/views/home_view.dart';
+
 import 'quiz_list_screen.dart';
 import 'package:flutter/material.dart';
-import '../dashboard_screen.dart'; // For QuizScoresPlaceholder
+import '../dashboard/views/home_view.dart';
 
 class QuizResultScreen extends StatelessWidget {
   final String quizName;
@@ -181,9 +183,10 @@ class QuizResultScreen extends StatelessWidget {
         // Go to Quiz Scores
         Expanded(
           child: OutlinedButton(
-            onPressed: () => Navigator.push(
+            onPressed: () => Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (_) => const QuizScoresPlaceholder()),
+              MaterialPageRoute(builder: (_) => const DashboardHomeView()),
+              (route) => false,
             ),
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,

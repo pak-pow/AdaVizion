@@ -17,7 +17,7 @@ class BadgeConfig {
   final int threshold;
   final int? tier;
   final String? description;
-  final String? fun_fact;
+  final String? funFact;
 
   const BadgeConfig({
     required this.label,
@@ -28,7 +28,7 @@ class BadgeConfig {
     required this.threshold,
     this.tier,
     this.description,
-    this.fun_fact,
+    this.funFact,
   });
 }
 

@@ -37,7 +37,6 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   int _level = 0;
   int _quizPoints = 0;
   int _toNextLevel = 0;
-  int _nextThreshold = 500;
   int _landmarksVisited = 0;
   int _landmarksTotal = 1;
 
@@ -88,8 +87,6 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             _level = (progress['level'] as num?)?.toInt() ?? 0;
             _quizPoints = (progress['quiz_points'] as num?)?.toInt() ?? 0;
             _toNextLevel = (xp?['to_next_level'] as num?)?.toInt() ?? 0;
-            _nextThreshold =
-                (xp?['next_threshold'] as num?)?.toInt() ?? 500;
             _landmarksVisited =
                 (landmarks?['visited'] as num?)?.toInt() ?? 0;
             _landmarksTotal =

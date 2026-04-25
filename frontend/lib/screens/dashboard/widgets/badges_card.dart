@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../models/badge_model.dart';
 
 // ============================================================================
@@ -73,7 +72,7 @@ class _BadgesCardState extends State<BadgesCard> {
         threshold: badge.threshold,
         tier: badge.tier,
         description: badge.description,
-        fun_fact: badge.fun_fact,
+        funFact: badge.funFact,
       );
     }).toList();
   }
@@ -319,20 +318,23 @@ class _BadgesCardState extends State<BadgesCard> {
                     config.imgPath!.isEmpty)
                   ? Icon(icon, color: iconColor, size: 28)
                   : Center(
-                      child: SvgPicture.network(
+                      child: Image.network(
                         config.imgPath!,
                         width: 40,
                         height: 40,
-                        placeholderBuilder: (context) => const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white70,
-                          ),
-                        ),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white70,
+                            ),
+                          );
+                        },
                         errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.broken_image, color: Colors.white70, size: 28),
+                            Icon(Icons.lock_outline_rounded, color: Colors.white.withValues(alpha: 0.70), size: 28),
                       ),
                     ),
           ),

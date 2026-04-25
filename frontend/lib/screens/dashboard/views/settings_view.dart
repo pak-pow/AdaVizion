@@ -547,7 +547,7 @@ class _SettingsViewState extends State<SettingsView> {
             padding: const EdgeInsets.only(bottom: 12),
             child: DropdownButtonFormField<String>(
               isExpanded: true,
-              value: kBackendPrograms.containsKey(_courseController.text)
+              initialValue: kBackendPrograms.containsKey(_courseController.text)
                   ? _courseController.text
                   : null,
               decoration: InputDecoration(
@@ -599,7 +599,7 @@ class _SettingsViewState extends State<SettingsView> {
               padding: const EdgeInsets.only(bottom: 12),
               child: DropdownButtonFormField<String>(
                 isExpanded: true,
-                value: kBackendSpecializations[_courseController.text]!.contains(_specializationController.text)
+                initialValue: kBackendSpecializations[_courseController.text]!.contains(_specializationController.text)
                     ? _specializationController.text
                     : null,
                 decoration: InputDecoration(

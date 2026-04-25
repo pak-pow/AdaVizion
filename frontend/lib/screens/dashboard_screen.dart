@@ -79,7 +79,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const LandmarkScreen(),
 
           // ── Tab 2: Quizzes ───────────────────────────────────────────────
-          const QuizListScreen(),
+          QuizListScreen(
+            onNavigateToTab: (index) => setState(() => _selectedIndex = index),
+          ),
 
           // ── Tab 3: Profile & Settings ──────────────────────────────────
           // onEditProfile switches _selectedIndex to 0 so the user lands on

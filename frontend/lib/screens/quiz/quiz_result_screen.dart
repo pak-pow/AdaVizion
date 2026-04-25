@@ -1,14 +1,11 @@
-import 'package:adavizion/screens/dashboard/views/home_view.dart';
-
-import 'quiz_list_screen.dart';
 import 'package:flutter/material.dart';
-import '../dashboard/views/home_view.dart';
 
 class QuizResultScreen extends StatelessWidget {
   final String quizName;
   final Map<String, dynamic> result;
-  final List<dynamic> questions; // ordered question list from taking screen
-  final Map<int, int> selectedAnswers; // question_id → selected choice index
+  final List<dynamic> questions;
+  final Map<int, int> selectedAnswers;
+  final void Function(int index)? onNavigateToTab;
 
   const QuizResultScreen({
     super.key,
@@ -16,6 +13,7 @@ class QuizResultScreen extends StatelessWidget {
     required this.result,
     required this.questions,
     required this.selectedAnswers,
+    this.onNavigateToTab,
   });
 
   // ─── BRANDING COLORS ───────────────────────────────────────────────────────
@@ -187,8 +185,10 @@ class QuizResultScreen extends StatelessWidget {
         // See Quiz Scores → Home tab (index 0)
         Expanded(
           child: OutlinedButton(
-            onPressed: () =>
-                Navigator.popUntil(context, (route) => route.isFirst),
+            onPressed: () {
+              onNavigateToTab?.call(0);
+              Navigator.popUntil(context, (route) => route.isFirst);
+            },
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: _maroonDark,
@@ -211,8 +211,10 @@ class QuizResultScreen extends StatelessWidget {
         // Back to Quizzes → just pop back to QuizListScreen (already in stack)
         Expanded(
           child: ElevatedButton(
-            onPressed: () =>
-                Navigator.popUntil(context, (route) => route.isFirst),
+            onPressed: () {
+              onNavigateToTab?.call(2);
+              Navigator.popUntil(context, (route) => route.isFirst);
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: _maroonDark,
               foregroundColor: Colors.white,

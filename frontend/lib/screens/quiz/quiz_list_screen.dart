@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../services/api/quiz_api.dart';
 import 'quiz_taking_screen.dart';
-import '../dashboard_screen.dart';
 
 enum QuizState { locked, unlocked, completed }
 
 class QuizListScreen extends StatefulWidget {
-  const QuizListScreen({super.key});
+  final void Function(int index)? onNavigateToTab;
+  const QuizListScreen({super.key, this.onNavigateToTab});
 
   @override
   State<QuizListScreen> createState() => _QuizListScreenState();
@@ -552,8 +552,11 @@ class _QuizListScreenState extends State<QuizListScreen> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) =>
-                        QuizTakingScreen(quizId: quizId, quizData: data),
+                    builder: (_) => QuizTakingScreen(
+                      quizId: quizId,
+                      quizData: data,
+                      onNavigateToTab: widget.onNavigateToTab,
+                    ),
                   ),
                 );
                 if (!mounted) return;

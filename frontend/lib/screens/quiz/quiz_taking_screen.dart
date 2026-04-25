@@ -4,15 +4,14 @@ import 'quiz_result_screen.dart';
 
 class QuizTakingScreen extends StatefulWidget {
   final int quizId;
-
-  /// The full quiz data map already fetched by QuizDetailScreen.
-  /// Shape: { 'info': {...}, 'status': {...}, 'questions': [...] }
   final Map<String, dynamic> quizData;
+  final void Function(int index)? onNavigateToTab;
 
   const QuizTakingScreen({
     super.key,
     required this.quizId,
     required this.quizData,
+    this.onNavigateToTab,
   });
 
   @override
@@ -102,6 +101,7 @@ class _QuizTakingScreenState extends State<QuizTakingScreen> {
             result: result,
             questions: _questions,
             selectedAnswers: Map.unmodifiable(_selectedAnswers),
+            onNavigateToTab: widget.onNavigateToTab,
           ),
         ),
       );

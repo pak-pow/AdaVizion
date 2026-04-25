@@ -15,7 +15,7 @@ async function fetchLandmarkChecklist(studentNum: string) {
   // Final checklist to show on the frontend
   const landmarkList = allLandmarks.map((landmark) => {
     const isVisited = visitedIds.has(landmark.landmark_id);
-    const { fun_fact, qr_string, ...publicData } = landmark;
+    const { description, fun_fact, qr_string, ...publicData } = landmark;
 
     return {
       ...publicData,
@@ -39,12 +39,7 @@ async function fetchLandmark(studentNum: string, landmarkId: number) {
   const { qr_string, ...publicData } = landmark;
 
   if (!visit) {
-    const { fun_fact, ...lockedData } = publicData;
-    
-    return {
-      ...lockedData,
-      is_unlocked: false,
-    };
+    throw new Error("Scan landmark QR first");
   }
 
   return {

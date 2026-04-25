@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { supabase } from "../lib/supabase";
-import type { RegistrationBody } from "../schemas/students.schema";
+import type { EditProfileBody, RegistrationBody } from "../schemas/students.schema";
 
 async function findStudents() {
   return await prisma.student.findMany({
@@ -108,10 +108,36 @@ async function updateStudentPicture(
   return updatedStudent;
 }
 
+async function updateStudentProfile(
+  studentNum: string,
+  updatedProfileData: EditProfileBody
+) {
+  return await prisma.student.update({
+    where: { student_number: studentNum },
+    data: {
+      first_name: updatedProfileData.firstName,
+      middle_name: updatedProfileData.middleName || null,
+      last_name: updatedProfileData.lastName,
+      program: updatedProfileData.program,
+      specialization: updatedProfileData.specialization || null,
+      year_level: updatedProfileData.yearLevel
+    }
+  });
+}
+
+async function updateStudentPassword(studentNum: string, newPassword: string) {
+  return await prisma.student.update({
+    where: { student_number: studentNum },
+    data: { password: newPassword }
+  });
+}
+
 export {
   findStudents,
   findStudent,
   findStudentProgress,
   createStudent,
-  updateStudentPicture
+  updateStudentPicture,
+  updateStudentProfile,
+  updateStudentPassword
 }

@@ -60,6 +60,24 @@ const ERRORS: ErrorDetails[] = [
     status: 400,
     message: "Failed to upload profile picture" 
   },
+  {
+    type: "STUDENT",
+    code: "EDIT_PROFILE_FAILED",
+    status: 400,
+    message: "Failed to edit student profile" 
+  },
+  {
+    type: "STUDENT",
+    code: "INCORRECT_PASSWORD",
+    status: 403,
+    message: "Incorrect password" 
+  },
+  {
+    type: "STUDENT",
+    code: "CHANGE_PASSWORD_FAILED",
+    status: 400,
+    message: "Failed to change password" 
+  },
 
   // Landmark Errors
   {

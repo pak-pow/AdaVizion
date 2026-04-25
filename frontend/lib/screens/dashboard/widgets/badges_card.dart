@@ -313,15 +313,14 @@ class _BadgesCardState extends State<BadgesCard> {
               ],
             ),
             child:
-                (config.isLocked ||
-                    config.imgPath == null ||
-                    config.imgPath!.isEmpty)
+                (config.isLocked || config.imgPath == null || config.imgPath!.isEmpty)
                   ? Icon(icon, color: iconColor, size: 28)
                   : Center(
                       child: Image.network(
-                        config.imgPath!,
-                        width: 40,
-                        height: 40,
+                        '${config.imgPath}?v=${DateTime.now().millisecondsSinceEpoch}',
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.contain,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return const SizedBox(

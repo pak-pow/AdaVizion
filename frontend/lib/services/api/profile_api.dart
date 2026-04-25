@@ -141,4 +141,56 @@ class ProfileApi {
       // so it propagates out of this catch and up to the caller correctly.
     }
   }
+
+  // ─── UPDATE PROFILE ─────────────────────────────────────────────────────────
+
+  /// Updates the student's profile information.
+  ///
+  /// Endpoint: `PATCH /students/me`
+  /// Auth required: ✅ Bearer token
+  static Future<void> updateProfile({
+    required String firstName,
+    required String middleName,
+    required String lastName,
+    required String program,
+    required String specialization,
+    required int yearLevel,
+  }) async {
+    final response = await http.patch(
+      Uri.parse('${ApiConfig.baseUrl}/students/me'),
+      headers: await ApiConfig.getHeaders(),
+      body: jsonEncode({
+        'firstName': firstName,
+        'middleName': middleName.isNotEmpty ? middleName : null,
+        'lastName': lastName,
+        'program': program,
+        'specialization': specialization.isNotEmpty ? specialization : null,
+        'yearLevel': yearLevel,
+      }),
+    );
+    ApiConfig.handleBackendError(response);
+  }
+
+  // ─── CHANGE PASSWORD ────────────────────────────────────────────────────────
+
+  /// Changes the student's password.
+  ///
+  /// Endpoint: `PATCH /students/me/password`
+  /// Auth required: ✅ Bearer token
+  static Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final response = await http.patch(
+      Uri.parse('${ApiConfig.baseUrl}/students/me/password'),
+      headers: await ApiConfig.getHeaders(),
+      body: jsonEncode({
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+        'confirmPassword': confirmPassword,
+      }),
+    );
+    ApiConfig.handleBackendError(response);
+  }
 }

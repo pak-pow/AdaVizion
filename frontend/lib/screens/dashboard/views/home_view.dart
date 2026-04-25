@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/api/profile_api.dart';
 import '../widgets/badges_card.dart';
+import '../../../utils/toast_service.dart';
 
 // ============================================================================
 // DASHBOARD HOME VIEW  (Consolidated + Hero Card)
@@ -36,7 +37,6 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   int _level = 0;
   int _quizPoints = 0;
   int _toNextLevel = 0;
-  int _nextThreshold = 500;
   int _landmarksVisited = 0;
   int _landmarksTotal = 1;
 
@@ -87,8 +87,6 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             _level = (progress['level'] as num?)?.toInt() ?? 0;
             _quizPoints = (progress['quiz_points'] as num?)?.toInt() ?? 0;
             _toNextLevel = (xp?['to_next_level'] as num?)?.toInt() ?? 0;
-            _nextThreshold =
-                (xp?['next_threshold'] as num?)?.toInt() ?? 500;
             _landmarksVisited =
                 (landmarks?['visited'] as num?)?.toInt() ?? 0;
             _landmarksTotal =
@@ -100,14 +98,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceFirst('Exception: ', '')),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
-          ),
-        );
+        ToastService.showError(
+            context, e.toString().replaceFirst('Exception: ', ''));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -142,10 +134,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       ? (_landmarksVisited / _landmarksTotal).clamp(0.0, 1.0)
       : 0.0;
 
-  double get _xpLevelProgress {
-    if (_nextThreshold <= 0) return 0.0;
-    return ((_nextThreshold - _toNextLevel) / _nextThreshold).clamp(0.0, 1.0);
-  }
+
 
   // ─── Build ────────────────────────────────────────────────────────────────
   @override
@@ -169,7 +158,10 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           // ── 2. Badge carousel ─────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: const BadgesCard(),
+            child: BadgesCard(
+              quizPoints: _quizPoints,
+              landmarksVisited: _landmarksVisited,
+            ),
           ),
 
           // ── 3 – 5. Progress sections ──────────────────────────────────
@@ -177,6 +169,11 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildMilestoneCard(),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildGlobalProgressCard(),
           ),
           const SizedBox(height: 12),
           Padding(
@@ -204,7 +201,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   // Bottom row  : Gold Rank chip · "X Points" counter · "Level X · Y XP total"
   // ==========================================================================
   Widget _buildCombinedHeroCard() {
-    final xpEarned = _nextThreshold - _toNextLevel;
+    final currentXP = (500 - _toNextLevel).clamp(0, 500);
 
     return Container(
       width: double.infinity,
@@ -355,7 +352,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    'Level $_level  ·  $xpEarned XP',
+                    'Level $_level  ·  $currentXP XP',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.65),
                       fontSize: 10,
@@ -485,9 +482,50 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
     );
   }
 
-  Widget _buildProgressCard() {
-    final xpEarned = _nextThreshold - _toNextLevel;
+  Widget _buildGlobalProgressCard() {
+    final currentXP = (500 - _toNextLevel).clamp(0, 500);
+    final remainingXP = 500 - currentXP;
+    final double xpLevelProgress = currentXP / 500.0;
 
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Global Progress',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF1A1A1A),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildProgressRow(
+            icon: Icons.bolt_rounded,
+            iconColor: _green,
+            title: 'Level $_level',
+            subtitle: '$currentXP/500 XP · $remainingXP to next',
+            progress: xpLevelProgress,
+            barColor: _green,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressCard() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -521,15 +559,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             progress: _explorerProgress,
             barColor: _amber,
           ),
-          const SizedBox(height: 14),
-          _buildProgressRow(
-            icon: Icons.bolt_rounded,
-            iconColor: _green,
-            title: 'Level $_level',
-            subtitle: '$xpEarned/$_nextThreshold XP · $_toNextLevel to next',
-            progress: _xpLevelProgress,
-            barColor: _green,
-          ),
+
         ],
       ),
     );
@@ -597,6 +627,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   }
 
   Widget _buildStatGrid() {
+    final currentXP = (500 - _toNextLevel).clamp(0, 500);
+    final remainingXP = 500 - currentXP;
     final scholarsEarned =
         _scholarMilestones.where((m) => _quizPoints >= m.pts).length;
     final explorersEarned =
@@ -622,14 +654,14 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           color: _green,
           value: 'LVL $_level',
           label: 'XP Progress',
-          sub: '$_toNextLevel XP to next level',
+          sub: '$remainingXP XP to next level',
         ),
         _buildStatTile(
           icon: Icons.percent_rounded,
           color: _maroon,
-          value: '-',
-          label: 'Avg. Quiz Score',
-          sub: 'Coming soon',
+          value: '$_quizPoints',
+          label: 'Total Quiz Score',
+          sub: 'Keep playing!',
         ),
         _buildStatTile(
           icon: Icons.military_tech_outlined,

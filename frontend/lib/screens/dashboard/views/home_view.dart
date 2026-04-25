@@ -148,14 +148,14 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── 1. Combined Hero Card ──────────────────────────────────────
+          // ── 0. Combined Hero Card (Identity) ──────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: _buildCombinedHeroCard(),
           ),
           const SizedBox(height: 16),
 
-          // ── 2. Badge carousel ─────────────────────────────────────────
+          // ── 1. Badge Carousel (Achievements) ─────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: BadgesCard(
@@ -163,27 +163,33 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
               landmarksVisited: _landmarksVisited,
             ),
           ),
-
-          // ── 3 – 5. Progress sections ──────────────────────────────────
           const SizedBox(height: 16),
+
+          // ── 2. Player Stats (Quick Look) ─────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildMilestoneCard(),
+            child: _buildStatGrid(),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+
+          // ── 3. XP & Level Card (Formerly Global Progress) ─────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildGlobalProgressCard(),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+
+          // ── 4. Scholar Milestones Card ────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildMilestoneCard(),
+          ),
+          const SizedBox(height: 16),
+
+          // ── 5. Map Exploration Card (Formerly Exploration) ─────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildProgressCard(),
-          ),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildStatGrid(),
           ),
 
           // Bottom clearance above BottomAppBar + FAB.
@@ -383,7 +389,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
         : '$_quizPoints / ${next.pts} quiz points';
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -398,6 +404,15 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Text(
+            'Scholar Milestones',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF1A1A1A),
+            ),
+          ),
+          const SizedBox(height: 12),
           Row(
             children: [
               Container(
@@ -504,14 +519,14 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Global Progress',
+            'XP & Level',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
               color: Color(0xFF1A1A1A),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           _buildProgressRow(
             icon: Icons.bolt_rounded,
             iconColor: _green,
@@ -543,14 +558,14 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Exploration',
+            'Map Exploration',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
               color: Color(0xFF1A1A1A),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           _buildProgressRow(
             icon: Icons.explore_outlined,
             iconColor: _amber,
@@ -627,48 +642,50 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   }
 
   Widget _buildStatGrid() {
-    final currentXP = (500 - _toNextLevel).clamp(0, 500);
-    final remainingXP = 500 - currentXP;
     final scholarsEarned =
         _scholarMilestones.where((m) => _quizPoints >= m.pts).length;
     final explorersEarned =
         _explorerMilestones.where((t) => _landmarksVisited >= t).length;
 
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: 1.35,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildStatTile(
-          icon: Icons.place_outlined,
-          color: _amber,
-          value: '$_landmarksVisited/$_landmarksTotal',
-          label: 'Landmarks',
-          sub: '$explorersEarned Explorer badges',
+        const Text(
+          'Player Stats',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1A1A1A),
+          ),
         ),
-        _buildStatTile(
-          icon: Icons.bolt_rounded,
-          color: _green,
-          value: 'LVL $_level',
-          label: 'XP Progress',
-          sub: '$remainingXP XP to next level',
-        ),
-        _buildStatTile(
-          icon: Icons.percent_rounded,
-          color: _maroon,
-          value: '$_quizPoints',
-          label: 'Total Quiz Score',
-          sub: 'Keep playing!',
-        ),
-        _buildStatTile(
-          icon: Icons.military_tech_outlined,
-          color: _gold,
-          value: '${scholarsEarned + explorersEarned}/6',
-          label: 'Rank',
-          sub: _currentRank,
+        const SizedBox(height: 12),
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // 1. Total Quiz Score Card
+              Expanded(
+                child: _buildStatTile(
+                  icon: Icons.percent_rounded,
+                  color: _maroon,
+                  value: '$_quizPoints',
+                  label: 'Total Quiz Points',
+                  sub: 'Keep playing!',
+                ),
+              ),
+              const SizedBox(width: 12),
+              // 2. Rank / Badges Card
+              Expanded(
+                child: _buildStatTile(
+                  icon: Icons.military_tech_outlined,
+                  color: _gold,
+                  value: '${scholarsEarned + explorersEarned}/6',
+                  label: 'Rank',
+                  sub: _currentRank,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -682,7 +699,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
     required String sub,
   }) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -705,7 +722,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             ),
             child: Icon(icon, color: color, size: 16),
           ),
-          const Spacer(),
+          const SizedBox(height: 12),
           Text(
             value,
             style: const TextStyle(
@@ -715,7 +732,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
               height: 1,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 4),
           Text(
             label,
             style: const TextStyle(
@@ -724,6 +741,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
               color: Color(0xFF444444),
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             sub,
             maxLines: 1,

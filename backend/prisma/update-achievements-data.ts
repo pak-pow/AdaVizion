@@ -44,7 +44,7 @@ async function updateAchievementsData() {
 async function uploadBadge(baseName: string) {
   try {
     // Construct the full file name with extension
-    const fileName = `${baseName}.svg`;
+    const fileName = `${baseName}.png`;
 
     // Construct the file path to the badge file
     const filePath = path.join(badgesFolderPath, fileName);
@@ -62,7 +62,7 @@ async function uploadBadge(baseName: string) {
       .storage
       .from("achievement-badges")
       .upload(fileName, fileBuffer, {
-        contentType: "image/svg+xml",
+        contentType: "image/png",
         upsert: true,
       });
     

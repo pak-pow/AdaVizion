@@ -17,7 +17,14 @@ import '../models/badge_model.dart';
 /// Manages its own filter-tab state and scroll controller.
 /// Progress stats are now visible by scrolling down the Home feed.
 class BadgesCard extends StatefulWidget {
-  const BadgesCard({super.key});
+  final int quizPoints;
+  final int landmarksVisited;
+
+  const BadgesCard({
+    super.key,
+    required this.quizPoints,
+    required this.landmarksVisited,
+  });
 
   @override
   State<BadgesCard> createState() => _BadgesCardState();
@@ -40,12 +47,35 @@ class _BadgesCardState extends State<BadgesCard> {
     super.dispose();
   }
 
-  List<BadgeConfig> get _visibleBadges => _selectedBadgeFilter == null
-      ? kAchievementBadges
-      : kAchievementBadges
+  List<BadgeConfig> get _visibleBadges {
+    // 1. Filter by category
+    final categoryBadges = _selectedBadgeFilter == null
+        ? kAchievementBadges
+        : kAchievementBadges
             .where((b) => b.category == _selectedBadgeFilter)
             .toList();
 
+    // 2. Map and compute real locked state
+    return categoryBadges.map((badge) {
+      bool isLocked = true;
+      if (badge.category == BadgeCategory.scholar) {
+        if (widget.quizPoints >= badge.threshold) isLocked = false;
+      } else if (badge.category == BadgeCategory.explorer) {
+        if (widget.landmarksVisited >= badge.threshold) isLocked = false;
+      }
+      return BadgeConfig(
+        label: badge.label,
+        sublabel: badge.sublabel,
+        category: badge.category,
+        isLocked: isLocked,
+        imgPath: badge.imgPath,
+        threshold: badge.threshold,
+        tier: badge.tier,
+        description: badge.description,
+        funFact: badge.funFact,
+      );
+    }).toList();
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -282,7 +312,31 @@ class _BadgesCardState extends State<BadgesCard> {
                 ),
               ],
             ),
-            child: Icon(icon, color: iconColor, size: 28),
+            child:
+                (config.isLocked ||
+                    config.imgPath == null ||
+                    config.imgPath!.isEmpty)
+                  ? Icon(icon, color: iconColor, size: 28)
+                  : Center(
+                      child: Image.network(
+                        config.imgPath!,
+                        width: 40,
+                        height: 40,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white70,
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) =>
+                            Icon(Icons.lock_outline_rounded, color: Colors.white.withValues(alpha: 0.70), size: 28),
+                      ),
+                    ),
           ),
           const SizedBox(height: 6),
 

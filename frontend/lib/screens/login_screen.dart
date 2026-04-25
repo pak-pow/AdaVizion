@@ -7,6 +7,7 @@ import 'auth/views/home_layout_view.dart';
 import 'auth/views/about_layout_view.dart';
 import 'auth/views/auth_layout_view.dart';
 import 'auth/views/success_layout_view.dart';
+import '../utils/toast_service.dart';
 
 // ============================================================================
 // AUTH SCREEN (Shell)
@@ -213,6 +214,7 @@ class _AuthScreenState extends State<AuthScreen> {
           _loginPasswordController.text,
         );
         if (mounted) {
+          ToastService.showSuccess(context, 'Login successful!');
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const DashboardScreen()),
@@ -253,36 +255,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
   // ─── SNACKBAR HELPERS ────────────────────────────────────────────────────────
   void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.red.shade800,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
-      ),
-    );
+    ToastService.showError(context, message);
   }
 
   void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.green.shade700,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
-      ),
-    );
+    ToastService.showSuccess(context, message);
   }
 }

@@ -60,6 +60,24 @@ const ERRORS: ErrorDetails[] = [
     status: 400,
     message: "Failed to upload profile picture" 
   },
+  {
+    type: "STUDENT",
+    code: "EDIT_PROFILE_FAILED",
+    status: 400,
+    message: "Failed to edit student profile" 
+  },
+  {
+    type: "STUDENT",
+    code: "INCORRECT_PASSWORD",
+    status: 403,
+    message: "Incorrect password" 
+  },
+  {
+    type: "STUDENT",
+    code: "CHANGE_PASSWORD_FAILED",
+    status: 400,
+    message: "Failed to change password" 
+  },
 
   // Landmark Errors
   {
@@ -79,6 +97,12 @@ const ERRORS: ErrorDetails[] = [
     code: "QR_FAILED",
     status: 500,
     message: "Failed to process scan" 
+  },
+  {
+    type: "LANDMARK",
+    code: "LANDMARK_LOCKED",
+    status: 423,
+    message: "Scan landmark QR first" 
   },
 
   // Quiz Errors

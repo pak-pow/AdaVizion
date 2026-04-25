@@ -88,10 +88,60 @@ export const LoginSchema = z.object({
   password: passwordBase
 })
 
+export const EditProfileSchema = z.object({
+  firstName: firstNameBase,
+  middleName: middleNameBase,
+  lastName: lastNameBase,
+  program: programBase,
+  specialization: specializationBase,
+  yearLevel: yearLevelBase,
+})
+
+// Verify program exists in the university curriculum
+.refine((data) => {
+  return Object.keys(PROGRAM_ABBREVIATIONS).includes(data.program);
+}, {
+  error: "Please select a valid MSEUF academic program",
+  path: ["program"]
+})
+
+// Verify specialization belongs to the selected program
+.refine((data) => {
+  if (!data.specialization) return true;
+  const validSpecializations = PROGRAM_SPECIALIZATIONS[data.program] || [];
+  return validSpecializations.includes(data.specialization);
+}, {
+  error: "Invalid specialization for the selected program",
+  path: ["specialization"]
+})
+
+export const ChangePasswordSchema = z.object({
+  oldPassword: z.string({ error: "Old password must be a string" })
+    .min(1, { error: "Old password is required" })
+    .max(255, { error: "Old password is too long" }),
+
+  newPassword: passwordBase,
+
+  confirmPassword: z.string({ error: "Confirm password must be a string" })
+    .min(1, { error: "Please confirm your new password" })
+    .max(255, { error: "Confirm password is too long" })
+})
+
+.refine((data) => {
+  return data.newPassword === data.confirmPassword 
+}, {
+  error: "Passwords do not match",
+  path: ["confirmPassword"]
+})
+
 type RegistrationBody = z.infer<typeof RegistrationSchema>;
 type LoginBody = z.infer<typeof LoginSchema>;
+type EditProfileBody = z.infer<typeof EditProfileSchema>;
+type ChangePasswordBody = z.infer<typeof ChangePasswordSchema>;
 
 export type {
   RegistrationBody,
-  LoginBody
+  LoginBody,
+  EditProfileBody,
+  ChangePasswordBody
 }

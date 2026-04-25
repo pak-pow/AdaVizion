@@ -45,34 +45,41 @@ const List<BadgeConfig> kAchievementBadges = [
     sublabel: 'Visit 1 landmark',
     category: BadgeCategory.explorer,
     threshold: 1,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-1.png',
+    imgPath:
+        'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-1.png',
     tier: 1,
-    description: "Your journey begins! Successfully located your first campus landmark.",
+    description:
+        "Your journey begins! Successfully located your first campus landmark.",
   ),
   BadgeConfig(
     label: 'Voyager',
     sublabel: 'Visit 5 landmarks',
     category: BadgeCategory.explorer,
     threshold: 5,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-2.png',
+    imgPath:
+        'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-2.png',
     tier: 2,
-    description: "Becoming a local! You've successfully navigated to 5 landmarks.",
+    description:
+        "Becoming a local! You've successfully navigated to 5 landmarks.",
   ),
   BadgeConfig(
     label: 'Trailblazer',
     sublabel: 'Visit all landmarks',
     category: BadgeCategory.explorer,
     threshold: 10,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.png',
+    imgPath:
+        'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.png',
     tier: 3,
-    description: "Campus Master! You've explored every corner of the university.",
+    description:
+        "Campus Master! You've explored every corner of the university.",
   ),
   BadgeConfig(
     label: 'Aspirant',
     sublabel: '50 quiz pts',
     category: BadgeCategory.scholar,
     threshold: 50,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.png',
+    imgPath:
+        'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.png',
     tier: 1,
     description: "50 quiz points achieved.",
   ),
@@ -81,7 +88,8 @@ const List<BadgeConfig> kAchievementBadges = [
     sublabel: '100 quiz pts',
     category: BadgeCategory.scholar,
     threshold: 100,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.png',
+    imgPath:
+        'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.png',
     tier: 2,
     description: "100 quiz points achieved.",
   ),
@@ -90,7 +98,8 @@ const List<BadgeConfig> kAchievementBadges = [
     sublabel: '150 quiz pts',
     category: BadgeCategory.scholar,
     threshold: 150,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.png',
+    imgPath:
+        'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.png',
     tier: 3,
     description: "150 quiz points achieved. Hawak mo ang beat!",
   ),

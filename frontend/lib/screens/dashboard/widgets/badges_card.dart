@@ -3,19 +3,11 @@ import '../models/badge_model.dart';
 
 // ============================================================================
 // BADGES CARD WIDGET
-//
-// Extracted from dashboard_screen.dart _buildBadgesCard(), _buildFilterTab(),
-// and _buildBadgePlaceholder() methods in _DashboardHomeViewState.
-//
-// The badge filter state (_selectedBadgeFilter, _badgeScrollController)
-// is promoted to this widget's own state since nothing outside the card
-// reads or writes those values.
 // ============================================================================
 
 /// Self-contained achievements badge carousel card shown on the dashboard.
 ///
 /// Manages its own filter-tab state and scroll controller.
-/// Progress stats are now visible by scrolling down the Home feed.
 class BadgesCard extends StatefulWidget {
   final int quizPoints;
   final int landmarksVisited;
@@ -52,8 +44,8 @@ class _BadgesCardState extends State<BadgesCard> {
     final categoryBadges = _selectedBadgeFilter == null
         ? kAchievementBadges
         : kAchievementBadges
-            .where((b) => b.category == _selectedBadgeFilter)
-            .toList();
+              .where((b) => b.category == _selectedBadgeFilter)
+              .toList();
 
     // 2. Map and compute real locked state
     return categoryBadges.map((badge) {
@@ -76,6 +68,7 @@ class _BadgesCardState extends State<BadgesCard> {
       );
     }).toList();
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,12 +81,12 @@ class _BadgesCardState extends State<BadgesCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Row 1: Title + Quiz Scores button ──────────────────────────────
-          Row(
+          // ── Row 1: Title ───────────────────────────────────────────────────
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 'Badges',
                 style: TextStyle(
                   color: Colors.white,
@@ -147,7 +140,7 @@ class _BadgesCardState extends State<BadgesCard> {
           // ── Row 3: Horizontal badge carousel ──────────────────────────────
           // Hint of overflow on the right edge signals that the list is scrollable.
           SizedBox(
-            height: 108, // coin 72 + 5 gap + ~18 label + 13 safety
+            height: 144, // coin 72 + 5 gap + ~24 label + 43 safety
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 280),
               switchInCurve: Curves.easeOut,
@@ -256,119 +249,354 @@ class _BadgesCardState extends State<BadgesCard> {
 
   // ─── Badge coin helper ─────────────────────────────────────────────────────
 
-  /// Renders a single coin-shaped achievement badge for the carousel.
-  ///
-  /// Locked  → grey gradient + semi-transparent lock icon
-  /// Unlocked → category-tinted gradient + category icon
+  /// Renders a single badge item for the Carousel.
   Widget _buildBadgePlaceholder({required BadgeConfig config}) {
     const double size = 72;
-
-    final List<Color> gradient;
-    final Color iconColor;
-    final IconData icon;
-
-    if (config.isLocked) {
-      gradient = [Colors.grey.shade300, Colors.grey.shade400];
-      iconColor = Colors.white.withValues(alpha: 0.70);
-      icon = Icons.lock_outline_rounded;
-    } else if (config.category == BadgeCategory.explorer) {
-      gradient = [const Color(0xFFE8A87C), const Color(0xFFC0703A)];
-      iconColor = Colors.white;
-      icon = Icons.explore_outlined;
-    } else {
-      gradient = [const Color(0xFFFFE066), const Color(0xFFFFB300)];
-      iconColor = Colors.white;
-      icon = Icons.school_outlined;
-    }
 
     // Category accent colour for the small sublabel.
     final chipColor = config.category == BadgeCategory.explorer
         ? const Color(0xFFE8A87C)
         : const Color(0xFFFFD700);
 
-    return SizedBox(
-      width: size,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // ── Coin ──
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: gradient,
+    Widget imageWidget;
+    if (config.imgPath == null || config.imgPath!.isEmpty) {
+      imageWidget = Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          config.category == BadgeCategory.explorer
+              ? Icons.explore_outlined
+              : Icons.school_outlined,
+          color: Colors.white.withValues(alpha: 0.7),
+          size: 28,
+        ),
+      );
+    } else {
+      imageWidget = Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: Image.network(
+          config.imgPath!,
+          width: 52,
+          height: 52,
+          fit: BoxFit.contain,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white70,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color:
-                      (config.isLocked ? Colors.grey.shade400 : gradient.last)
-                          .withValues(alpha: 0.50),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+            );
+          },
+          errorBuilder: (context, error, stackTrace) => Icon(
+            Icons.broken_image_outlined,
+            color: Colors.white.withValues(alpha: 0.70),
+            size: 28,
+          ),
+        ),
+      );
+    }
+
+    if (config.isLocked) {
+      // Locked state: Greyscale, opacity, overlay lock + Circular Clip Fix
+      imageWidget = Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(
+            alpha: 0.15,
+          ), // Flat dark grey / transparent circle
+          shape: BoxShape.circle,
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Opacity(
+              opacity: 0.4,
+              child: ColorFiltered(
+                colorFilter: const ColorFilter.matrix([
+                  0.2126,
+                  0.7152,
+                  0.0722,
+                  0,
+                  0,
+                  0.2126,
+                  0.7152,
+                  0.0722,
+                  0,
+                  0,
+                  0.2126,
+                  0.7152,
+                  0.0722,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                ]),
+                child: imageWidget,
+              ),
             ),
-            child:
-                (config.isLocked || config.imgPath == null || config.imgPath!.isEmpty)
-                  ? Icon(icon, color: iconColor, size: 28)
-                  : Center(
-                      child: Image.network(
-                        '${config.imgPath}?v=${DateTime.now().millisecondsSinceEpoch}',
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.contain,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white70,
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) =>
-                            Icon(Icons.lock_outline_rounded, color: Colors.white.withValues(alpha: 0.70), size: 28),
+            const Icon(Icons.lock, color: Colors.white, size: 24),
+          ],
+        ),
+      );
+    } else {
+      // Unlocked state: "Medal Holder" Pedestal Design (3D Feel)
+      imageWidget = Container(
+        padding: const EdgeInsets.all(1.0), // Tight thin outer maroon border
+        decoration: const BoxDecoration(color: _maroon, shape: BoxShape.circle),
+        child: Container(
+          padding: const EdgeInsets.all(
+            2.5,
+          ), // Inner silver/metallic grey border
+          decoration: const BoxDecoration(
+            color: Color(0xFFC0C0C0), // Silver / Metallic Grey
+            shape: BoxShape.circle,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(2.0), // Reduced from 6.0 to account for image padding
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: imageWidget,
+          ),
+        ),
+      );
+    }
+
+    return InkWell(
+      onTap: () => _showBadgeDetails(config),
+      borderRadius: BorderRadius.circular(16),
+      child: SizedBox(
+        width: size,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: size,
+              width: size,
+              child: Center(child: imageWidget),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              config.label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: config.isLocked
+                    ? Colors.white.withValues(alpha: 0.50)
+                    : Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.2,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              config.sublabel,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: config.isLocked
+                    ? Colors.white.withValues(alpha: 0.28)
+                    : chipColor.withValues(alpha: 0.85),
+                fontSize: 8.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Modal Details View ────────────────────────────────────────────────────
+
+  void _showBadgeDetails(BadgeConfig config) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        Widget largeImageWidget;
+        if (config.imgPath == null || config.imgPath!.isEmpty) {
+          largeImageWidget = Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              config.category == BadgeCategory.explorer
+                  ? Icons.explore_outlined
+                  : Icons.school_outlined,
+              color: Colors.grey.shade300,
+              size: 60,
+            ),
+          );
+        } else {
+          largeImageWidget = Image.network(
+            config.imgPath!,
+            width: 120,
+            height: 120,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => Icon(
+              Icons.broken_image_outlined,
+              color: Colors.grey.shade400,
+              size: 60,
+            ),
+          );
+        }
+
+        if (config.isLocked) {
+          largeImageWidget = Stack(
+            alignment: Alignment.center,
+            children: [
+              Opacity(
+                opacity: 0.4,
+                child: ColorFiltered(
+                  colorFilter: const ColorFilter.matrix([
+                    0.2126,
+                    0.7152,
+                    0.0722,
+                    0,
+                    0,
+                    0.2126,
+                    0.7152,
+                    0.0722,
+                    0,
+                    0,
+                    0.2126,
+                    0.7152,
+                    0.0722,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                  ]),
+                  child: largeImageWidget,
+                ),
+              ),
+              const Icon(Icons.lock, color: Colors.grey, size: 48),
+            ],
+          );
+        }
+
+        return Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Hero(tag: 'badge-${config.label}', child: largeImageWidget),
+                  const SizedBox(height: 24),
+                  Text(
+                    config.label,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: _maroon,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  if (config.description != null &&
+                      config.description!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      config.isLocked
+                          ? "Keep exploring to unlock this lore!"
+                          : config.description!,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey.shade600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Text(
+                      'Required: ${config.threshold} ${config.category == BadgeCategory.scholar ? 'points' : 'landmarks'}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade800,
                       ),
                     ),
-          ),
-          const SizedBox(height: 6),
-
-          // ── Badge name ──
-          Text(
-            config.label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: config.isLocked
-                  ? Colors.white.withValues(alpha: 0.50)
-                  : Colors.white,
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.2,
+                  ),
+                  if (!config.isLocked &&
+                      config.funFact != null &&
+                      config.funFact!.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF7F7F9),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.lightbulb_outline,
+                            color: const Color(0xFFFFD700).withValues(alpha: 0.8),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              config.funFact!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                ],
+              ),
             ),
           ),
-
-          // ── Sublabel (threshold hint) ──
-          Text(
-            config.sublabel,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: config.isLocked
-                  ? Colors.white.withValues(alpha: 0.28)
-                  : chipColor.withValues(alpha: 0.85),
-              fontSize: 7.5,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/badge_model.dart';
+import '../../../services/api/achievement_api.dart';
 
 // ============================================================================
 // BADGES CARD WIDGET
@@ -33,28 +34,38 @@ class _BadgesCardState extends State<BadgesCard> {
   /// Controller for the horizontal badge carousel.
   final _badgeScrollController = ScrollController();
 
+  /// Dynamic data future from backend.
+  late Future<List<BadgeConfig>> _achievementsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _achievementsFuture = AchievementApi.getAchievements();
+  }
+
   @override
   void dispose() {
     _badgeScrollController.dispose();
     super.dispose();
   }
 
-  List<BadgeConfig> get _visibleBadges {
-    // 1. Filter by category
+  List<BadgeConfig> _filterAndOverrideBadges(List<BadgeConfig> allBadges) {
+    // 1. Filter by category selector
     final categoryBadges = _selectedBadgeFilter == null
-        ? kAchievementBadges
-        : kAchievementBadges
+        ? allBadges
+        : allBadges
               .where((b) => b.category == _selectedBadgeFilter)
               .toList();
 
-    // 2. Map and compute real locked state
+    // 2. Override locked state based on live dashboard stats (Immediate UI Feedback)
     return categoryBadges.map((badge) {
-      bool isLocked = true;
+      bool isLocked = badge.isLocked;
       if (badge.category == BadgeCategory.scholar) {
         if (widget.quizPoints >= badge.threshold) isLocked = false;
       } else if (badge.category == BadgeCategory.explorer) {
         if (widget.landmarksVisited >= badge.threshold) isLocked = false;
       }
+
       return BadgeConfig(
         label: badge.label,
         sublabel: badge.sublabel,
@@ -141,21 +152,56 @@ class _BadgesCardState extends State<BadgesCard> {
           // Hint of overflow on the right edge signals that the list is scrollable.
           SizedBox(
             height: 144, // coin 72 + 5 gap + ~24 label + 43 safety
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 280),
-              switchInCurve: Curves.easeOut,
-              switchOutCurve: Curves.easeIn,
-              child: ListView.separated(
-                key: ValueKey(_selectedBadgeFilter),
-                controller: _badgeScrollController,
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(right: 8),
-                physics: const BouncingScrollPhysics(),
-                itemCount: _visibleBadges.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 14),
-                itemBuilder: (_, i) =>
-                    _buildBadgePlaceholder(config: _visibleBadges[i]),
-              ),
+            child: FutureBuilder<List<BadgeConfig>>(
+              future: _achievementsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                      'Failed to load achievements',
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  );
+                }
+
+                final allBadges = snapshot.data ?? [];
+                final visibleBadges = _filterAndOverrideBadges(allBadges);
+
+                if (visibleBadges.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No badges available in this category.',
+                      style: TextStyle(color: Colors.white38, fontSize: 11),
+                    ),
+                  );
+                }
+
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 280),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  child: ListView.separated(
+                    key: ValueKey(_selectedBadgeFilter),
+                    controller: _badgeScrollController,
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(right: 8),
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: visibleBadges.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 14),
+                    itemBuilder: (_, i) =>
+                        _buildBadgePlaceholder(config: visibleBadges[i]),
+                  ),
+                );
+              },
             ),
           ),
 

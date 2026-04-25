@@ -393,31 +393,33 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   }
 
   /// Dialog button builder to reduce boilerplate in dialog definitions. Can create either
-  /// a filled ElevatedButton or a TextButton based on [isText].
+  /// a filled ElevatedButton or an OutlinedButton based on [isSecondary].
   ///
   /// Parameters:
   ///  - [label] — The text to display on the button.
   ///  - [onPressed] — The callback to execute when the button is pressed.
-  ///  - [isText] — If true, creates a TextButton; otherwise, creates an ElevatedButton with maroon styling.
+  ///  - [isSecondary] — If true, creates a OutlinedButton; otherwise, creates an ElevatedButton with maroon styling.
   ///  - [fullWidth] — pass true when the button is inside an [Expanded] row so
   ///   it fills its cell. Leave false (default) for standalone single-button
   ///   footers, which size to their content and are centered by the parent.
   Widget _dialogButton({
     required String label,
     required VoidCallback onPressed,
-    bool isText = false,
+    bool isSecondary = false,
     bool fullWidth = false,
   }) {
     final double? width = fullWidth ? double.infinity : null;
 
-    if (isText) {
+    if (isSecondary) {
       return SizedBox(
         width: width,
         height: 45,
-        child: TextButton(
+        child: OutlinedButton(
           onPressed: onPressed,
-          style: TextButton.styleFrom(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Colors.white,
             foregroundColor: _maroonDark,
+            side: const BorderSide(color: _maroonDark, width: 1.5),
             padding: const EdgeInsets.symmetric(horizontal: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -602,7 +604,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                 Expanded(
                   child: _dialogButton(
                     label: "Close",
-                    isText: true,
+                    isSecondary: true,
                     fullWidth: true,
                     onPressed: () => _closeDialogAnd(_resetScanner),
                   ),
@@ -666,7 +668,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
               Expanded(
                 child: _dialogButton(
                   label: "Close",
-                  isText: true,
+                  isSecondary: true,
                   fullWidth: true,
                   onPressed: () =>
                       _closeDialogAnd(() => Navigator.pop(context)),

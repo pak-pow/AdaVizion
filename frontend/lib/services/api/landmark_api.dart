@@ -25,15 +25,14 @@ class LandmarkApi {
   /// {
   ///   "landmark_id": int,
   ///   "name": String,
-  ///   "description": String?,
-  ///   "img_path": String?,
   ///   "is_visited": bool
   /// }
   /// ```
   ///
-  /// Note: `fun_fact` and `qr_string` are intentionally excluded from this
-  /// endpoint. `fun_fact` is only revealed after a successful QR scan.
-  /// `qr_string` is never sent to the client — it is only compared server-side.
+  /// Note: `description`, `fun_fact`, and `qr_string` are intentionally excluded
+  /// from this endpoint. Both `description` and `fun_fact` are only revealed after
+  /// a successful QR scan. `qr_string` is never sent to the client — it is only
+  /// compared server-side.
   static Future<List<dynamic>> getChecklist() async {
     final response = await http.get(
       Uri.parse('${ApiConfig.baseUrl}/landmarks'),
@@ -55,13 +54,24 @@ class LandmarkApi {
   /// Parameters:
   ///   [id] — The landmark's database ID (retrieved from [getChecklist]).
   ///
-  /// Returns: A [Map] with landmark details. The `fun_fact` field is gated:
-  ///   - If the student has NOT visited this landmark: `fun_fact` is excluded
-  ///     and `is_unlocked` is `false`.
-  ///   - If the student HAS visited: `fun_fact` is included and
-  ///     `is_unlocked` is `true`.
+  /// Returns: A [Map] with the landmark's full details (including `description`
+  /// and `fun_fact`) if the student has already visited this landmark:
+  /// ```json
+  /// {
+  ///   "landmark_id": int,
+  ///   "name": String,
+  ///   "description": String,
+  ///   "fun_fact": String,
+  ///   "img_path": String?,
+  ///   "is_unlocked": true
+  /// }
+  /// ```
   ///
-  /// This gating is enforced entirely server-side — the client cannot bypass it.
+  /// Throws: [Exception] with "Scan landmark QR first" (423 Locked) if the
+  ///   student has not yet scanned this landmark's QR code. The caller should
+  ///   catch this to show a locked/discovery UI state rather than the detail view.
+  ///
+  /// Access control is enforced entirely server-side — the client cannot bypass it.
   static Future<Map<String, dynamic>> getLandmark(int id) async {
     final response = await http.get(
       Uri.parse('${ApiConfig.baseUrl}/landmarks/$id'),
@@ -77,20 +87,21 @@ class LandmarkApi {
 
   /// Records a QR code scan visit for the logged-in student at a specific landmark.
   ///
-  /// Endpoint: `POST /landmarks/:id/visit`
+  /// Endpoint: `POST /landmarks/visit`
   /// Auth required: ✅ Bearer token
   ///
   /// Parameters:
   ///   [qrCode] — The raw string value decoded from the QR code scan.
-  ///              The backend compares this against `landmark.qr_string` in the
-  ///              database. If they don't match, a 403 error is returned.
+  ///              The backend looks up the landmark by this value and compares it
+  ///              against `landmark.qr_string` in the database.
   ///
   /// Request body sent: `{ "qr_code_scanned": "<qrCode>" }`
   ///
   /// Returns: A [Map] containing:
   /// ```json
   /// {
-  ///   "landmark": { "name", "fun_fact", "visited_at" },
+  ///   "message": "Scan and visit successful",
+  ///   "landmark": { "name", "description", "fun_fact", "img_path", "visited_at" },
   ///   "progress": {
   ///     "xp": { "previous", "current", "earned", "next_threshold", "to_next_level" },
   ///     "level": { "previous", "current", "did_level_up" }
@@ -104,9 +115,13 @@ class LandmarkApi {
   ///   - `new_achievements.isNotEmpty`              → show achievement badge toast(s)
   ///   - `result['landmark']['fun_fact']`           → display the unlocked fun fact
   ///
-  /// Throws: [Exception] with "Invalid landmark QR code" (403) if [qrCode] doesn't
-  ///   match the database record, or "Landmark already visited" (409) if the student
-  ///   has scanned this QR before.
+  /// Throws:
+  ///   - [Exception] with "Landmark not found" (404) if the scanned QR string
+  ///     does not match any landmark in the database.
+  ///   - [Exception] with "Invalid landmark QR code" (403) if the QR string is
+  ///     found but does not match the landmark's stored `qr_string`.
+  ///   - [Exception] with "Landmark already visited" (409) if the student has
+  ///     already scanned this landmark before.
   static Future<Map<String, dynamic>> visitLandmark(String qrCode) async {
     final response = await http.post(
       Uri.parse('${ApiConfig.baseUrl}/landmarks/visit'),

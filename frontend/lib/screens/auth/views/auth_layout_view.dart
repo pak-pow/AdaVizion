@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/auth_text_field.dart';
+import '../../../utils/toast_service.dart';
 
 // ============================================================================
 // AUTH LAYOUT VIEW
@@ -191,7 +192,7 @@ class AuthLayoutView extends StatelessWidget {
                   ),
                 ],
               ),
-              child: _buildCardContent(border, size),
+              child: _buildCardContent(context, border, size),
             ),
           ],
         ),
@@ -200,7 +201,7 @@ class AuthLayoutView extends StatelessWidget {
   }
 
   // ─── Card content (inputs + submit button) ─────────────────────────────────
-  Widget _buildCardContent(OutlineInputBorder border, Size size) {
+  Widget _buildCardContent(BuildContext context, OutlineInputBorder border, Size size) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -334,7 +335,9 @@ class AuthLayoutView extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                ToastService.showInfo(context, 'Feature coming soon!');
+              },
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 minimumSize: Size.zero,

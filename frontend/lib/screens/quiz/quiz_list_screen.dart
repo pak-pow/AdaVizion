@@ -311,18 +311,6 @@ class _QuizListScreenState extends State<QuizListScreen> {
                             scoreAchieved,
                             maxScore,
                           ),
-                          if (!isLocked) ...[
-                            const SizedBox(width: 8),
-                            AnimatedRotation(
-                              turns: isExpanded ? 0.5 : 0.0,
-                              duration: const Duration(milliseconds: 300),
-                              child: const Icon(
-                                Icons.keyboard_arrow_down,
-                                color: Colors.white,
-                                size: 22,
-                              ),
-                            ),
-                          ],
                         ],
                       ),
                     ),

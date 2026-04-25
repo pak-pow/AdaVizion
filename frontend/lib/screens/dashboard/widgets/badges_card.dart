@@ -151,7 +151,7 @@ class _BadgesCardState extends State<BadgesCard> {
           // ── Row 3: Horizontal badge carousel ──────────────────────────────
           // Hint of overflow on the right edge signals that the list is scrollable.
           SizedBox(
-            height: 144, // coin 72 + 5 gap + ~24 label + 43 safety
+            height: 160, // coin 72 + 5 gap + ~32 label + 51 safety
             child: FutureBuilder<List<BadgeConfig>>(
               future: _achievementsFuture,
               builder: (context, snapshot) {
@@ -423,7 +423,7 @@ class _BadgesCardState extends State<BadgesCard> {
       onTap: () => _showBadgeDetails(config),
       borderRadius: BorderRadius.circular(16),
       child: SizedBox(
-        width: size,
+        width: 86, // Increased width to give text more horizontal room
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -443,9 +443,9 @@ class _BadgesCardState extends State<BadgesCard> {
                 color: config.isLocked
                     ? Colors.white.withValues(alpha: 0.50)
                     : Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.2,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.1,
               ),
             ),
             const SizedBox(height: 2),
@@ -458,7 +458,7 @@ class _BadgesCardState extends State<BadgesCard> {
                 color: config.isLocked
                     ? Colors.white.withValues(alpha: 0.28)
                     : chipColor.withValues(alpha: 0.85),
-                fontSize: 8.5,
+                fontSize: 10,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -578,7 +578,6 @@ class _BadgesCardState extends State<BadgesCard> {
                           : config.description!,
                       style: TextStyle(
                         fontSize: 14,
-                        fontStyle: FontStyle.italic,
                         color: Colors.grey.shade600,
                       ),
                       textAlign: TextAlign.center,

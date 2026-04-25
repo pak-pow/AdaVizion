@@ -361,7 +361,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                     'Level $_level  ·  $currentXP XP',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.65),
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -444,7 +444,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                     Text(
                       subtext,
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: Colors.grey.shade500,
                         fontWeight: FontWeight.w500,
                       ),
@@ -617,7 +617,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 9.5,
+                      fontSize: 12,
                       color: Colors.grey.shade500,
                       fontWeight: FontWeight.w500,
                     ),
@@ -651,7 +651,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Player Stats',
+          'Student Stats',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w800,
@@ -736,7 +736,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           Text(
             label,
             style: const TextStyle(
-              fontSize: 10,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
               color: Color(0xFF444444),
             ),
@@ -747,8 +747,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 9,
-              color: Colors.grey.shade400,
+              fontSize: 12,
+              color: Colors.grey.shade600,
               fontWeight: FontWeight.w500,
             ),
           ),

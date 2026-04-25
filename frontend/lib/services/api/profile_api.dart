@@ -186,7 +186,7 @@ class ProfileApi {
       Uri.parse('${ApiConfig.baseUrl}/students/me/password'),
       headers: await ApiConfig.getHeaders(),
       body: jsonEncode({
-        'currentPassword': currentPassword,
+        'oldPassword': currentPassword,
         'newPassword': newPassword,
         'confirmPassword': confirmPassword,
       }),

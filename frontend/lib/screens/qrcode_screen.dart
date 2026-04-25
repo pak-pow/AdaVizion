@@ -357,6 +357,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     required String title,
     Widget? content,
     required List<Widget> actions,
+    bool isDarkHeader = false,
   }) {
     return showDialog<T>(
       context: context,
@@ -364,13 +365,15 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titlePadding: EdgeInsets.zero,
+        contentPadding: EdgeInsets.zero,
+        actionsPadding: EdgeInsets.zero,
         backgroundColor: Colors.white,
 
         // ─── HEADER  ──────────────────
         title: Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
-            color: _maroonDark,
+            color: isDarkHeader ? _maroonDark : Colors.white,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -379,10 +382,10 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           child: Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w800,
-              color: Colors.white,
+              color: isDarkHeader ? Colors.white : _maroonDark,
             ),
           ),
         ),
@@ -630,9 +633,10 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   /// Shows an error dialog when the scanned QR code is not a valid landmark code.
   void _showInvalidQrDialog() {
     _showScanDialog(
-      title: "Invalid QR Code",
+      title: "Invalid QR Code!",
+      isDarkHeader: true,
       content: const Padding(
-        padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+        padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
         child: Text(
           "This doesn't seem to be a valid landmark QR code. Please try scanning again.",
           textAlign: TextAlign.center,
@@ -659,7 +663,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   void _showAlreadyVisitedDialog() {
     _showScanDialog(
       title: "Already Visited!",
-      content: const SizedBox(height: 16),
+      content: null,
       actions: [
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -693,8 +697,9 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   void _showErrorDialog() {
     _showScanDialog(
       title: "Something Went Wrong!",
+      isDarkHeader: true,
       content: const Padding(
-        padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+        padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
         child: Text(
           "Couldn't connect to the server. Check your connection and try again.",
           textAlign: TextAlign.center,

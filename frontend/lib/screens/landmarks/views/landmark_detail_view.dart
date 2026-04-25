@@ -186,6 +186,7 @@ class _HeroSliver extends StatelessWidget {
                 ? Image.network(
                     imgPath!,
                     fit: BoxFit.cover,
+                    // ignore: unnecessary_underscores
                     errorBuilder: (_, __, ___) =>
                         const LandmarkImageFallback(iconSize: 64),
                   )

@@ -136,22 +136,27 @@ class _ProgressHeader extends StatelessWidget {
     final progress = total == 0 ? 0.0 : visited / total;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
             'Campus Landmarks',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 28,
               fontWeight: FontWeight.w900,
               color: kLandmarkMaroon,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 1),
           Text(
-            'Scan QR codes around campus to discover each landmark.',
-            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+            'Scan QR codes around campus to\ndiscover each landmark.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade600,
+              height: 1,
+            ),
           ),
           const SizedBox(height: 16),
 

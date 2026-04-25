@@ -81,6 +81,7 @@ class _CardImage extends StatelessWidget {
         ? Image.network(
             imgPath!,
             fit: BoxFit.cover,
+            // ignore: unnecessary_underscores
             errorBuilder: (_, __, ___) => const LandmarkImageFallback(),
           )
         : const LandmarkImageFallback();
@@ -114,13 +115,6 @@ class _NameStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 24, 10, 10),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [Colors.black.withValues(alpha: 0.75), Colors.transparent],
-        ),
-      ),
       child: Text(
         name,
         maxLines: 2,

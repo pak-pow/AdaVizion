@@ -44,14 +44,17 @@
 | Category | Technology |
 | --- | --- |
 | **Frontend** | [Dart](https://dart.dev/docs), [Flutter](https://flutter.dev/) |
-| **Backend** | [TypeScript](https://www.typescriptlang.org/docs/), [Express.js](https://expressjs.com/) |
+| **Backend** | [Node.js](https://nodejs.org/en), [TypeScript](https://www.typescriptlang.org/docs/), [Express.js](https://expressjs.com/) |
 | **ORM** | [Prisma](https://www.prisma.io/) |
 | **Database** | [PostgreSQL](https://www.postgresql.org/docs/) |
+| **Storage** | [Supabase Storage](https://supabase.com/docs/guides/storage) |
 | **Validation** | [Zod](https://zod.dev/) |
-| **Security** | [JWT](https://jwt.io/introduction) |
+| **Security** | [JWT](https://jwt.io/introduction), [Bcrypt](https://www.npmjs.com/package/bcrypt) |
+| **File Uploads** | [Multer](https://www.npmjs.com/package/multer) |
+| **Testing** | [Postman](https://www.postman.com/), [Thunder Client](https://www.thunderclient.com/) |
 | **Development** | [VS Code](https://code.visualstudio.com/), Web Browser |
-| **Test** | [Postman](https://www.postman.com/) |
-| **Deployment** | [Vercel](https://vercel.com/) |
+| **Version Control** | [Git](https://git-scm.com/), [GitHub](https://github.com/) |
+| **Deployment** | [Vercel](https://vercel.com/), [Render](https://render.com/) |
 
 ## ⚙️ Environment Setup Guide (Windows)
 

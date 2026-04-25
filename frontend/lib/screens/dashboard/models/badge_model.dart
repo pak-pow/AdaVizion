@@ -30,68 +30,35 @@ class BadgeConfig {
     this.description,
     this.funFact,
   });
+
+  /// Factory to safely parse achievement data from the backend API.
+  /// Backend keys: title, description, category, threshold, img_path, is_unlocked, etc.
+  factory BadgeConfig.fromJson(Map<String, dynamic> json) {
+    final catStr = json['category'] as String? ?? 'EXPLORER';
+    final category = catStr.toUpperCase() == 'SCHOLAR'
+        ? BadgeCategory.scholar
+        : BadgeCategory.explorer;
+
+    final threshold = json['threshold'] as int? ?? 0;
+
+    // Construct sublabel based on category and threshold
+    String sublabel = '';
+    if (category == BadgeCategory.explorer) {
+      sublabel = 'Visit $threshold landmark${threshold == 1 ? '' : 's'}';
+    } else {
+      sublabel = '$threshold quiz pts';
+    }
+
+    return BadgeConfig(
+      label: json['title'] as String? ?? 'Unknown',
+      sublabel: sublabel,
+      category: category,
+      isLocked: !(json['is_unlocked'] as bool? ?? true),
+      imgPath: json['img_path'] as String?,
+      threshold: threshold,
+      tier: (json['tier'] as num?)?.toInt(),
+      description: json['description'] as String?,
+      funFact: json['fun_fact'] as String?,
+    );
+  }
 }
-
-// The backend `Achievement` model has 6 seeded entries across two categories:
-//   EXPLORER (landmark-based): Envergan Scout, Wildcat Voyager, Luzonian Trailblazer
-//   SCHOLAR  (quiz-point-based): Envergan Aspirant, Wildcat Seeker, Luzonian Paragon
-// Each achievement has: achievement_id, title, description, category, threshold, img_path.
-// Badges are locked until the student reaches the achievement's threshold.
-
-/// The six seeded achievement badges, mirroring the backend achievements seed data.
-const List<BadgeConfig> kAchievementBadges = [
-  BadgeConfig(
-    label: 'Scout',
-    sublabel: 'Visit 1 landmark',
-    category: BadgeCategory.explorer,
-    threshold: 1,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-1.svg',
-    tier: 1,
-    description: "Your journey begins! Successfully located your first campus landmark.",
-  ),
-  BadgeConfig(
-    label: 'Voyager',
-    sublabel: 'Visit 5 landmarks',
-    category: BadgeCategory.explorer,
-    threshold: 5,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-2.svg',
-    tier: 2,
-    description: "Becoming a local! You've successfully navigated to 5 landmarks.",
-  ),
-  BadgeConfig(
-    label: 'Trailblazer',
-    sublabel: 'Visit all landmarks',
-    category: BadgeCategory.explorer,
-    threshold: 10,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.svg',
-    tier: 3,
-    description: "Campus Master! You've explored every corner of the university.",
-  ),
-  BadgeConfig(
-    label: 'Aspirant',
-    sublabel: '50 quiz pts',
-    category: BadgeCategory.scholar,
-    threshold: 50,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.svg',
-    tier: 1,
-    description: "50 quiz points achieved.",
-  ),
-  BadgeConfig(
-    label: 'Seeker',
-    sublabel: '100 quiz pts',
-    category: BadgeCategory.scholar,
-    threshold: 100,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.svg',
-    tier: 2,
-    description: "100 quiz points achieved.",
-  ),
-  BadgeConfig(
-    label: 'Paragon',
-    sublabel: '150 quiz pts',
-    category: BadgeCategory.scholar,
-    threshold: 150,
-    imgPath: 'https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.svg',
-    tier: 3,
-    description: "150 quiz points achieved. Hawak mo ang beat!",
-  ),
-];

@@ -52,6 +52,7 @@ class _SettingsViewState extends State<SettingsView> {
   final _studentIdController = TextEditingController();
   final _courseController = TextEditingController();
   final _specializationController = TextEditingController();
+  int _yearLevel = 1;
 
   String get _fullName {
     final first = _firstNameController.text.trim();
@@ -89,14 +90,17 @@ class _SettingsViewState extends State<SettingsView> {
             final firstName = info['first_name'] ?? '';
             final lastName = info['last_name'] ?? '';
             final middleName = info['middle_name'] ?? '';
-            
+
             _firstNameController.text = firstName;
             _lastNameController.text = lastName;
             _middleNameController.text = middleName;
 
             // Fallback: If DB only has single string name
             final fullNameStr = info['full_name'] ?? info['name'];
-            if (firstName.isEmpty && lastName.isEmpty && fullNameStr is String && fullNameStr.isNotEmpty) {
+            if (firstName.isEmpty &&
+                lastName.isEmpty &&
+                fullNameStr is String &&
+                fullNameStr.isNotEmpty) {
               final parts = fullNameStr.trim().split(RegExp(r'\s+'));
               if (parts.length == 1) {
                 _firstNameController.text = parts[0];
@@ -106,16 +110,20 @@ class _SettingsViewState extends State<SettingsView> {
               } else if (parts.length > 2) {
                 _firstNameController.text = parts[0];
                 _lastNameController.text = parts.last;
-                _middleNameController.text = parts.sublist(1, parts.length - 1).join(' ');
+                _middleNameController.text = parts
+                    .sublist(1, parts.length - 1)
+                    .join(' ');
               }
             }
 
             _studentIdController.text = info['student_number'] ?? '';
             _courseController.text = info['program'] ?? '';
             _specializationController.text = info['specialization'] ?? '';
+            if (info['year_level'] != null) {
+              _yearLevel = info['year_level'] as int;
+            }
             final rawImg = info['img_path'];
-            _imgPath =
-                (rawImg is String && rawImg.isNotEmpty) ? rawImg : null;
+            _imgPath = (rawImg is String && rawImg.isNotEmpty) ? rawImg : null;
           }
           _isLoading = false;
         });
@@ -142,7 +150,9 @@ class _SettingsViewState extends State<SettingsView> {
     } catch (e) {
       if (mounted) {
         ToastService.showError(
-            context, e.toString().replaceFirst('Exception: ', ''));
+          context,
+          e.toString().replaceFirst('Exception: ', ''),
+        );
       }
     } finally {
       if (mounted) setState(() => _isUploadingPicture = false);
@@ -154,13 +164,14 @@ class _SettingsViewState extends State<SettingsView> {
     showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
           'Log out?',
           style: TextStyle(fontWeight: FontWeight.w900),
         ),
-        content: const Text(
-          'Are you sure you want to log out of EUventure?',
-        ),
+        content: const Text('Are you sure you want to log out of EUventure?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
@@ -180,13 +191,127 @@ class _SettingsViewState extends State<SettingsView> {
             },
             child: const Text(
               'Log out',
-              style: TextStyle(
-                color: _maroon,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: _maroon, fontWeight: FontWeight.bold),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ─── Change Password ───────────────────────────────────────────────────────
+  void _showChangePasswordDialog() {
+    final currentPasswordController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    bool isLoading = false;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: const Text(
+              'Change Password',
+              style: TextStyle(fontWeight: FontWeight.w900),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildEditField(
+                    controller: currentPasswordController,
+                    hint: 'Current Password',
+                  ),
+                  _buildEditField(
+                    controller: newPasswordController,
+                    hint: 'New Password',
+                  ),
+                  _buildEditField(
+                    controller: confirmPasswordController,
+                    hint: 'Confirm New Password',
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              if (isLoading)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: _maroon,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                )
+              else ...[
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (newPasswordController.text !=
+                        confirmPasswordController.text) {
+                      ToastService.showError(
+                        context,
+                        'New passwords do not match.',
+                      );
+                      return;
+                    }
+                    if (newPasswordController.text.length < 8) {
+                      ToastService.showError(
+                        context,
+                        'Password must be at least 8 characters.',
+                      );
+                      return;
+                    }
+
+                    setDialogState(() => isLoading = true);
+                    try {
+                      await ProfileApi.changePassword(
+                        currentPassword: currentPasswordController.text,
+                        newPassword: newPasswordController.text,
+                        confirmPassword: confirmPasswordController.text,
+                      );
+                      if (context.mounted) {
+                        Navigator.of(dialogContext).pop();
+                        ToastService.showSuccess(
+                          context,
+                          'Password changed successfully!',
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ToastService.showError(
+                          context,
+                          e.toString().replaceFirst('Exception: ', ''),
+                        );
+                        setDialogState(() => isLoading = false);
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _maroon,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text(
+                    'Change',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ],
+          );
+        },
       ),
     );
   }
@@ -237,8 +362,8 @@ class _SettingsViewState extends State<SettingsView> {
                           ),
                           _buildTile(
                             icon: Icons.lock_outline,
-                            label: 'Privacy & Security',
-                            onTap: _showComingSoon,
+                            label: 'Change Password',
+                            onTap: _showChangePasswordDialog,
                           ),
                         ]),
 
@@ -535,7 +660,10 @@ class _SettingsViewState extends State<SettingsView> {
           ),
           const SizedBox(height: 16),
           _buildEditField(controller: _firstNameController, hint: 'First Name'),
-          _buildEditField(controller: _middleNameController, hint: 'Middle Name (Optional)'),
+          _buildEditField(
+            controller: _middleNameController,
+            hint: 'Middle Name (Optional)',
+          ),
           _buildEditField(controller: _lastNameController, hint: 'Last Name'),
           _buildEditField(
             controller: _studentIdController,
@@ -552,10 +680,16 @@ class _SettingsViewState extends State<SettingsView> {
                   : null,
               decoration: InputDecoration(
                 labelText: 'Course / Program',
-                labelStyle: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                labelStyle: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade500,
+                ),
                 filled: true,
                 fillColor: const Color(0xFFF7F7F9),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(color: Colors.grey.shade200),
@@ -587,7 +721,8 @@ class _SettingsViewState extends State<SettingsView> {
                 if (newValue != null) {
                   setState(() {
                     _courseController.text = newValue;
-                    _specializationController.text = ''; // Reset on program change
+                    _specializationController.text =
+                        ''; // Reset on program change
                   });
                 }
               },
@@ -599,15 +734,24 @@ class _SettingsViewState extends State<SettingsView> {
               padding: const EdgeInsets.only(bottom: 12),
               child: DropdownButtonFormField<String>(
                 isExpanded: true,
-                initialValue: kBackendSpecializations[_courseController.text]!.contains(_specializationController.text)
+                initialValue:
+                    kBackendSpecializations[_courseController.text]!.contains(
+                      _specializationController.text,
+                    )
                     ? _specializationController.text
                     : null,
                 decoration: InputDecoration(
                   labelText: 'Specialization',
-                  labelStyle: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  labelStyle: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF7F7F9),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.grey.shade200),
@@ -621,7 +765,9 @@ class _SettingsViewState extends State<SettingsView> {
                     borderSide: const BorderSide(color: _maroon, width: 1.5),
                   ),
                 ),
-                items: kBackendSpecializations[_courseController.text]!.map((String value) {
+                items: kBackendSpecializations[_courseController.text]!.map((
+                  String value,
+                ) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
@@ -644,6 +790,59 @@ class _SettingsViewState extends State<SettingsView> {
                 },
               ),
             ),
+          // Year Level Dropdown
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: DropdownButtonFormField<int>(
+              isExpanded: true,
+              initialValue: _yearLevel,
+              decoration: InputDecoration(
+                labelText: 'Year Level',
+                labelStyle: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade500,
+                ),
+                filled: true,
+                fillColor: const Color(0xFFF7F7F9),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: _maroon, width: 1.5),
+                ),
+              ),
+              items: [1, 2, 3, 4].map((int value) {
+                return DropdownMenuItem<int>(
+                  value: value,
+                  child: Text(
+                    value.toString(),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF1A1A1A),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: (int? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    _yearLevel = newValue;
+                  });
+                }
+              },
+            ),
+          ),
           const SizedBox(height: 4),
           Row(
             children: [
@@ -667,9 +866,32 @@ class _SettingsViewState extends State<SettingsView> {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    setState(() => _isEditMode = false);
-                    // TODO: Add backend PATCH /students/me call here
+                  onPressed: () async {
+                    setState(() => _isLoading = true);
+                    try {
+                      await ProfileApi.updateProfile(
+                        firstName: _firstNameController.text.trim(),
+                        middleName: _middleNameController.text.trim(),
+                        lastName: _lastNameController.text.trim(),
+                        program: _courseController.text,
+                        specialization: _specializationController.text,
+                        yearLevel: _yearLevel,
+                      );
+                      await _fetchProfile();
+                      if (!mounted) return;
+                      setState(() => _isEditMode = false);
+                      ToastService.showSuccess(
+                        context,
+                        'Profile updated successfully!',
+                      );
+                    } catch (e) {
+                      if (!mounted) return;
+                      ToastService.showError(
+                        context,
+                        e.toString().replaceFirst('Exception: ', ''),
+                      );
+                      setState(() => _isLoading = false);
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _maroon,
@@ -712,9 +934,7 @@ class _SettingsViewState extends State<SettingsView> {
           labelText: hint,
           labelStyle: TextStyle(fontSize: 12, color: Colors.grey.shade500),
           filled: true,
-          fillColor: readOnly
-              ? Colors.grey.shade100
-              : const Color(0xFFF7F7F9),
+          fillColor: readOnly ? Colors.grey.shade100 : const Color(0xFFF7F7F9),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 12,
@@ -808,13 +1028,10 @@ class _SettingsViewState extends State<SettingsView> {
           color: labelColor ?? const Color(0xFF1A1A1A),
         ),
       ),
-      trailing: trailing ??
+      trailing:
+          trailing ??
           (showArrow
-              ? Icon(
-                  Icons.chevron_right,
-                  color: Colors.grey.shade400,
-                  size: 20,
-                )
+              ? Icon(Icons.chevron_right, color: Colors.grey.shade400, size: 20)
               : null),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
     );

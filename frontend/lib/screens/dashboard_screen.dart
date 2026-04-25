@@ -25,7 +25,8 @@ import 'landmarks/landmark_screen.dart';
 // ============================================================================
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final int initialTab;
+  const DashboardScreen({super.key, this.initialTab = 0});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -37,7 +38,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   static const _headerGrey = Color(0xFFF5F5F5);
 
   // ─── Tab state ─────────────────────────────────────────────────────────────
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialTab;
+  }
 
   // Nav item definitions — order must match the IndexedStack children order.
   // The SizedBox gap at index 2 in the BottomAppBar Row accounts for the FAB;

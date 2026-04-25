@@ -32,10 +32,6 @@ class _QuizTakingScreenState extends State<QuizTakingScreen> {
   String? _errorMessage;
 
   // ─── GETTERS ───────────────────────────────────────────────────────────────
-  //List<dynamic> get _questions => widget.quizData['questions'] as List<dynamic>; // uncomment when fixed
-
-  // temp solution
-  // TODO: find a fix for this bc smth is fucking it up
   /// Sorted by question_id — guarantees display order regardless of cache/server ordering.
   List<dynamic> get _questions {
     final list = List<dynamic>.from(

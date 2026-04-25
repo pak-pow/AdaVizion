@@ -30,20 +30,12 @@ class QuizResultScreen extends StatelessWidget {
   Map<String, dynamic> get _performance =>
       _quizMap['performance'] as Map<String, dynamic>;
 
-  Map<String, dynamic> get _levelProgress =>
-      (result['progress'] as Map<String, dynamic>)['level']
-          as Map<String, dynamic>;
-
   Map<String, dynamic> get _xpProgress =>
       (result['progress'] as Map<String, dynamic>)['xp']
           as Map<String, dynamic>;
 
-  List<dynamic> get _newAchievements =>
-      result['new_achievements'] as List<dynamic>? ?? [];
-
   List<dynamic> get _breakdown => _quizMap['breakdown'] as List<dynamic>? ?? [];
 
-  bool get _didLevelUp => _levelProgress['did_level_up'] == true;
   int get _xpEarned => _xpProgress['earned'] as int? ?? 0;
   int get _scoreAchieved => _performance['score_achieved'] as int? ?? 0;
   bool get _isPassed => _performance['is_passed'] == true;
@@ -54,11 +46,6 @@ class QuizResultScreen extends StatelessWidget {
   // ─── BUILD METHOD ──────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    // TODO: REMOVE ONCE DEDICATED TOASTS ARE IMPLEMENTED - This is just a temporary way to show rewards until we have a proper notification system in place.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showRewardToasts(context);
-    });
-
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
 
@@ -182,12 +169,13 @@ class QuizResultScreen extends StatelessWidget {
   Widget _buildActionsRow(BuildContext context) {
     return Row(
       children: [
-        // See Quiz Scores → Home tab (index 0)
         Expanded(
           child: OutlinedButton(
             onPressed: () {
+              Navigator.pop(
+                context,
+              ); // QuizResultScreen → QuizListScreen (inside DashboardScreen)
               onNavigateToTab?.call(0);
-              Navigator.popUntil(context, (route) => route.isFirst);
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -208,13 +196,11 @@ class QuizResultScreen extends StatelessWidget {
 
         const SizedBox(width: 12),
 
-        // Back to Quizzes → just pop back to QuizListScreen (already in stack)
         Expanded(
           child: ElevatedButton(
             onPressed: () {
-              onNavigateToTab?.call(2);
-              Navigator.popUntil(context, (route) => route.isFirst);
-            },
+              if (Navigator.canPop(context)) Navigator.pop(context);
+            }, // QuizResultScreen → QuizListScreen
             style: ElevatedButton.styleFrom(
               backgroundColor: _maroonDark,
               foregroundColor: Colors.white,
@@ -421,45 +407,6 @@ class QuizResultScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  /// TODO: Remove once dedicated toast notifications are implemented in the app.
-  // ─── REWARD TOASTS ─────────────────────────────────────────────────────────
-  /// Shows level-up and achievement snackbars based on the result payload.
-  /// Called via [WidgetsBinding.addPostFrameCallback] so the screen is
-  /// fully rendered before snackbars appear.
-  void _showRewardToasts(BuildContext context) {
-    if (_didLevelUp) {
-      final int newLevel = _levelProgress['current'] as int? ?? 0;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '🎉 Level Up! You are now Level $newLevel!',
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-          backgroundColor: _maroonDark,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
-
-    for (final achievement in _newAchievements) {
-      final title =
-          (achievement as Map<String, dynamic>)['title'] as String? ??
-          'Achievement Unlocked';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '🏆 $title',
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-          backgroundColor: _maroon,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
   }
 }
 

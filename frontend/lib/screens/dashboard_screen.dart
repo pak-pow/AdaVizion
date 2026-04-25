@@ -58,10 +58,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         backgroundColor: _headerGrey,
         elevation: 0,
-        titleSpacing: 16,
-        centerTitle: false,
-        // Logo hidden on Quizzes tab (index 2) since QuizListScreen renders
-        // its own centred logo. Absent on all other tabs without conditions.
+        centerTitle: true,
         title: Image.asset('assets/images/nav_logo.png', height: 42),
       ),
 

@@ -3,7 +3,7 @@ import 'quiz/quiz_list_screen.dart';
 import 'dashboard/views/home_view.dart';
 import 'dashboard/views/settings_view.dart';
 import 'qrcode_screen.dart';
-import 'landmark_screen.dart';
+import 'landmarks/landmark_screen.dart';
 
 // ============================================================================
 // DASHBOARD SCREEN (Shell)
@@ -86,9 +86,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // ── Tab 3: Profile & Settings ──────────────────────────────────
           // onEditProfile switches _selectedIndex to 0 so the user lands on
           // the Home tab where the profile edit pencil icon lives.
-          SettingsView(
-            onEditProfile: () => setState(() => _selectedIndex = 0),
-          ),
+          SettingsView(onEditProfile: () => setState(() => _selectedIndex = 0)),
         ],
       ),
 
@@ -165,8 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               item.label,
               style: TextStyle(
                 fontSize: 10,
-                fontWeight:
-                    isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 color: isSelected ? _maroon : Colors.grey,
               ),
             ),
@@ -176,4 +173,3 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
-

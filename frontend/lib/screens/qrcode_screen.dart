@@ -1,7 +1,9 @@
+import 'package:adavizion/screens/landmarks/models/landmark_model.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../services/api/landmark_api.dart';
+import 'landmarks/views/landmark_detail_view.dart';
 
 /// The main entry point for the QR code scanning screen.
 /// This screen uses the `mobile_scanner` package to access the device's camera and scan for QR codes.
@@ -443,7 +445,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     final xpEarned = progress['xp']['earned'];
     final didLevelUp = progress['level']['did_level_up'];
     final achievements = result['new_achievements'] as List;
-    final landmarkId = landmark['landmark_id'] as int;
 
     showDialog(
       context: context,
@@ -566,11 +567,15 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           _dialogButton(
             label: "View Landmark",
             onPressed: () =>
-                _closeDialogAnd(() => _navigateToLandmarkDetails(landmarkId)),
+                _closeDialogAnd(() => _navigateToLandmarkDetails(landmark)),
           ),
         ],
       ),
-    ).then((_) => _resetScanner());
+    ).then((_) {
+      if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+        _resetScanner();
+      }
+    });
   }
 
   /// Shows an error dialog when the scanned QR code is not recognized as a valid landmark code.
@@ -630,9 +635,17 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 
   /// Navigates to the landmark details screen for the given [landmarkId].
   /// This is called after a successful scan when the user taps "View Landmark" in the success dialog.
-  /// TODO: Reroute to the correct details screen once the new details page is implemented.
-  void _navigateToLandmarkDetails(int landmarkId) {
-    Navigator.pushNamed(context, '/landmark_details', arguments: landmarkId);
+  void _navigateToLandmarkDetails(Map<String, dynamic> landmarkRaw) {
+    final summary = LandmarkSummary(
+      landmarkId: landmarkRaw['landmark_id'] as int,
+      name: landmarkRaw['name'] as String,
+      imgPath: landmarkRaw['img_path'] as String?,
+      isVisited: true, // just scanned it, so it's visited
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => LandmarkDetailView(landmark: summary)),
+    );
   }
 
   Widget _buildControlButton({

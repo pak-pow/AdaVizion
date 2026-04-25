@@ -364,6 +364,9 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titlePadding: EdgeInsets.zero,
+        backgroundColor: Colors.white,
+
+        // ─── HEADER  ──────────────────
         title: Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
@@ -467,8 +470,8 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
         titlePadding: EdgeInsets.zero,
-        // Remove default content/actions padding so we control it ourselves
         contentPadding: EdgeInsets.zero,
         actionsPadding: EdgeInsets.zero,
         title: Container(

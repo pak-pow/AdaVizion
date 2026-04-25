@@ -5,7 +5,7 @@
     "category": "EXPLORER",
     "tier": 1,
     "threshold": 1,
-    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-1.svg"
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-1.png"
   },
   {
     "title": "Wildcat Voyager",
@@ -13,7 +13,7 @@
     "category": "EXPLORER",
     "tier": 2,
     "threshold": 5,
-    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-2.svg"
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-2.png"
   },
   {
     "title": "Luzonian Trailblazer",
@@ -21,7 +21,7 @@
     "category": "EXPLORER",
     "tier": 3,
     "threshold": 10,
-    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.svg"
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.png"
   },
   {
     "title": "Envergan Aspirant",
@@ -29,7 +29,7 @@
     "category": "SCHOLAR",
     "tier": 1,
     "threshold": 50,
-    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.svg"
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.png"
   },
   {
     "title": "Wildcat Seeker",
@@ -37,7 +37,7 @@
     "category": "SCHOLAR",
     "tier": 2,
     "threshold": 100,
-    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.svg"
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.png"
   },
   {
     "title": "Luzonian Paragon",
@@ -45,6 +45,6 @@
     "category": "SCHOLAR",
     "tier": 3,
     "threshold": 150,
-    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.svg"
+    "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.png"
   }
 ]

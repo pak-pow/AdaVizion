@@ -20,7 +20,7 @@
     "description": "Campus Master! You've explored every corner of the university.",
     "category": "EXPLORER",
     "tier": 3,
-    "threshold": 10,
+    "threshold": 9,
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.png"
   },
   {
@@ -28,7 +28,7 @@
     "description": "50 quiz points achieved.",
     "category": "SCHOLAR",
     "tier": 1,
-    "threshold": 50,
+    "threshold": 150,
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.png"
   },
   {
@@ -36,7 +36,7 @@
     "description": "100 quiz points achieved.",
     "category": "SCHOLAR",
     "tier": 2,
-    "threshold": 100,
+    "threshold": 300,
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.png"
   },
   {
@@ -44,7 +44,7 @@
     "description": "150 quiz points achieved. Hawak mo ang beat!",
     "category": "SCHOLAR",
     "tier": 3,
-    "threshold": 150,
+    "threshold": 450,
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.png"
   }
 ]

@@ -30,7 +30,9 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
 
   // ── Display-only profile fields ───────────────────────────────────────────
   String _name = '';
+  String _studentNumber = '';
   String _program = '';
+  String _specialization = '';
   String? _imgPath;
 
   // ── Progress state (GET /students/me → data['progress']) ─────────────────
@@ -73,7 +75,9 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             final firstName = info['first_name'] ?? '';
             final lastName = info['last_name'] ?? '';
             _name = '$firstName $lastName'.trim();
+            _studentNumber = info['student_number'] ?? '';
             _program = info['program'] ?? '';
+            _specialization = info['specialization'] ?? '';
             final rawImgPath = info['img_path'];
             _imgPath = (rawImgPath is String && rawImgPath.isNotEmpty)
                 ? rawImgPath
@@ -87,10 +91,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             _level = (progress['level'] as num?)?.toInt() ?? 0;
             _quizPoints = (progress['quiz_points'] as num?)?.toInt() ?? 0;
             _toNextLevel = (xp?['to_next_level'] as num?)?.toInt() ?? 0;
-            _landmarksVisited =
-                (landmarks?['visited'] as num?)?.toInt() ?? 0;
-            _landmarksTotal =
-                (landmarks?['total'] as num?)?.toInt() ?? 1;
+            _landmarksVisited = (landmarks?['visited'] as num?)?.toInt() ?? 0;
+            _landmarksTotal = (landmarks?['total'] as num?)?.toInt() ?? 1;
           }
 
           _isLoading = false;
@@ -99,7 +101,9 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
     } catch (e) {
       if (mounted) {
         ToastService.showError(
-            context, e.toString().replaceFirst('Exception: ', ''));
+          context,
+          e.toString().replaceFirst('Exception: ', ''),
+        );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -135,8 +139,6 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       ? (_landmarksVisited / _landmarksTotal).clamp(0.0, 1.0)
       : 0.0;
 
-
-
   // ─── Build ────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
@@ -154,7 +156,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: _buildCombinedHeroCard(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // ── 1. Badge Carousel (Achievements) ─────────────────────────
           Padding(
@@ -164,7 +166,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
               landmarksVisited: _landmarksVisited,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // ── 2. Student Stats (Compact Layout) ──────────────────────────
           Padding(
@@ -187,17 +189,23 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   // Bottom row  : Gold Rank chip · "X Points" counter · "Level X · Y XP total"
   // ==========================================================================
   Widget _buildCombinedHeroCard() {
-
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [_gradientTop, _maroon],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -205,7 +213,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
         children: [
           // ── Top row: Avatar + Name + Program ─────────────────────────
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Avatar
               Container(
@@ -233,9 +241,9 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                       )
                     : null,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 20),
 
-              // Name + program
+              // Name + Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,78 +252,96 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                       _name.isEmpty ? 'Student' : _name,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        height: 1.15,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        height: 1.1,
                       ),
                     ),
-                    if (_program.isNotEmpty) ...[
-                      const SizedBox(height: 3),
+                    if (_studentNumber.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        _studentNumber,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          height: 1.1,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 6),
+                    if (_program.isNotEmpty)
                       Text(
                         _program,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    if (_specialization.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        _specialization,
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.75),
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
                   ],
                 ),
               ),
+
+              // Rank chip (Moved to top-right)
+              _buildRankChip(),
             ],
           ),
+        ],
+      ),
+    );
+  }
 
-          const SizedBox(height: 22),
-
-          // ── Bottom row: Rank chip ──────────────────────────────────────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Rank chip (Locked or Gold)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _landmarksVisited == 0
-                      ? Colors.transparent
-                      : _gold.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: _landmarksVisited == 0
-                        ? Colors.white.withValues(alpha: 0.4)
-                        : _gold.withValues(alpha: 0.55),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _landmarksVisited == 0
-                          ? Icons.lock_outline_rounded
-                          : Icons.military_tech_rounded,
-                      color: _landmarksVisited == 0
-                          ? Colors.white.withValues(alpha: 0.4)
-                          : _gold,
-                      size: 13,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      _currentRank,
-                      style: TextStyle(
-                        color: _landmarksVisited == 0
-                            ? Colors.white.withValues(alpha: 0.4)
-                            : _gold,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-            ],
+  // Extracted Rank Chip for relocation
+  Widget _buildRankChip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: _landmarksVisited == 0
+            ? Colors.transparent
+            : _gold.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: _landmarksVisited == 0
+              ? Colors.white.withValues(alpha: 0.4)
+              : _gold.withValues(alpha: 0.55),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _landmarksVisited == 0
+                ? Icons.lock_outline_rounded
+                : Icons.military_tech_rounded,
+            color: _landmarksVisited == 0
+                ? Colors.white.withValues(alpha: 0.4)
+                : _gold,
+            size: 13,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            _currentRank,
+            style: TextStyle(
+              color: _landmarksVisited == 0
+                  ? Colors.white.withValues(alpha: 0.4)
+                  : _gold,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.2,
+            ),
           ),
         ],
       ),
@@ -339,15 +365,15 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       children: [
         // 1. XP & Level Progress (Top Row)
         Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 12,
-                offset: const Offset(0, 3),
+                blurRadius: 24,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
@@ -369,13 +395,13 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                     '$currentXP / 500 XP',
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: Colors.grey.shade600,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               _buildAnimatedBar(xpProgress, _green, Colors.grey.shade200),
             ],
           ),
@@ -416,15 +442,15 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -444,7 +470,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             label,
             style: TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
               color: Colors.grey.shade600,
             ),
           ),

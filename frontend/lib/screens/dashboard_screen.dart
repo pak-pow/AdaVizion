@@ -52,7 +52,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF7F7F9),
 
       // ── APP BAR ──────────────────────────────────────────────────────────────
       appBar: AppBar(

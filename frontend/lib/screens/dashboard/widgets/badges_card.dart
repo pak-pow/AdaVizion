@@ -53,9 +53,7 @@ class _BadgesCardState extends State<BadgesCard> {
     // 1. Filter by category selector
     final categoryBadges = _selectedBadgeFilter == null
         ? allBadges
-        : allBadges
-              .where((b) => b.category == _selectedBadgeFilter)
-              .toList();
+        : allBadges.where((b) => b.category == _selectedBadgeFilter).toList();
 
     // 2. Override locked state based on live dashboard stats (Immediate UI Feedback)
     return categoryBadges.map((badge) {
@@ -93,17 +91,44 @@ class _BadgesCardState extends State<BadgesCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Row 1: Title ───────────────────────────────────────────────────
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Badges',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
+              ),
+              const Spacer(),
+              FutureBuilder<List<BadgeConfig>>(
+                future: _achievementsFuture,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return const SizedBox();
+                  final all = snapshot.data!;
+                  final earned = all.where((b) {
+                    bool locked = b.isLocked;
+                    if (b.category == BadgeCategory.scholar) {
+                      if (widget.quizPoints >= b.threshold) locked = false;
+                    } else {
+                      if (widget.landmarksVisited >= b.threshold)
+                        locked = false;
+                    }
+                    return !locked;
+                  }).length;
+
+                  return Text(
+                    '$earned/${all.length}',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -151,7 +176,7 @@ class _BadgesCardState extends State<BadgesCard> {
           // ── Row 3: Horizontal badge carousel ──────────────────────────────
           // Hint of overflow on the right edge signals that the list is scrollable.
           SizedBox(
-            height: 160, // coin 72 + 5 gap + ~32 label + 51 safety
+            height: 120, // coin 72 + 5 gap + ~32 label + 51 safety
             child: FutureBuilder<List<BadgeConfig>>(
               future: _achievementsFuture,
               builder: (context, snapshot) {
@@ -408,7 +433,9 @@ class _BadgesCardState extends State<BadgesCard> {
             shape: BoxShape.circle,
           ),
           child: Container(
-            padding: const EdgeInsets.all(2.0), // Reduced from 6.0 to account for image padding
+            padding: const EdgeInsets.all(
+              2.0,
+            ), // Reduced from 6.0 to account for image padding
             decoration: const BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
@@ -446,20 +473,6 @@ class _BadgesCardState extends State<BadgesCard> {
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.1,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              config.sublabel,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: config.isLocked
-                    ? Colors.white.withValues(alpha: 0.28)
-                    : chipColor.withValues(alpha: 0.85),
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -618,7 +631,9 @@ class _BadgesCardState extends State<BadgesCard> {
                         children: [
                           Icon(
                             Icons.lightbulb_outline,
-                            color: const Color(0xFFFFD700).withValues(alpha: 0.8),
+                            color: const Color(
+                              0xFFFFD700,
+                            ).withValues(alpha: 0.8),
                             size: 20,
                           ),
                           const SizedBox(width: 8),

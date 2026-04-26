@@ -20,7 +20,7 @@
     "description": "Campus Master! You've explored every corner of the university.",
     "category": "EXPLORER",
     "tier": 3,
-    "threshold": 10,
+    "threshold": 9,
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/explorer-level-3.png"
   },
   {

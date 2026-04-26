@@ -5,6 +5,7 @@ import studentRouter from "./routes/students.route";
 import landmarkRouter from "./routes/landmarks.route";
 import quizRouter from "./routes/quizzes.route";
 import achievementRouter from "./routes/achievements.route";
+import * as serverController from "./controllers/server.controller";
 
 dotenv.config();
 
@@ -22,12 +23,7 @@ app.use(cors({
 
 app.use(express.json()); // Allows routes to parse the body (JSON data)
 
-app.get("/", (req: Request, res: Response) => {
-  res.json({
-    status: "ok",
-    message: "EUventure API is running"
-  });
-})
+app.get("/", serverController.home);
 
 app.use("/students", studentRouter);
 app.use("/landmarks", landmarkRouter);

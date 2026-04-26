@@ -6,14 +6,12 @@ import '../../../utils/toast_service.dart';
 // AUTH LAYOUT VIEW
 //
 // Extracted from login_screen.dart _buildAuthLayout() + _buildAuthCardContent()
-// (lines 421–857).
 //
 // Contains the Login/Signup form card. Receives all controllers, dropdown
 // state, loading flag, and submit callback from the parent shell so it owns
 // zero business logic itself.
 //
-// The _backendPrograms and _backendSpecializations maps are moved here as
-// top-level constants since they are only ever read from within this widget.
+// Now supports a responsive 50/50 split layout for Desktop (>= 900px width).
 // ============================================================================
 
 // These maps directly mirror backend/src/constants/academic-maps.ts
@@ -72,10 +70,6 @@ const Map<String, List<String>> kBackendSpecializations = {
 };
 
 /// The login and signup form card.
-///
-/// Stateless — all mutable state (controllers, loading, dropdowns) is owned
-/// by [_AuthScreenState] and forwarded here as params. This keeps business
-/// logic (AuthApi calls, navigation) entirely in the parent shell.
 class AuthLayoutView extends StatelessWidget {
   const AuthLayoutView({
     super.key,
@@ -120,7 +114,6 @@ class AuthLayoutView extends StatelessWidget {
   final void Function(String?) onSpecializationChanged;
 
   /// Called when the user taps "Continue" / "Confirm".
-  /// The parent shell owns the actual AuthApi call and navigation.
   final Future<void> Function() onSubmit;
 
   // ─── Brand colours ─────────────────────────────────────────────────────────
@@ -132,11 +125,177 @@ class AuthLayoutView extends StatelessWidget {
     final border = authInputBorder();
     final size = MediaQuery.of(context).size;
 
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 900) {
+          return _buildDesktopLayout(context, border, size);
+        } else {
+          return _buildMobileLayout(context, border, size);
+        }
+      },
+    );
+  }
+
+  // ─── Desktop Layout (6:4 Split) ──────────────────────────────────────────
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    OutlineInputBorder border,
+    Size size,
+  ) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    // Left panel 6, Right panel 4
+    final splitLine = screenWidth * 0.6;
+
+    return SizedBox(
+      height: screenHeight,
+      child: Stack(
+        children: [
+          // 1. Background split (Behind everything)
+          Row(
+            children: [
+              Expanded(flex: 6, child: Container(color: Colors.white)),
+              Expanded(flex: 4, child: Container(color: _maroon)),
+            ],
+          ),
+
+          // LAYER 2: Large Mascot (Straddling center boundary)
+          Positioned(
+            left: splitLine - 240,
+            top: 60 + ((screenHeight - 60) * 0.35) - 200,
+            child: IgnorePointer(
+              child: Transform.rotate(
+                angle: -0.25,
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  height: 450,
+                  width: 450,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ),
+
+          // LAYER 3: Foreground Content (Branding + Card)
+          Row(
+            children: [
+              // LEFT SIDE (White background)
+              Expanded(
+                flex: 6,
+                child: Container(
+                  padding: const EdgeInsets.only(left: 80.0),
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Welcome to',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w500,
+                          color: _maroon,
+                        ),
+                      ),
+                      const Text(
+                        'EUventure',
+                        style: TextStyle(
+                          fontSize: 72,
+                          fontWeight: FontWeight.w900,
+                          color: _maroon,
+                          height: 1.0,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Interactive University\nExploration Platform',
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: _maroon,
+                          height: 1.4,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 64),
+                      OutlinedButton(
+                        onPressed: () {
+                          ToastService.showInfo(
+                            context,
+                            'Discover the future of campus tours.',
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: _maroon,
+                          side: const BorderSide(color: _maroon, width: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 48,
+                            vertical: 24,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'About',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // RIGHT SIDE (Maroon background)
+              Expanded(
+                flex: 4,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 480),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Container(
+                        padding: const EdgeInsets.all(40.0), // 40px all sides
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 40,
+                              offset: Offset(0, 20),
+                            ),
+                          ],
+                        ),
+                        child: _buildCardContent(
+                          context,
+                          border,
+                          size,
+                          isDesktop: true,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Mobile Layout (Original) ──────────────────────────────────────────────
+  Widget _buildMobileLayout(
+    BuildContext context,
+    OutlineInputBorder border,
+    Size size,
+  ) {
     return Column(
       children: [
-        const SizedBox(height: 24),
-
-        // Dynamic Titles: Renders the image logo for login, and text for signup
+        const SizedBox(height: 48), // Top padding for mascot
         if (isLogin)
           Center(child: Image.asset('assets/images/title.png', height: 100))
         else
@@ -150,83 +309,87 @@ class AuthLayoutView extends StatelessWidget {
               height: 1.1,
             ),
           ),
-
-        const SizedBox(height: 32),
-
-        // --- Z-INDEX LAYERING (Mascot & Card) ---
-        Stack(
-          clipBehavior:
-              Clip.none, // Allows the massive mascot to bleed off the edges
-          alignment: Alignment.topCenter,
-          children: [
-            // LAYER 1 (BACK): The Mascot
-            Positioned(
-              top: -112,
-              left: 5,
-              right: 5,
-              child: RepaintBoundary(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  fit: BoxFit.fitWidth,
+        const SizedBox(height: 12), // Reduced gap below title
+        Padding(
+          padding: const EdgeInsets.only(
+            top: 80,
+          ), // Reduced spacing for peeking effect
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topCenter,
+            children: [
+              Positioned(
+                top: -180, // Position higher for slight overlap
+                left: 5,
+                right: 5,
+                child: RepaintBoundary(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
               ),
-            ),
-
-            // LAYER 2 (FRONT): The Form Card
-            Container(
-              margin: const EdgeInsets.only(
-                top: 150,
-                left: 24,
-                right: 24,
-                bottom: 40,
+              Container(
+                margin: const EdgeInsets.only(
+                  top: 90, // Reduced margin to pull card closer to mascot
+                  left: 24,
+                  right: 24,
+                  bottom: 40,
+                ),
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 15,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: _buildCardContent(context, border, size),
               ),
-              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 15,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: _buildCardContent(context, border, size),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
   }
 
   // ─── Card content (inputs + submit button) ─────────────────────────────────
-  Widget _buildCardContent(BuildContext context, OutlineInputBorder border, Size size) {
+  Widget _buildCardContent(
+    BuildContext context,
+    OutlineInputBorder border,
+    Size size, {
+    bool isDesktop = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           isLogin ? 'Sign in' : 'Sign up',
-          style: const TextStyle(
-            fontSize: 30,
+          style: TextStyle(
+            fontSize: isDesktop ? 48 : 30,
             fontWeight: FontWeight.w900,
             color: _maroon,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
           isLogin
               ? 'to explore and learn in Enverga\nUniversity'
               : 'and get ready to explore\nwith us',
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             color: _maroon,
-            fontSize: 10,
+            fontSize: isDesktop ? 13 : 10,
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: isDesktop ? 40 : 24),
 
         // --- SIGN UP FIELDS ---
         if (!isLogin) ...[
@@ -259,13 +422,12 @@ class AuthLayoutView extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // DYNAMIC PROGRAM DROPDOWN
           AuthDropdownField(
             hint: 'Course/Program',
             items: kBackendPrograms.entries
                 .map(
                   (e) => DropdownMenuItem(
-                    value: e.key, // Sends 'BSCS' to backend
+                    value: e.key,
                     child: Text(
                       e.value,
                       style: const TextStyle(fontSize: 12),
@@ -280,7 +442,6 @@ class AuthLayoutView extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // DYNAMIC SPECIALIZATION DROPDOWN (Only shows if selected program has subs)
           if (selectedProgram != null &&
               kBackendSpecializations.containsKey(selectedProgram)) ...[
             AuthDropdownField(
@@ -318,12 +479,12 @@ class AuthLayoutView extends StatelessWidget {
         if (isLogin) ...[
           AuthTextField(
             controller: emailController,
-            hint: 'Student ID',
+            hint: isDesktop ? 'Enter your email' : 'Student ID',
             icon: Icons.email_outlined,
             border: border,
             maxLength: 15,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: isDesktop ? 20 : 12),
           AuthTextField(
             controller: loginPasswordController,
             hint: 'Password',
@@ -349,7 +510,7 @@ class AuthLayoutView extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: isDesktop ? 24 : 8),
         ],
 
         // --- SUBMIT BUTTON ---
@@ -358,7 +519,7 @@ class AuthLayoutView extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: _maroonDark,
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: EdgeInsets.symmetric(vertical: isDesktop ? 18 : 12),
             minimumSize: const Size.fromHeight(45),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -375,12 +536,9 @@ class AuthLayoutView extends StatelessWidget {
                     strokeWidth: 2,
                   ),
                 )
-              : Text(
-                  isLogin ? 'Continue' : 'Confirm',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+              : const Text(
+                  'Confirm', // Standardized label
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
         ),
       ],

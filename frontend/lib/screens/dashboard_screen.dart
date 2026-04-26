@@ -3,7 +3,7 @@ import 'quiz/quiz_list_screen.dart';
 import 'dashboard/views/home_view.dart';
 import 'dashboard/views/settings_view.dart';
 import 'qrcode_screen.dart';
-import 'landmark_screen.dart';
+import 'landmarks/landmark_screen.dart';
 
 // ============================================================================
 // DASHBOARD SCREEN (Shell)
@@ -25,7 +25,8 @@ import 'landmark_screen.dart';
 // ============================================================================
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final int initialTab;
+  const DashboardScreen({super.key, this.initialTab = 0});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -37,7 +38,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   static const _headerGrey = Color(0xFFF5F5F5);
 
   // ─── Tab state ─────────────────────────────────────────────────────────────
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialTab;
+  }
 
   // Nav item definitions — order must match the IndexedStack children order.
   // The SizedBox gap at index 2 in the BottomAppBar Row accounts for the FAB;
@@ -60,8 +67,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         elevation: 0,
         titleSpacing: 16,
         centerTitle: false,
-        // Logo hidden on Quizzes tab (index 2) since QuizListScreen renders
-        // its own centred logo. Absent on all other tabs without conditions.
         title: Image.asset('assets/images/nav_logo.png', height: 42),
       ),
 

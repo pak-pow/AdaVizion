@@ -28,7 +28,7 @@ class QuizResultView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Replace with proper toast/notification system once implemented.
+    // TODO: REMOVE ONCE DEDICATED TOASTS ARE IMPLEMENTED - This is just a temporary way to show rewards until we have a proper notification system in place.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showRewardToasts(context);
     });
@@ -212,12 +212,13 @@ class _ActionsRow extends StatelessWidget {
   Widget build(BuildContext _) {
     return Row(
       children: [
-        // See Quiz Scores → Home tab (index 0)
         Expanded(
           child: OutlinedButton(
             onPressed: () {
+              Navigator.pop(
+                context,
+              ); // QuizResultScreen → QuizListScreen (inside DashboardScreen)
               onNavigateToTab?.call(0);
-              Navigator.popUntil(context, (route) => route.isFirst);
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -242,9 +243,8 @@ class _ActionsRow extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             onPressed: () {
-              onNavigateToTab?.call(2);
-              Navigator.popUntil(context, (route) => route.isFirst);
-            },
+              if (Navigator.canPop(context)) Navigator.pop(context);
+            }, // QuizResultScreen → QuizListScreen
             style: ElevatedButton.styleFrom(
               backgroundColor: kQuizMaroonDark,
               foregroundColor: Colors.white,

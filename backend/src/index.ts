@@ -25,6 +25,8 @@ app.use(express.json()); // Allows routes to parse the body (JSON data)
 
 app.get("/", serverController.home);
 
+app.get("/health", serverController.checkHealth)
+
 app.use("/students", studentRouter);
 app.use("/landmarks", landmarkRouter);
 app.use("/quizzes", quizRouter);

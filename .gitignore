@@ -68,3 +68,4 @@ achievement-badges
 .pub-cache/
 .pub/
 backend/package-lock.json
+frontend/pubspec.lock

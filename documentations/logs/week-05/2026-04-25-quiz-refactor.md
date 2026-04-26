@@ -64,7 +64,7 @@ quiz/
 - Fixed by adding `onQuizExited` callback that clears `_detailData[quizId]`, collapses the accordion, and re-fetches the list on return
 
 **UI**
-- Gradient on the list screen header adjusted — added stops `[0.0, 0.55, 1.0]` so the dark color holds longer before fading, per designer feedback ("lower the gradient")
+- Gradient on the list screen header adjusted to match the profile banner, per designer feedback ("match to profile banner")
 
 ### Known TODOs
 - Reward toasts (level-up, achievements) are implemented via `SnackBar` — flagged for replacement once a proper notification system is in place

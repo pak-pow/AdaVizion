@@ -215,7 +215,8 @@ class _QuizHeader extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [kQuizGradientTop, kQuizGradientBottom],
+          stops: [0.0, 0.55, 1.0],
+          colors: [kQuizGradientTop, kQuizGradientTop, kQuizGradientBottom],
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(12),

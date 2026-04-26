@@ -117,9 +117,9 @@ class _QuizTakingViewState extends State<QuizTakingView> {
       appBar: AppBar(
         backgroundColor: kQuizHeaderGrey,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         automaticallyImplyLeading: false,
-        title: Image.asset('assets/images/nav_logo.png', height: 75),
+        title: Image.asset('assets/images/nav_logo.png', height: 42),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -337,40 +337,26 @@ class _SubmitSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text(
-          'Click submit to Complete',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: kQuizMaroonDark,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Center(
-          child: isSubmitting
-              ? const CircularProgressIndicator(color: kQuizMaroon)
-              : OutlinedButton(
-                  onPressed: onSubmit,
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: kQuizMaroonDark,
-                    side: const BorderSide(color: kQuizMaroonDark, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    minimumSize: const Size(180, 45),
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                  ),
-                  child: const Text(
-                    'Submit',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
-                  ),
+    return Center(
+      child: isSubmitting
+          ? const CircularProgressIndicator(color: kQuizMaroon)
+          : OutlinedButton(
+              onPressed: onSubmit,
+              style: OutlinedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: kQuizMaroonDark,
+                side: const BorderSide(color: kQuizMaroonDark, width: 1.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-        ),
-      ],
+                minimumSize: const Size(180, 45),
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+              ),
+              child: const Text(
+                'Submit',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
+              ),
+            ),
     );
   }
 }

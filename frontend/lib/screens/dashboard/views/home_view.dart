@@ -166,31 +166,10 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           ),
           const SizedBox(height: 16),
 
-          // ── 2. Player Stats (Quick Look) ─────────────────────────────
+          // ── 2. Student Stats (Compact Layout) ──────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildStatGrid(),
-          ),
-          const SizedBox(height: 16),
-
-          // ── 3. XP & Level Card (Formerly Global Progress) ─────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildGlobalProgressCard(),
-          ),
-          const SizedBox(height: 16),
-
-          // ── 4. Scholar Milestones Card ────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildMilestoneCard(),
-          ),
-          const SizedBox(height: 16),
-
-          // ── 5. Map Exploration Card (Formerly Exploration) ─────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildProgressCard(),
+            child: _buildCompactStats(),
           ),
 
           // Bottom clearance above BottomAppBar + FAB.
@@ -347,325 +326,94 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   // PROGRESS SECTION BUILDERS
   // ==========================================================================
 
-  Widget _buildMilestoneCard() {
-    final next = _nextMilestone;
-    final allDone = next == null;
-    final heading = allDone
-        ? 'All Scholar badges earned! 🎉'
-        : '${next.pts - _quizPoints} pts to reach ${next.rank}';
-    final subtext = allDone
-        ? "You've mastered every milestone."
-        : '$_quizPoints / ${next.pts} quiz points';
+  // ==========================================================================
+  // COMPACT STATS SECTION
+  // ==========================================================================
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Scholar Milestones',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1A1A1A),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  color: _gold.withValues(alpha: 0.14),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.emoji_events_outlined,
-                  color: _gold,
-                  size: 18,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      heading,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF1A1A1A),
-                      ),
-                    ),
-                    const SizedBox(height: 1),
-                    Text(
-                      subtext,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade500,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                '${(_scholarProgress * 100).toInt()}%',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w900,
-                  color: _gold,
-                ),
+  Widget _buildCompactStats() {
+    final currentXP = (500 - _toNextLevel).clamp(0, 500);
+    final xpProgress = currentXP / 500.0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // 1. XP & Level Progress (Top Row)
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          _buildAnimatedBar(_scholarProgress, _gold, Colors.grey.shade200),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: _scholarMilestones.map((m) {
-              final earned = _quizPoints >= m.pts;
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    earned
-                        ? Icons.check_circle_rounded
-                        : Icons.radio_button_unchecked_rounded,
-                    size: 10,
-                    color: earned ? _gold : Colors.grey.shade400,
-                  ),
-                  const SizedBox(width: 3),
-                  Text(
-                    '${m.pts} pts',
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w600,
-                      color: earned ? _gold : Colors.grey.shade400,
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGlobalProgressCard() {
-    final currentXP = (500 - _toNextLevel).clamp(0, 500);
-    final remainingXP = 500 - currentXP;
-    final double xpLevelProgress = currentXP / 500.0;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'XP & Level',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1A1A1A),
-            ),
-          ),
-          const SizedBox(height: 12),
-          _buildProgressRow(
-            icon: Icons.bolt_rounded,
-            iconColor: _green,
-            title: 'Level $_level',
-            subtitle: '$currentXP/500 XP · $remainingXP to next',
-            progress: xpLevelProgress,
-            barColor: _green,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Map Exploration',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1A1A1A),
-            ),
-          ),
-          const SizedBox(height: 12),
-          _buildProgressRow(
-            icon: Icons.explore_outlined,
-            iconColor: _amber,
-            title: 'Landmarks',
-            subtitle: 'Visited: $_landmarksVisited/$_landmarksTotal',
-            progress: _explorerProgress,
-            barColor: _amber,
-          ),
-
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressRow({
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String subtitle,
-    required double progress,
-    required Color barColor,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.13),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: iconColor, size: 15),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    title,
+                    'Level $_level',
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF1A1A1A),
                     ),
                   ),
                   Text(
-                    subtitle,
+                    '$currentXP / 500 XP',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade500,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey.shade600,
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              _buildAnimatedBar(xpProgress, _green, Colors.grey.shade200),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // 2. Landmarks & Quiz Row (Bottom Row)
+        Row(
+          children: [
+            Expanded(
+              child: _buildCompactStatCard(
+                label: 'Landmarks',
+                value: 'Visited: $_landmarksVisited/$_landmarksTotal',
+                icon: Icons.explore_outlined,
+                color: _amber,
+              ),
             ),
-            Text(
-              '${(progress * 100).toInt()}%',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: barColor,
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildCompactStatCard(
+                label: 'Quiz Scores',
+                value: '$_quizPoints Total Quiz Points',
+                icon: Icons.percent_rounded,
+                color: _maroon,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 7),
-        _buildAnimatedBar(progress, barColor, Colors.grey.shade200),
       ],
     );
   }
 
-  Widget _buildStatGrid() {
-    final scholarsEarned =
-        _scholarMilestones.where((m) => _quizPoints >= m.pts).length;
-    final explorersEarned =
-        _explorerMilestones.where((t) => _landmarksVisited >= t).length;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Student Stats',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF1A1A1A),
-          ),
-        ),
-        const SizedBox(height: 12),
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 1. Total Quiz Score Card
-              Expanded(
-                child: _buildStatTile(
-                  icon: Icons.percent_rounded,
-                  color: _maroon,
-                  value: '$_quizPoints',
-                  label: 'Total Quiz Points',
-                  sub: 'Keep playing!',
-                ),
-              ),
-              const SizedBox(width: 12),
-              // 2. Rank / Badges Card
-              Expanded(
-                child: _buildStatTile(
-                  icon: Icons.military_tech_outlined,
-                  color: _gold,
-                  value: '${scholarsEarned + explorersEarned}/6',
-                  label: 'Rank',
-                  sub: _currentRank,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatTile({
+  Widget _buildCompactStatCard({
+    required String label,
+    required String value,
     required IconData icon,
     required Color color,
-    required String value,
-    required String label,
-    required String sub,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -693,32 +441,22 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           ),
           const SizedBox(height: 12),
           Text(
-            value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              color: Color(0xFF1A1A1A),
-              height: 1,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF444444),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            sub,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 12,
+              fontWeight: FontWeight.w700,
               color: Colors.grey.shade600,
-              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF1A1A1A),
             ),
           ),
         ],

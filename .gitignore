@@ -55,6 +55,7 @@ node_modules
 qr-codes
 landmark-thumbnails
 achievement-badges
+dist
 
 # Keep environment variables out of version control
 .env 

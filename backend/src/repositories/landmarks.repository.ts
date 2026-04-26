@@ -1,7 +1,12 @@
 import { prisma } from "../lib/prisma";
+import { supabase } from "../lib/supabase";
 
 async function findAllLandmarks() {
   return await prisma.landmark.findMany();
+}
+
+async function findOneLandmark() {
+  return await prisma.landmark.findFirst();
 }
 
 async function findLandmarksCount() {
@@ -69,13 +74,24 @@ async function createLandmarkVisit(
   });
 }
 
+async function findOneLandmarkThumbnail() {
+  return await supabase
+    .storage
+    .from("landmarks")
+    .list("thumbnails", {
+      limit: 1,
+    });
+}
+
 export {
   findAllLandmarks,
+  findOneLandmark,
   findLandmarksCount,
   findLandmarksVisitedByStudent,
   findLandmark,
   findLandmarkVisitedByStudent,
   findLandmarkByQr,
   findLandmarksVisitedCount,
-  createLandmarkVisit
+  createLandmarkVisit,
+  findOneLandmarkThumbnail
 }

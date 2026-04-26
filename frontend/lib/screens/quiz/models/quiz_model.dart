@@ -73,8 +73,7 @@ class QuizResult {
       for (final item in breakdown)
         (item as Map<String, dynamic>).let(
           (m) => (m['info'] as Map<String, dynamic>)['question_id'] as int,
-        ): ((item as Map<String, dynamic>)['performance']
-                as Map<String, dynamic>)['is_correct'] ==
+        ): ((item)['performance'] as Map<String, dynamic>)['is_correct'] ==
             true,
     };
   }

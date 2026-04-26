@@ -66,7 +66,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Positioned(
               top: -25, // Pulled back down
-              right: 8, // Pulled back left
+              right: 14, // Pulled back left
               child: Transform.rotate(
                 angle: math.pi,
                 child: Opacity(

@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api/landmark_api.dart';
+import '../services/api/profile_api.dart';
 import 'landmarks/views/landmark_detail_view.dart';
 import 'landmarks/models/landmark_model.dart';
 import 'dashboard_screen.dart';
@@ -28,6 +30,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   bool? _cameraPermissionGranted;
   bool _isScanning = true;
   bool _isLoading = false;
+  bool _safetyReminderShown = false;
 
   // ─── LIFECYCLE ────────────────────────────────────────────────────────────
 
@@ -35,6 +38,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   void initState() {
     super.initState();
     _initController();
+    _checkAndShowSafetyReminder();
   }
 
   @override
@@ -83,6 +87,30 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     return const SizedBox.expand();
   }
 
+  /// Reads the per-user reminder flag from [SharedPreferences] and shows
+  /// the safety dialog if this user has not seen it before.
+  Future<void> _checkAndShowSafetyReminder() async {
+    try {
+      final data = await ProfileApi.getProfile();
+      final studentNumber = data['info']['student_number'] as String?;
+
+      if (studentNumber == null) return;
+
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'safety_reminder_shown_$studentNumber';
+      final alreadyShown = prefs.getBool(key) ?? false;
+
+      if (!alreadyShown && mounted) {
+        await prefs.setBool(key, true);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _showSafetyReminderDialog();
+        });
+      }
+    } catch (_) {
+      // If profile fetch fails for any reason, silently skip the reminder.
+      // Don't block the scanner over a non-critical UI feature.
+    }
+  }
   // ─── BUILD ────────────────────────────────────────────────────────────────
 
   @override
@@ -726,6 +754,56 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     );
   }
 
+  void _showSafetyReminderDialog() {
+    _showScanDialog(
+      title: 'Safety First',
+      isDarkHeader: true,
+      content: const Padding(
+        padding: EdgeInsets.fromLTRB(20, 20, 20, 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.health_and_safety_outlined,
+              size: 48,
+              color: _maroonDark,
+            ),
+            SizedBox(height: 16),
+            Text(
+              "Please be aware of your surroundings while scanning QR codes around campus.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, height: 1.5),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "Do not use the scanner while walking or in unsafe areas.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                height: 1.5,
+                color: Colors.black54,
+              ),
+            ),
+            SizedBox(height: 16),
+          ],
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _dialogButton(
+                label: "Got it",
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
   // ─── WIDGET HELPERS ─────────────────────────────────────────────────────────
 
   void _navigateToLandmarkDetails(Map<String, dynamic> landmarkData) {

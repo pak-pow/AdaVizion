@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import '../models/quiz_model.dart';
+import '../quiz_constants.dart';
 
-class QuizResultScreen extends StatelessWidget {
+// ─── Quiz result view ─────────────────────────────────────────────────────────
+
+/// Displays the score, pass/fail status, XP earned, and a full answer review
+/// after a quiz is submitted.
+class QuizResultView extends StatelessWidget {
   final String quizName;
-  final Map<String, dynamic> result;
+  final QuizResult result;
   final List<dynamic> questions;
+
+  /// Maps `question_id` → selected choice index.
   final Map<int, int> selectedAnswers;
   final void Function(int index)? onNavigateToTab;
 
-  const QuizResultScreen({
+  const QuizResultView({
     super.key,
     required this.quizName,
     required this.result,
@@ -16,90 +24,52 @@ class QuizResultScreen extends StatelessWidget {
     this.onNavigateToTab,
   });
 
-  // ─── BRANDING COLORS ───────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _maroonDark = Color(0xFF4A0F0F);
-  static const _headerGrey = Color(0xFFF5F5F5);
-  static const _failAndWrongRed = Color(0xFFC62828);
-  static const _passAndCorrectGreen = Color(0xFF2E7D32);
-  static const _dividerGrey = Color(0xFFDDDDDD);
+  // ─── Build ──────────────────────────────────────────────────────────────────
 
-  // ─── GETTERS ───────────────────────────────────────────────────────────────
-  Map<String, dynamic> get _quizMap => result['quiz'] as Map<String, dynamic>;
-
-  Map<String, dynamic> get _performance =>
-      _quizMap['performance'] as Map<String, dynamic>;
-
-  Map<String, dynamic> get _levelProgress =>
-      (result['progress'] as Map<String, dynamic>)['level']
-          as Map<String, dynamic>;
-
-  Map<String, dynamic> get _xpProgress =>
-      (result['progress'] as Map<String, dynamic>)['xp']
-          as Map<String, dynamic>;
-
-  List<dynamic> get _newAchievements =>
-      result['new_achievements'] as List<dynamic>? ?? [];
-
-  List<dynamic> get _breakdown => _quizMap['breakdown'] as List<dynamic>? ?? [];
-
-  bool get _didLevelUp => _levelProgress['did_level_up'] == true;
-  int get _xpEarned => _xpProgress['earned'] as int? ?? 0;
-  int get _scoreAchieved => _performance['score_achieved'] as int? ?? 0;
-  bool get _isPassed => _performance['is_passed'] == true;
-
-  int get _maxScore =>
-      (_quizMap['info'] as Map<String, dynamic>?)?['max_score'] as int? ?? 0;
-
-  // ─── BUILD METHOD ──────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    // TODO: REMOVE ONCE DEDICATED TOASTS ARE IMPLEMENTED - This is just a temporary way to show rewards until we have a proper notification system in place.
+    // TODO: Replace with proper toast/notification system once implemented.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showRewardToasts(context);
     });
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-
-      // --- APP BAR ---
       appBar: AppBar(
-        backgroundColor: _headerGrey,
+        backgroundColor: kQuizHeaderGrey,
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Image.asset('assets/images/nav_logo.png', height: 75),
       ),
-
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1. QUIZ TITLE
-              _buildTitleHeader(),
-
+              // ── Title ──────────────────────────────────────────────────────
+              _TitleHeader(title: quizName),
               const SizedBox(height: 20),
 
-              // 2. STATS ROW (SCORE | PASS/FAIL | XP EARNED)
-              _buildStatsRow(),
-
+              // ── Stats row ──────────────────────────────────────────────────
+              _StatsRow(result: result),
               const SizedBox(height: 16),
 
-              // 3. ACTION BUTTONS ROW
-              _buildActionsRow(context),
-
+              // ── Action buttons ─────────────────────────────────────────────
+              _ActionsRow(onNavigateToTab: onNavigateToTab, context: context),
               const SizedBox(height: 24),
 
-              // 4. DIVIDER
-              const Divider(thickness: 1.5, color: _dividerGrey),
-
+              // ── Divider ────────────────────────────────────────────────────
+              const Divider(thickness: 1.5, color: kQuizDivider),
               const SizedBox(height: 16),
 
-              // 5. ANSWER REVIEW
-              _buildAnswerReview(),
-
+              // ── Answer review ──────────────────────────────────────────────
+              _AnswerReview(
+                questions: questions,
+                selectedAnswers: selectedAnswers,
+                correctnessById: result.correctnessById,
+              ),
               const SizedBox(height: 40),
             ],
           ),
@@ -108,16 +78,60 @@ class QuizResultScreen extends StatelessWidget {
     );
   }
 
-  // ─── TITLE HEADER ──────────────────────────────────────────────────────────
-  Widget _buildTitleHeader() {
+  // ─── Reward toasts ───────────────────────────────────────────────────────────
+
+  /// Shows level-up and achievement snackbars.
+  /// TODO: Remove once dedicated toast notifications are implemented.
+  void _showRewardToasts(BuildContext context) {
+    if (result.didLevelUp) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '🎉 Level Up! You are now Level ${result.currentLevel}!',
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          backgroundColor: kQuizMaroonDark,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+
+    for (final achievement in result.newAchievements) {
+      final title =
+          (achievement as Map<String, dynamic>)['title'] as String? ??
+          'Achievement Unlocked';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '🏆 $title',
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          backgroundColor: kQuizMaroon,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+}
+
+// ─── Title header ─────────────────────────────────────────────────────────────
+
+class _TitleHeader extends StatelessWidget {
+  final String title;
+  const _TitleHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: _maroonDark,
+        color: kQuizMaroonDark,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        quizName,
+        title,
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Colors.white,
@@ -127,9 +141,16 @@ class QuizResultScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  // ─── STATS ROW ───────────────────────────────────────────────────────────
-  Widget _buildStatsRow() {
+// ─── Stats row ────────────────────────────────────────────────────────────────
+
+class _StatsRow extends StatelessWidget {
+  final QuizResult result;
+  const _StatsRow({required this.result});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
@@ -146,40 +167,49 @@ class QuizResultScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // SCORE
+          // Score
           _StatCell(
             label: 'Score',
-            value: _maxScore > 0
-                ? '$_scoreAchieved / $_maxScore'
-                : '$_scoreAchieved pts',
-            valueColor: _maroonDark,
+            value: result.maxScore > 0
+                ? '${result.scoreAchieved} / ${result.maxScore}'
+                : '${result.scoreAchieved} pts',
+            valueColor: kQuizMaroonDark,
           ),
 
           _VerticalDivider(),
 
-          // PASS/FAIL
+          // Pass / Fail
           _StatCell(
             label: 'Result',
-            value: _isPassed ? 'Passed' : 'Failed',
-            valueColor: _isPassed ? _passAndCorrectGreen : _failAndWrongRed,
-            icon: _isPassed ? Icons.check_circle : Icons.cancel,
+            value: result.isPassed ? 'Passed' : 'Failed',
+            valueColor: result.isPassed ? kQuizPassGreen : kQuizFailRed,
+            icon: result.isPassed ? Icons.check_circle : Icons.cancel,
           ),
 
           _VerticalDivider(),
 
-          // XP EARNED
+          // XP
           _StatCell(
             label: 'XP Earned',
-            value: '+$_xpEarned',
-            valueColor: _maroon,
+            value: '+${result.xpEarned}',
+            valueColor: kQuizMaroon,
           ),
         ],
       ),
     );
   }
+}
 
-  // ─── ACTIONS ROW ─────────────────────────────────────────────────────────
-  Widget _buildActionsRow(BuildContext context) {
+// ─── Actions row ──────────────────────────────────────────────────────────────
+
+class _ActionsRow extends StatelessWidget {
+  final void Function(int index)? onNavigateToTab;
+  final BuildContext context;
+
+  const _ActionsRow({required this.context, this.onNavigateToTab});
+
+  @override
+  Widget build(BuildContext _) {
     return Row(
       children: [
         // See Quiz Scores → Home tab (index 0)
@@ -191,8 +221,8 @@ class QuizResultScreen extends StatelessWidget {
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
-              foregroundColor: _maroonDark,
-              side: const BorderSide(color: _maroonDark, width: 1.5),
+              foregroundColor: kQuizMaroonDark,
+              side: const BorderSide(color: kQuizMaroonDark, width: 1.5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -208,7 +238,7 @@ class QuizResultScreen extends StatelessWidget {
 
         const SizedBox(width: 12),
 
-        // Back to Quizzes → just pop back to QuizListScreen (already in stack)
+        // Back to Quizzes → Quizzes tab (index 2)
         Expanded(
           child: ElevatedButton(
             onPressed: () {
@@ -216,7 +246,7 @@ class QuizResultScreen extends StatelessWidget {
               Navigator.popUntil(context, (route) => route.isFirst);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: _maroonDark,
+              backgroundColor: kQuizMaroonDark,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -233,20 +263,24 @@ class QuizResultScreen extends StatelessWidget {
       ],
     );
   }
+}
 
-  // ─── ANSWER REVIEW ─────────────────────────────────────────────────────────
-  Widget _buildAnswerReview() {
+// ─── Answer review ────────────────────────────────────────────────────────────
+
+class _AnswerReview extends StatelessWidget {
+  final List<dynamic> questions;
+  final Map<int, int> selectedAnswers;
+  final Map<int, bool> correctnessById;
+
+  const _AnswerReview({
+    required this.questions,
+    required this.selectedAnswers,
+    required this.correctnessById,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     if (questions.isEmpty) return const SizedBox.shrink();
-
-    // Build a lookup: question_id → is_correct, from the breakdown
-    final Map<int, bool> correctnessById = {};
-    for (final item in _breakdown) {
-      final m = item as Map<String, dynamic>;
-      final info = m['info'] as Map<String, dynamic>;
-      final perf = m['performance'] as Map<String, dynamic>;
-      final qId = info['question_id'] as int? ?? -1;
-      correctnessById[qId] = perf['is_correct'] == true;
-    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,37 +290,47 @@ class QuizResultScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w900,
-            color: _maroonDark,
+            color: kQuizMaroonDark,
           ),
         ),
         const SizedBox(height: 16),
-        ...List.generate(questions.length, (index) {
-          final q = questions[index] as Map<String, dynamic>;
-          final int questionId = q['question_id'] as int;
-          final String questionText = q['question_text'] as String? ?? '';
-          final List<dynamic> choices = q['choices'] as List<dynamic>? ?? [];
-          final int selectedIdx = selectedAnswers[questionId] ?? -1;
-          final bool wasCorrect = correctnessById[questionId] ?? false;
-
-          return _buildReviewQuestion(
-            index,
-            questionText,
-            choices,
-            selectedIdx,
-            wasCorrect,
+        ...List.generate(questions.length, (i) {
+          final q = questions[i] as Map<String, dynamic>;
+          final questionId = q['question_id'] as int;
+          return _ReviewQuestion(
+            index: i,
+            questionText: q['question_text'] as String? ?? '',
+            choices: q['choices'] as List<dynamic>? ?? [],
+            selectedIdx: selectedAnswers[questionId] ?? -1,
+            wasCorrect: correctnessById[questionId] ?? false,
           );
         }),
       ],
     );
   }
+}
 
-  Widget _buildReviewQuestion(
-    int index,
-    String questionText,
-    List<dynamic> choices,
-    int selectedIdx,
-    bool wasCorrect,
-  ) {
+// ─── Review question ──────────────────────────────────────────────────────────
+
+class _ReviewQuestion extends StatelessWidget {
+  final int index;
+  final String questionText;
+  final List<dynamic> choices;
+  final int selectedIdx;
+  final bool wasCorrect;
+
+  const _ReviewQuestion({
+    required this.index,
+    required this.questionText,
+    required this.choices,
+    required this.selectedIdx,
+    required this.wasCorrect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final statusColor = wasCorrect ? kQuizPassGreen : kQuizFailRed;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(16),
@@ -294,9 +338,7 @@ class QuizResultScreen extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: wasCorrect
-              ? _passAndCorrectGreen.withValues(alpha: 0.35)
-              : _failAndWrongRed.withValues(alpha: 0.35),
+          color: statusColor.withValues(alpha: 0.35),
           width: 1.5,
         ),
         boxShadow: [
@@ -319,31 +361,26 @@ class QuizResultScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: _maroonDark,
+                  color: kQuizMaroonDark,
                 ),
               ),
               Expanded(
                 child: Text(
                   questionText,
-                  style: const TextStyle(fontSize: 13, color: _maroonDark),
+                  style: const TextStyle(fontSize: 13, color: kQuizMaroonDark),
                 ),
               ),
-              const SizedBox(width: 8),
             ],
           ),
-
           const SizedBox(height: 12),
 
           // Choices
-          ...List.generate(choices.length, (choiceIndex) {
-            final String choiceText = choices[choiceIndex] as String? ?? '';
-            final bool isSelected = choiceIndex == selectedIdx;
-
+          ...List.generate(choices.length, (i) {
+            final isSelected = i == selectedIdx;
             if (!isSelected) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                       width: 20,
@@ -359,7 +396,7 @@ class QuizResultScreen extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text(
-                        choiceText,
+                        choices[i] as String? ?? '',
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey.shade600,
@@ -371,14 +408,9 @@ class QuizResultScreen extends StatelessWidget {
               );
             }
 
-            final Color statusColor = wasCorrect
-                ? _passAndCorrectGreen
-                : _failAndWrongRed;
-
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     width: 20,
@@ -401,7 +433,7 @@ class QuizResultScreen extends StatelessWidget {
                   ),
                   Expanded(
                     child: Text(
-                      choiceText,
+                      choices[i] as String? ?? '',
                       style: TextStyle(
                         fontSize: 13,
                         color: statusColor,
@@ -422,50 +454,11 @@ class QuizResultScreen extends StatelessWidget {
       ),
     );
   }
-
-  /// TODO: Remove once dedicated toast notifications are implemented in the app.
-  // ─── REWARD TOASTS ─────────────────────────────────────────────────────────
-  /// Shows level-up and achievement snackbars based on the result payload.
-  /// Called via [WidgetsBinding.addPostFrameCallback] so the screen is
-  /// fully rendered before snackbars appear.
-  void _showRewardToasts(BuildContext context) {
-    if (_didLevelUp) {
-      final int newLevel = _levelProgress['current'] as int? ?? 0;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '🎉 Level Up! You are now Level $newLevel!',
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-          backgroundColor: _maroonDark,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
-
-    for (final achievement in _newAchievements) {
-      final title =
-          (achievement as Map<String, dynamic>)['title'] as String? ??
-          'Achievement Unlocked';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '🏆 $title',
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-          backgroundColor: _maroon,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
-  }
 }
 
-// ─── SMALL REUSABLE WIDGETS ────────────────────────────────────────────────
+// ─── Shared small widgets ─────────────────────────────────────────────────────
 
-/// A single labeled stat cell used in the stats row
+/// A single labeled stat cell used in [_StatsRow].
 class _StatCell extends StatelessWidget {
   final String label;
   final String value;
@@ -486,14 +479,14 @@ class _StatCell extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color: Colors.black54,
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 6),
-        if (icon != null) ...[
+        if (icon != null)
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -508,8 +501,8 @@ class _StatCell extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ] else
+          )
+        else
           Text(
             value,
             style: TextStyle(
@@ -523,7 +516,7 @@ class _StatCell extends StatelessWidget {
   }
 }
 
-/// A thin vertical separator for the stats row
+/// Thin vertical line separator between stat cells.
 class _VerticalDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

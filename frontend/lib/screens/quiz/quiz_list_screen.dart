@@ -213,10 +213,9 @@ class _QuizHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 32),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0.0, 0.55, 1.0],
-          colors: [kQuizGradientTop, kQuizGradientTop, kQuizGradientBottom],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [kQuizGradientTop, kQuizMaroon],
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(12),

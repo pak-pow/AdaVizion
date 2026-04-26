@@ -87,7 +87,7 @@ class ProfileApi {
 
     final request = http.MultipartRequest(
       'PATCH',
-      Uri.parse('${ApiConfig.baseUrl}/students/me/picture/upload'),
+      Uri.parse('${ApiConfig.baseUrl}/students/me/picture'),
     );
 
     // Inject the JWT. Content-Type is intentionally omitted — the http package

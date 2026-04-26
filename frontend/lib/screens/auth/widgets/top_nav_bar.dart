@@ -34,6 +34,9 @@ class AuthTopNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isSmall = screenWidth < 500;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       // Creates the grey-to-white-to-grey horizontal gradient matching the Figma design
@@ -54,44 +57,52 @@ class AuthTopNavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Nav Bar Brand Logo
-          Image.asset('assets/images/nav_logo.png', height: 48),
+          Image.asset('assets/images/nav_logo.png', height: isSmall ? 40 : 48),
 
-          Row(
-            children: [
-              _navTextItem('Homepage', AppView.home),
-              const SizedBox(width: 10),
-              _navTextItem('About', AppView.about),
-              const SizedBox(width: 10),
-              _navTextItem(
-                'Sign in',
-                AppView.auth,
-                specificAuth: AuthState.login,
-              ),
-              const SizedBox(width: 12),
+          const SizedBox(width: 8),
 
-              // Highlighted "Sign up" Call-to-Action Button
-              ElevatedButton(
-                onPressed: () =>
-                    onNavigate(AppView.auth, specificAuth: AuthState.signup),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _maroonDark,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 0,
-                  ),
-                  minimumSize: const Size(0, 36),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  elevation: 0,
+          Flexible(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _navTextItem('Homepage', AppView.home),
+                SizedBox(width: isSmall ? 12 : 24),
+                _navTextItem('About', AppView.about),
+                SizedBox(width: isSmall ? 12 : 24),
+                _navTextItem(
+                  'Sign in',
+                  AppView.auth,
+                  specificAuth: AuthState.login,
                 ),
-                child: const Text(
-                  'Sign up',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                SizedBox(width: isSmall ? 16 : 32),
+
+                // Highlighted "Sign up" Call-to-Action Button
+                ElevatedButton(
+                  onPressed: () =>
+                      onNavigate(AppView.auth, specificAuth: AuthState.signup),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _maroonDark,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isSmall ? 16 : 36,
+                      vertical: 0,
+                    ),
+                    minimumSize: Size(0, isSmall ? 32 : 42),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Sign up',
+                    style: TextStyle(
+                      fontSize: isSmall ? 11 : 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

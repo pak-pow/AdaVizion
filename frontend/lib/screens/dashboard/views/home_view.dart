@@ -123,6 +123,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   }
 
   String get _currentRank {
+    if (_landmarksVisited == 0) return 'Locked';
     String rank = 'Envergan Scout';
     for (final m in _scholarMilestones) {
       if (_quizPoints >= m.pts) rank = m.rank;
@@ -207,7 +208,6 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   // Bottom row  : Gold Rank chip · "X Points" counter · "Level X · Y XP total"
   // ==========================================================================
   Widget _buildCombinedHeroCard() {
-    final currentXP = (500 - _toNextLevel).clamp(0, 500);
 
     return Container(
       width: double.infinity,
@@ -289,34 +289,44 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
 
           const SizedBox(height: 22),
 
-          // ── Bottom row: Rank chip · Points · Level · XP ───────────────
+          // ── Bottom row: Rank chip ──────────────────────────────────────────
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Gold rank chip
+              // Rank chip (Locked or Gold)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _gold.withValues(alpha: 0.18),
+                  color: _landmarksVisited == 0
+                      ? Colors.transparent
+                      : _gold.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: _gold.withValues(alpha: 0.55),
+                    color: _landmarksVisited == 0
+                        ? Colors.white.withValues(alpha: 0.4)
+                        : _gold.withValues(alpha: 0.55),
                     width: 1,
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.military_tech_rounded,
-                      color: _gold,
+                    Icon(
+                      _landmarksVisited == 0
+                          ? Icons.lock_outline_rounded
+                          : Icons.military_tech_rounded,
+                      color: _landmarksVisited == 0
+                          ? Colors.white.withValues(alpha: 0.4)
+                          : _gold,
                       size: 13,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       _currentRank,
-                      style: const TextStyle(
-                        color: _gold,
+                      style: TextStyle(
+                        color: _landmarksVisited == 0
+                            ? Colors.white.withValues(alpha: 0.4)
+                            : _gold,
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.2,
@@ -325,48 +335,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                   ],
                 ),
               ),
-
               const Spacer(),
-
-              // Points + Level + XP
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // Points counter
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '$_quizPoints',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w900,
-                            height: 1,
-                          ),
-                        ),
-                        const TextSpan(
-                          text: ' pts',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    'Level $_level  ·  $currentXP XP',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.65),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ],

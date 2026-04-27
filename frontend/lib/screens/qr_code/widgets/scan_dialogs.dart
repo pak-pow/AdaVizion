@@ -349,7 +349,18 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // "Got it" simply dismisses — no mixin callback needed.
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    buildDialogButton(
+                      label: "Got it",
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

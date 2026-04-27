@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/badge_model.dart';
 import '../../../services/api/achievement_api.dart';
+import 'package:adavizion/theme/app_colors.dart';
 
 // ============================================================================
 // BADGES CARD WIDGET
@@ -24,9 +25,6 @@ class BadgesCard extends StatefulWidget {
 }
 
 class _BadgesCardState extends State<BadgesCard> {
-  // ─── Brand colour ─────────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
-
   // ─── Local state ──────────────────────────────────────────────────────────
   /// null = All categories. Otherwise filters the carousel to one category.
   BadgeCategory? _selectedBadgeFilter;
@@ -84,7 +82,7 @@ class _BadgesCardState extends State<BadgesCard> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: _maroon,
+        color: AppColors.maroon,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -160,7 +158,7 @@ class _BadgesCardState extends State<BadgesCard> {
                 label: 'Explorer',
                 icon: Icons.explore_outlined,
                 isActive: _selectedBadgeFilter == BadgeCategory.explorer,
-                activeColor: const Color(0xFFE8A87C),
+                activeColor: AppColors.amber,
                 onTap: () => setState(() {
                   _selectedBadgeFilter = BadgeCategory.explorer;
                   _badgeScrollController.jumpTo(0);
@@ -171,7 +169,7 @@ class _BadgesCardState extends State<BadgesCard> {
                 label: 'Scholar',
                 icon: Icons.school_outlined,
                 isActive: _selectedBadgeFilter == BadgeCategory.scholar,
-                activeColor: const Color(0xFFFFD700),
+                activeColor: AppColors.scholarGold,
                 onTap: () => setState(() {
                   _selectedBadgeFilter = BadgeCategory.scholar;
                   _badgeScrollController.jumpTo(0);
@@ -332,10 +330,6 @@ class _BadgesCardState extends State<BadgesCard> {
   Widget _buildBadgePlaceholder({required BadgeConfig config}) {
     const double size = 72;
 
-    // Category accent colour for the small sublabel.
-    final chipColor = config.category == BadgeCategory.explorer
-        ? const Color(0xFFE8A87C)
-        : const Color(0xFFFFD700);
 
     Widget imageWidget;
     if (config.imgPath == null || config.imgPath!.isEmpty) {
@@ -431,13 +425,13 @@ class _BadgesCardState extends State<BadgesCard> {
       // Unlocked state: "Medal Holder" Pedestal Design (3D Feel)
       imageWidget = Container(
         padding: const EdgeInsets.all(1.0), // Tight thin outer maroon border
-        decoration: const BoxDecoration(color: _maroon, shape: BoxShape.circle),
+        decoration: const BoxDecoration(color: AppColors.maroon, shape: BoxShape.circle),
         child: Container(
           padding: const EdgeInsets.all(
             2.5,
           ), // Inner silver/metallic grey border
           decoration: const BoxDecoration(
-            color: Color(0xFFC0C0C0), // Silver / Metallic Grey
+            color: AppColors.silver, // Silver / Metallic Grey
             shape: BoxShape.circle,
           ),
           child: Container(
@@ -586,7 +580,7 @@ class _BadgesCardState extends State<BadgesCard> {
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w900,
-                      color: _maroon,
+                      color: AppColors.maroon,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -639,9 +633,7 @@ class _BadgesCardState extends State<BadgesCard> {
                         children: [
                           Icon(
                             Icons.lightbulb_outline,
-                            color: const Color(
-                              0xFFFFD700,
-                            ).withValues(alpha: 0.8),
+                            color: AppColors.scholarGold.withValues(alpha: 0.8),
                             size: 20,
                           ),
                           const SizedBox(width: 8),

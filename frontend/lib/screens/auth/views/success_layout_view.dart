@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adavizion/theme/app_colors.dart';
 
 // ============================================================================
 // SUCCESS LAYOUT VIEW
@@ -20,9 +21,6 @@ class SuccessLayoutView extends StatelessWidget {
   /// Called when the user taps "Go to Login", allowing the parent shell
   /// to switch auth state back to [AuthState.login].
   final VoidCallback onGoToLogin;
-
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _maroonDark = Color(0xFF5D1414);
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +61,7 @@ class SuccessLayoutView extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
-                      color: _maroon,
+                      color: AppColors.maroon,
                       height: 1.3,
                     ),
                   ),
@@ -72,7 +70,7 @@ class SuccessLayoutView extends StatelessWidget {
                     'You can scan, learn, and enjoy\nwith EUventure',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: _maroon,
+                      color: AppColors.maroon,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -82,9 +80,9 @@ class SuccessLayoutView extends StatelessWidget {
                   OutlinedButton(
                     onPressed: onGoToLogin,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: _maroonDark,
+                      foregroundColor: AppColors.maroonDark,
                       side:
-                          const BorderSide(color: _maroonDark, width: 1.5),
+                          const BorderSide(color: AppColors.maroonDark, width: 1.5),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       minimumSize: const Size(0, 45),
                       shape: RoundedRectangleBorder(

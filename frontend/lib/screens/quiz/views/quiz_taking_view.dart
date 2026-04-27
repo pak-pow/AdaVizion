@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/api/quiz_api.dart';
 import '../models/quiz_model.dart';
-import '../quiz_constants.dart';
+import 'package:adavizion/theme/app_colors.dart';
 import 'quiz_result_view.dart';
 
 // ─── Quiz taking view ─────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ class _QuizTakingViewState extends State<QuizTakingView> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        backgroundColor: kQuizHeaderGrey,
+        backgroundColor: AppColors.surfaceGrey,
         elevation: 0,
         centerTitle: false,
         automaticallyImplyLeading: false,
@@ -157,7 +157,7 @@ class _QuizTakingViewState extends State<QuizTakingView> {
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 13,
-                      color: kQuizMaroon,
+                      color: AppColors.maroon,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -215,7 +215,7 @@ class _QuizTitleHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: kQuizMaroonDark,
+        color: AppColors.maroonGradientBottom,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -263,13 +263,13 @@ class _QuestionItem extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: kQuizMaroonDark,
+                color: AppColors.maroonGradientBottom,
               ),
             ),
             Expanded(
               child: Text(
                 text,
-                style: const TextStyle(fontSize: 13, color: kQuizMaroonDark),
+                style: const TextStyle(fontSize: 13, color: AppColors.maroonGradientBottom),
               ),
             ),
           ],
@@ -293,7 +293,7 @@ class _QuestionItem extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 12),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: kQuizMaroon, width: 1.5),
+                      border: Border.all(color: AppColors.maroon, width: 1.5),
                     ),
                     child: isSelected
                         ? Center(
@@ -302,7 +302,7 @@ class _QuestionItem extends StatelessWidget {
                               height: 12,
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: kQuizMaroon,
+                                color: AppColors.maroon,
                               ),
                             ),
                           )
@@ -313,7 +313,7 @@ class _QuestionItem extends StatelessWidget {
                       choices[i] as String? ?? '',
                       style: const TextStyle(
                         fontSize: 13,
-                        color: kQuizMaroonDark,
+                        color: AppColors.maroonGradientBottom,
                       ),
                     ),
                   ),
@@ -339,13 +339,13 @@ class _SubmitSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: isSubmitting
-          ? const CircularProgressIndicator(color: kQuizMaroon)
+          ? const CircularProgressIndicator(color: AppColors.maroon)
           : OutlinedButton(
               onPressed: onSubmit,
               style: OutlinedButton.styleFrom(
                 backgroundColor: Colors.white,
-                foregroundColor: kQuizMaroonDark,
-                side: const BorderSide(color: kQuizMaroonDark, width: 1.5),
+                foregroundColor: AppColors.maroonGradientBottom,
+                side: const BorderSide(color: AppColors.maroonGradientBottom, width: 1.5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

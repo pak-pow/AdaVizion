@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adavizion/theme/app_colors.dart';
 
 class StudentStats extends StatelessWidget {
   final int level;
@@ -16,8 +17,7 @@ class StudentStats extends StatelessWidget {
     required this.quizPoints,
   });
 
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _green = Color(0xFF2E7D32);
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class StudentStats extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF1A1A1A),
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   Text(
@@ -60,13 +60,13 @@ class StudentStats extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
-              _buildAnimatedBar(xpProgress, _green, Colors.grey.shade200),
+              _buildAnimatedBar(xpProgress, AppColors.green, AppColors.borderLight),
             ],
           ),
         ),
@@ -81,8 +81,7 @@ class StudentStats extends StatelessWidget {
                 label: 'Landmarks',
                 value: '$landmarksVisited / $landmarksTotal',
                 icon: Icons.location_on_rounded,
-                color:
-                    _maroon, // Changed from _amber to match "star" icon color
+                color: AppColors.maroon,
               ),
             ),
             const SizedBox(width: 16),
@@ -91,7 +90,7 @@ class StudentStats extends StatelessWidget {
                 label: 'Quiz Scores',
                 value: '$quizPoints pts',
                 icon: Icons.emoji_events_rounded,
-                color: _maroon,
+                color: AppColors.maroon,
               ),
             ),
           ],
@@ -140,7 +139,7 @@ class StudentStats extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: _maroon,
+                    color: AppColors.maroon,
                     height: 1.1,
                   ),
                 ),
@@ -152,7 +151,7 @@ class StudentStats extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade600,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],

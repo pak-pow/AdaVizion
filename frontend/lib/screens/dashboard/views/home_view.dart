@@ -4,6 +4,7 @@ import '../widgets/badges_card.dart';
 import '../widgets/student_card.dart';
 import '../widgets/student_stats.dart';
 import '../../../utils/toast_service.dart';
+import 'package:adavizion/theme/app_colors.dart';
 
 // ============================================================================
 // DASHBOARD HOME VIEW  (Consolidated + Hero Card)
@@ -43,9 +44,6 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   int _toNextLevel = 0;
   int _landmarksVisited = 0;
   int _landmarksTotal = 1;
-
-  // ── Brand colours ─────────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
 
   // ── Scholar / Explorer milestones — mirror backend achievements.data.json ─
 
@@ -108,7 +106,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: _maroon));
+      return const Center(child: CircularProgressIndicator(color: AppColors.maroon));
     }
 
     return SingleChildScrollView(

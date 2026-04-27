@@ -1,7 +1,7 @@
 // ─── PERMISSION DENIED UI ─────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
-import '../../../theme/app_colors.dart';
+import 'package:adavizion/theme/app_colors.dart';
 
 /// Full-screen widget displayed when camera permission has been denied.
 ///

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:adavizion/theme/app_colors.dart';
 import '../services/api/landmark_api.dart';
 import 'landmarks/views/landmark_detail_view.dart';
 import 'landmarks/models/landmark_model.dart';
@@ -16,10 +17,7 @@ class QRCodeScreen extends StatefulWidget {
 }
 
 class _QRCodeScreenState extends State<QRCodeScreen> {
-  // ─── BRANDING COLORS ──────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _maroonDark = Color(0xFF5D1414);
-  static const _headerGrey = Color(0xFFF5F5F5);
+
 
   // ─── STATE VARIABLES ───────────────────────────────────────────────────────
   Key _scannerKey = UniqueKey();
@@ -92,7 +90,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 
       // --- APP BAR ---
       appBar: AppBar(
-        backgroundColor: _headerGrey,
+        backgroundColor: AppColors.surfaceGrey,
         centerTitle: true,
         title: Image.asset("assets/images/nav_logo.png", height: 75),
         elevation: 0,
@@ -140,7 +138,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           CustomPaint(
             painter: _ScanOverlayPainter(
               scanAreaSize: _scanAreaSize,
-              borderColor: _maroon,
+              borderColor: AppColors.maroon,
             ),
           ),
 
@@ -280,7 +278,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
               icon: const Icon(Icons.refresh),
               label: const Text("Try Again"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: _maroonDark,
+                backgroundColor: AppColors.maroonDark,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -376,7 +374,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         title: Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
-            color: isDarkHeader ? _maroonDark : Colors.white,
+            color: isDarkHeader ? AppColors.maroonDark : Colors.white,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -388,7 +386,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w800,
-              color: isDarkHeader ? Colors.white : _maroonDark,
+              color: isDarkHeader ? Colors.white : AppColors.maroonDark,
             ),
           ),
         ),
@@ -424,8 +422,8 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.white,
-            foregroundColor: _maroonDark,
-            side: const BorderSide(color: _maroonDark, width: 1.5),
+            foregroundColor: AppColors.maroonDark,
+            side: const BorderSide(color: AppColors.maroonDark, width: 1.5),
             padding: const EdgeInsets.symmetric(horizontal: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -444,7 +442,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: _maroonDark,
+          backgroundColor: AppColors.maroonDark,
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -484,7 +482,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         title: Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
-            color: _maroonDark,
+            color: AppColors.maroonDark,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -513,7 +511,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: _maroon,
+                    color: AppColors.maroon,
                     letterSpacing: 1.2,
                   ),
                 ),
@@ -524,10 +522,10 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF0FAF4), // soft mint green
+                    color: AppColors.funFactBGFill, // soft mint green
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: const Color(0xFFB2DFC4), // muted sage border
+                      color: AppColors.funFactBorder, // muted sage border
                     ),
                   ),
                   child: Column(
@@ -538,7 +536,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                           Icon(
                             Icons.lightbulb_outline,
                             size: 16,
-                            color: Color(0xFF2E7D52), // deep forest green
+                            color: AppColors.funFactIcon, // deep forest green
                           ),
                           SizedBox(width: 6),
                           Text(
@@ -546,7 +544,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
-                              color: Color(0xFF2E7D52),
+                              color: AppColors.funFactIcon,
                               letterSpacing: 0.8,
                             ),
                           ),
@@ -559,7 +557,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                         style: const TextStyle(
                           fontSize: 14,
                           height: 1.45,
-                          color: Color(0xFF1A3D2B),
+                          color: AppColors.funFactBody,
                         ),
                       ),
                     ],
@@ -574,21 +572,21 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                     vertical: 7,
                   ),
                   decoration: BoxDecoration(
-                    color: _maroon.withValues(alpha: 0.1),
+                    color: AppColors.maroon.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(999),
-                    border: Border.all(color: _maroon.withValues(alpha: 0.35)),
+                    border: Border.all(color: AppColors.maroon.withValues(alpha: 0.35)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.bolt, size: 16, color: _maroon),
+                      Icon(Icons.bolt, size: 16, color: AppColors.maroon),
                       const SizedBox(width: 4),
                       Text(
                         "+$xpEarned XP earned",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: _maroon,
+                          color: AppColors.maroon,
                         ),
                       ),
                     ],
@@ -760,7 +758,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: _maroon.withValues(alpha: 0.8),
+        color: AppColors.maroon.withValues(alpha: 0.8),
         shape: BoxShape.circle,
       ),
       child: IconButton(iconSize: 30, onPressed: onPressed, icon: icon),

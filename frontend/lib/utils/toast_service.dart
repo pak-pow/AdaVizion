@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adavizion/theme/app_colors.dart';
 
 class ToastService {
   static void _showToast(
@@ -33,11 +34,11 @@ class ToastService {
   }
 
   static void showSuccess(BuildContext context, String message) {
-    _showToast(context, message, Colors.green.shade700, Icons.check_circle);
+    _showToast(context, message, AppColors.green, Icons.check_circle);
   }
 
   static void showError(BuildContext context, String message) {
-    _showToast(context, message, const Color(0xFF7A1D1D), Icons.error);
+    _showToast(context, message, AppColors.maroon, Icons.error);
   }
 
   static void showInfo(BuildContext context, String message) {

@@ -9,7 +9,7 @@ import '../landmarks/models/landmark_model.dart';
 import '../landmarks/views/landmark_detail_view.dart';
 import '../dashboard_screen.dart';
 
-import '../../theme/app_colors.dart';
+import 'package:adavizion/theme/app_colors.dart';
 import 'utils/scan_error_handler.dart';
 import 'widgets/permission_denied_view.dart';
 import 'widgets/scan_dialogs.dart';

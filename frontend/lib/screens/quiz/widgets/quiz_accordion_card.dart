@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/quiz_model.dart';
-import '../quiz_constants.dart';
+import 'package:adavizion/theme/app_colors.dart';
 import 'quiz_detail_panel.dart';
 
 // ─── Quiz accordion card ──────────────────────────────────────────────────────
@@ -85,7 +85,7 @@ class QuizAccordionCard extends StatelessWidget {
                   child: Container(
                     height: 60,
                     decoration: BoxDecoration(
-                      color: isLocked ? Colors.grey.shade400 : kQuizTakeColor,
+                      color: isLocked ? Colors.grey.shade400 : AppColors.maroonGradientBottom,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
@@ -107,7 +107,7 @@ class QuizAccordionCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: kQuizMaroonDark,
+                    color: AppColors.maroonGradientBottom,
                     height: 1.0,
                   ),
                 ),
@@ -120,7 +120,7 @@ class QuizAccordionCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: kQuizMaroonDark,
+                    color: AppColors.maroonGradientBottom,
                   ),
                 ),
               ],

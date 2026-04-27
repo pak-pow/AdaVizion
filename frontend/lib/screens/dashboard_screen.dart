@@ -5,6 +5,7 @@ import 'dashboard/views/home_view.dart';
 import 'dashboard/views/settings_view.dart';
 import 'qrcode_screen.dart';
 import 'landmarks/landmark_screen.dart';
+import 'package:adavizion/theme/app_colors.dart';
 
 // ============================================================================
 // DASHBOARD SCREEN (Shell)
@@ -34,10 +35,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  // ─── Brand colours ─────────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _headerGrey = Color(0xFFF5F5F5);
-
   // ─── Tab state ─────────────────────────────────────────────────────────────
   late int _selectedIndex;
 
@@ -60,7 +57,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F9),
+      backgroundColor: AppColors.surfaceWhite,
 
       // ── APP BAR ──────────────────────────────────────────────────────────────
       appBar: AppBar(
@@ -115,7 +112,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       // shape: CircleBorder() ensures a perfect circle regardless of the theme's
       // default FAB shape (Material 3 uses a rounded-square by default).
       floatingActionButton: FloatingActionButton(
-        backgroundColor: _maroon,
+        backgroundColor: AppColors.maroon,
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
         tooltip: 'Scan QR Code',
@@ -175,7 +172,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Icon(
                 item.icon,
                 key: ValueKey(isSelected),
-                color: isSelected ? _maroon : Colors.grey,
+                color: isSelected ? AppColors.maroon : Colors.grey,
                 size: 24,
               ),
             ),
@@ -185,7 +182,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? _maroon : Colors.grey,
+                color: isSelected ? AppColors.maroon : Colors.grey,
               ),
             ),
           ],

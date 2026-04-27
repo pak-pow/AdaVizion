@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../quiz_constants.dart';
+import 'package:adavizion/theme/app_colors.dart';
 import '../views/quiz_taking_view.dart';
 import 'shared/quiz_error_state.dart';
 
@@ -46,7 +46,7 @@ class QuizDetailPanel extends StatelessWidget {
         if (isLoading)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 32),
-            child: Center(child: CircularProgressIndicator(color: kQuizMaroon)),
+            child: Center(child: CircularProgressIndicator(color: AppColors.maroon)),
           )
         else if (error != null)
           QuizErrorState(message: error, onRetry: onRetry, compact: true)
@@ -135,7 +135,7 @@ class _RemindersBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: kQuizMaroonDark, width: 1.5),
+        border: Border.all(color: AppColors.maroonGradientBottom, width: 1.5),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -145,7 +145,7 @@ class _RemindersBox extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: const BoxDecoration(
-              color: kQuizMaroonDark,
+              color: AppColors.maroonGradientBottom,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(6),
                 topRight: Radius.circular(6),
@@ -178,7 +178,7 @@ class _RemindersBox extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: kQuizMaroonDark,
+                          color: AppColors.maroonGradientBottom,
                         ),
                       ),
                       Expanded(
@@ -186,7 +186,7 @@ class _RemindersBox extends StatelessWidget {
                           rules[i],
                           style: const TextStyle(
                             fontSize: 13,
-                            color: kQuizMaroonDark,
+                            color: AppColors.maroon,
                           ),
                         ),
                       ),
@@ -213,7 +213,7 @@ class _StartButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: kQuizTakeColor,
+        backgroundColor: AppColors.maroonDeep,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         minimumSize: const Size(double.infinity, 50),
@@ -243,7 +243,7 @@ class _AlreadyCompletedBadge extends StatelessWidget {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: kQuizMaroonDark,
+            color: AppColors.maroonGradientBottom,
           ),
         ),
       ),

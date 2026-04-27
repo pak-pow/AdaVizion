@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import '../../../theme/app_colors.dart';
+import 'package:adavizion/theme/app_colors.dart';
 
 /// Bottom footer shown while the camera is active.
 ///

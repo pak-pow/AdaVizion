@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adavizion/theme/app_colors.dart';
 
 class StudentCard extends StatelessWidget {
   final String name;
@@ -16,8 +17,7 @@ class StudentCard extends StatelessWidget {
     this.imgPath,
   });
 
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _gradientTop = Color(0xFFA62121);
+
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class StudentCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_gradientTop, _maroon],
+          colors: [AppColors.maroonLight, AppColors.maroon],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [

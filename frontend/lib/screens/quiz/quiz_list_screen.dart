@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/api/quiz_api.dart';
 import 'models/quiz_model.dart';
-import 'quiz_constants.dart';
+import 'package:adavizion/theme/app_colors.dart';
 import 'widgets/quiz_accordion_card.dart';
 import 'widgets/shared/quiz_error_state.dart';
 
@@ -117,7 +117,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      color: kQuizMaroon,
+      color: AppColors.maroon,
       onRefresh: _loadQuizzes,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -144,7 +144,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
     if (_isLoading) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 60),
-        child: CircularProgressIndicator(color: kQuizMaroon),
+        child: CircularProgressIndicator(color: AppColors.maroon),
       );
     }
 
@@ -215,7 +215,7 @@ class _QuizHeader extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [kQuizGradientTop, kQuizMaroon],
+          colors: [AppColors.maroonGradientTop, AppColors.maroon],
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(12),

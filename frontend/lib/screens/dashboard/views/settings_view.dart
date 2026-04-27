@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adavizion/theme/app_colors.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../services/api/api_config.dart';
 import '../../../services/api/profile_api.dart';
@@ -33,9 +34,7 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
-  // ── Brand colours ─────────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _gradientTop = Color(0xFFA62121);
+
 
   // ── Loading ───────────────────────────────────────────────────────────────
   bool _isLoading = true;
@@ -191,7 +190,7 @@ class _SettingsViewState extends State<SettingsView> {
             },
             child: const Text(
               'Log out',
-              style: TextStyle(color: _maroon, fontWeight: FontWeight.bold),
+              style: TextStyle(color: AppColors.maroon, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -247,7 +246,7 @@ class _SettingsViewState extends State<SettingsView> {
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
-                      color: _maroon,
+                      color: AppColors.maroon,
                       strokeWidth: 2,
                     ),
                   ),
@@ -300,7 +299,7 @@ class _SettingsViewState extends State<SettingsView> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _maroon,
+                    backgroundColor: AppColors.maroon,
                     foregroundColor: Colors.white,
                   ),
                   child: const Text(
@@ -324,9 +323,9 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F9),
+      backgroundColor: AppColors.surfaceWhite,
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: _maroon))
+          ? const Center(child: CircularProgressIndicator(color: AppColors.maroon))
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -380,7 +379,7 @@ class _SettingsViewState extends State<SettingsView> {
                               'v1.0.0',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: Colors.grey.shade500,
+                                color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -395,8 +394,8 @@ class _SettingsViewState extends State<SettingsView> {
                           _buildTile(
                             icon: Icons.logout,
                             label: 'Log Out',
-                            iconColor: _maroon,
-                            labelColor: _maroon,
+                            iconColor: AppColors.maroon,
+                            labelColor: AppColors.maroon,
                             showArrow: false,
                             onTap: _showLogoutDialog,
                           ),
@@ -413,7 +412,7 @@ class _SettingsViewState extends State<SettingsView> {
   // ── Header ─────────────────────────────────────────────────────────────────
   Widget _buildHeader() {
     return Container(
-      color: const Color(0xFFF7F7F9),
+      color: AppColors.surfaceWhite,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -423,7 +422,7 @@ class _SettingsViewState extends State<SettingsView> {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF1A1A1A),
+              color: AppColors.textPrimary,
             ),
           ),
           Container(
@@ -442,7 +441,7 @@ class _SettingsViewState extends State<SettingsView> {
             child: const Icon(
               Icons.settings_outlined,
               size: 20,
-              color: Color(0xFF1A1A1A),
+              color: AppColors.textPrimary,
             ),
           ),
         ],
@@ -460,12 +459,12 @@ class _SettingsViewState extends State<SettingsView> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_gradientTop, _maroon],
+          colors: [AppColors.maroonLight, AppColors.maroon],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: _maroon.withValues(alpha: 0.28),
+            color: AppColors.maroon.withValues(alpha: 0.28),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -655,7 +654,7 @@ class _SettingsViewState extends State<SettingsView> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF1A1A1A),
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -682,25 +681,21 @@ class _SettingsViewState extends State<SettingsView> {
                 labelText: 'Course / Program',
                 labelStyle: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade500,
+                  color: AppColors.textSecondary,
                 ),
                 filled: true,
-                fillColor: const Color(0xFFF7F7F9),
+                fillColor: AppColors.surfaceWhite,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: const BorderSide(color: AppColors.borderLight),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: _maroon, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.maroon, width: 1.5),
                 ),
               ),
               items: kBackendPrograms.entries.map((e) {
@@ -710,7 +705,7 @@ class _SettingsViewState extends State<SettingsView> {
                     e.value,
                     style: const TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF1A1A1A),
+                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -744,10 +739,10 @@ class _SettingsViewState extends State<SettingsView> {
                   labelText: 'Specialization',
                   labelStyle: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade500,
+                    color: AppColors.textSecondary,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF7F7F9),
+                  fillColor: AppColors.surfaceWhite,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
@@ -762,7 +757,7 @@ class _SettingsViewState extends State<SettingsView> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: _maroon, width: 1.5),
+                    borderSide: const BorderSide(color: AppColors.maroon, width: 1.5),
                   ),
                 ),
                 items: kBackendSpecializations[_courseController.text]!.map((
@@ -774,7 +769,7 @@ class _SettingsViewState extends State<SettingsView> {
                       value,
                       style: const TextStyle(
                         fontSize: 13,
-                        color: Color(0xFF1A1A1A),
+                        color: AppColors.textPrimary,
                         fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -800,25 +795,21 @@ class _SettingsViewState extends State<SettingsView> {
                 labelText: 'Year Level',
                 labelStyle: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade500,
+                  color: AppColors.textSecondary,
                 ),
                 filled: true,
-                fillColor: const Color(0xFFF7F7F9),
+                fillColor: AppColors.surfaceWhite,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: const BorderSide(color: AppColors.borderLight),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: _maroon, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.maroon, width: 1.5),
                 ),
               ),
               items: [1, 2, 3, 4].map((int value) {
@@ -828,7 +819,7 @@ class _SettingsViewState extends State<SettingsView> {
                     value.toString(),
                     style: const TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF1A1A1A),
+                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -850,8 +841,8 @@ class _SettingsViewState extends State<SettingsView> {
                 child: OutlinedButton(
                   onPressed: () => setState(() => _isEditMode = false),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.grey.shade600,
-                    side: BorderSide(color: Colors.grey.shade300),
+                    foregroundColor: AppColors.textSecondary,
+                    side: const BorderSide(color: AppColors.borderLight),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -894,7 +885,7 @@ class _SettingsViewState extends State<SettingsView> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _maroon,
+                    backgroundColor: AppColors.maroon,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -927,29 +918,29 @@ class _SettingsViewState extends State<SettingsView> {
         readOnly: readOnly,
         style: TextStyle(
           fontSize: 13,
-          color: readOnly ? Colors.grey.shade600 : const Color(0xFF1A1A1A),
+          color: readOnly ? AppColors.textSecondary : AppColors.textPrimary,
           fontWeight: FontWeight.w500,
         ),
         decoration: InputDecoration(
           labelText: hint,
-          labelStyle: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          labelStyle: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
           filled: true,
-          fillColor: readOnly ? Colors.grey.shade100 : const Color(0xFFF7F7F9),
+          fillColor: readOnly ? AppColors.surfaceGrey : AppColors.surfaceWhite,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 12,
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade200),
+            borderSide: const BorderSide(color: AppColors.borderLight),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade200),
+            borderSide: const BorderSide(color: AppColors.borderLight),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: _maroon, width: 1.5),
+            borderSide: const BorderSide(color: AppColors.maroon, width: 1.5),
           ),
         ),
       ),
@@ -1025,13 +1016,13 @@ class _SettingsViewState extends State<SettingsView> {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: labelColor ?? const Color(0xFF1A1A1A),
+          color: labelColor ?? AppColors.textPrimary,
         ),
       ),
       trailing:
           trailing ??
           (showArrow
-              ? Icon(Icons.chevron_right, color: Colors.grey.shade400, size: 20)
+              ? const Icon(Icons.chevron_right, color: AppColors.textLight, size: 20)
               : null),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
     );

@@ -1,3 +1,4 @@
+import 'package:adavizion/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // ============================================================================
@@ -14,8 +15,6 @@ import 'package:flutter/material.dart';
 class HomeLayoutView extends StatelessWidget {
   const HomeLayoutView({super.key});
 
-  static const _maroon = Color(0xFF7A1D1D);
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -28,7 +27,7 @@ class HomeLayoutView extends StatelessWidget {
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w900,
-              color: _maroon,
+              color: AppColors.maroon,
               height: 1.2,
             ),
           ),
@@ -39,7 +38,7 @@ class HomeLayoutView extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: _maroon,
+              color: AppColors.maroon,
             ),
           ),
           SizedBox(

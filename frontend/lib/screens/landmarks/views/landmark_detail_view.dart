@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/api/landmark_api.dart';
-import '../landmark_constants.dart';
+import '../../../theme/app_colors.dart';
 import '../models/landmark_model.dart';
 import '../utils/landmark_name_parser.dart';
 import '../widgets/shared/landmark_error_state.dart';
@@ -50,7 +50,7 @@ class _LandmarkDetailViewState extends State<LandmarkDetailView> {
           // ── Loading ─────────────────────────────────────────────────────────
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: kLandmarkMaroon),
+              child: CircularProgressIndicator(color: AppColors.maroon),
             );
           }
 
@@ -124,7 +124,7 @@ class _HeroSliver extends StatelessWidget {
       expandedHeight: 280,
       pinned: true,
       centerTitle: true,
-      backgroundColor: kLandmarkMaroon,
+      backgroundColor: AppColors.maroon,
       leading: Padding(
         padding: const EdgeInsets.all(8),
         child: CircleAvatar(
@@ -200,9 +200,9 @@ class _HeroSliver extends StatelessWidget {
                     stops: const [0.55, 0.78, 0.90, 1.0],
                     colors: [
                       Colors.transparent,
-                      kLandmarkMaroonDark.withValues(alpha: 0.53),
-                      kLandmarkMaroonDark.withValues(alpha: 0.80),
-                      kLandmarkMaroonDark,
+                      AppColors.maroonDark.withValues(alpha: 0.53),
+                      AppColors.maroonDark.withValues(alpha: 0.80),
+                      AppColors.maroonDark,
                     ],
                   ),
                 ),
@@ -231,7 +231,7 @@ class _SectionLabel extends StatelessWidget {
       style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w800,
-        color: kLandmarkMaroon,
+        color: AppColors.maroon,
       ),
     );
   }
@@ -251,9 +251,9 @@ class _FunFactCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: kFunFactMint,
+        color: AppColors.funFactBGFill,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kFunFactSage),
+        border: Border.all(color: AppColors.funFactBorder),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -261,14 +261,18 @@ class _FunFactCard extends StatelessWidget {
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.lightbulb_outline, color: kFunFactGreen, size: 18),
+              Icon(
+                Icons.lightbulb_outline,
+                color: AppColors.funFactIcon,
+                size: 18,
+              ),
               SizedBox(width: 8),
               Text(
                 'DID YOU KNOW?',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: kFunFactGreen,
+                  color: AppColors.funFactIcon,
                 ),
               ),
             ],
@@ -279,7 +283,7 @@ class _FunFactCard extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 15,
-              color: kFunFactDeep,
+              color: AppColors.funFactBody,
               height: 1.6,
             ),
           ),

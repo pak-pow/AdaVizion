@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/auth_text_field.dart';
 import '../../../utils/toast_service.dart';
+import '../../../theme/app_colors.dart';
 
 // ============================================================================
 // AUTH LAYOUT VIEW
@@ -116,10 +117,6 @@ class AuthLayoutView extends StatelessWidget {
   /// Called when the user taps "Continue" / "Confirm".
   final Future<void> Function() onSubmit;
 
-  // ─── Brand colours ─────────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _maroonDark = Color(0xFF5D1414);
-
   @override
   Widget build(BuildContext context) {
     final border = authInputBorder();
@@ -155,7 +152,7 @@ class AuthLayoutView extends StatelessWidget {
           Row(
             children: [
               Expanded(flex: 6, child: Container(color: Colors.white)),
-              Expanded(flex: 4, child: Container(color: _maroon)),
+              Expanded(flex: 4, child: Container(color: AppColors.maroon)),
             ],
           ),
 
@@ -194,7 +191,7 @@ class AuthLayoutView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w500,
-                          color: _maroon,
+                          color: AppColors.maroon,
                         ),
                       ),
                       const Text(
@@ -202,7 +199,7 @@ class AuthLayoutView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 72,
                           fontWeight: FontWeight.w900,
-                          color: _maroon,
+                          color: AppColors.maroon,
                           height: 1.0,
                         ),
                       ),
@@ -211,7 +208,7 @@ class AuthLayoutView extends StatelessWidget {
                         'Interactive University\nExploration Platform',
                         style: TextStyle(
                           fontSize: 22,
-                          color: _maroon,
+                          color: AppColors.maroon,
                           height: 1.4,
                           letterSpacing: 0.5,
                         ),
@@ -225,8 +222,11 @@ class AuthLayoutView extends StatelessWidget {
                           );
                         },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: _maroon,
-                          side: const BorderSide(color: _maroon, width: 2),
+                          foregroundColor: AppColors.maroon,
+                          side: const BorderSide(
+                            color: AppColors.maroon,
+                            width: 2,
+                          ),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 48,
                             vertical: 24,
@@ -305,7 +305,7 @@ class AuthLayoutView extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w900,
-              color: _maroon,
+              color: AppColors.maroon,
               height: 1.1,
             ),
           ),
@@ -373,7 +373,7 @@ class AuthLayoutView extends StatelessWidget {
           style: TextStyle(
             fontSize: isDesktop ? 48 : 30,
             fontWeight: FontWeight.w900,
-            color: _maroon,
+            color: AppColors.maroon,
           ),
           textAlign: TextAlign.center,
         ),
@@ -384,7 +384,7 @@ class AuthLayoutView extends StatelessWidget {
               : 'and get ready to explore\nwith us',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: _maroon,
+            color: AppColors.maroon,
             fontSize: isDesktop ? 13 : 10,
             fontWeight: FontWeight.bold,
           ),
@@ -506,7 +506,7 @@ class AuthLayoutView extends StatelessWidget {
               ),
               child: const Text(
                 'Forgot password?',
-                style: TextStyle(color: _maroon, fontSize: 10),
+                style: TextStyle(color: AppColors.maroon, fontSize: 10),
               ),
             ),
           ),
@@ -517,7 +517,7 @@ class AuthLayoutView extends StatelessWidget {
         ElevatedButton(
           onPressed: isLoading ? null : onSubmit,
           style: ElevatedButton.styleFrom(
-            backgroundColor: _maroonDark,
+            backgroundColor: AppColors.maroonDark,
             foregroundColor: Colors.white,
             padding: EdgeInsets.symmetric(vertical: isDesktop ? 18 : 12),
             minimumSize: const Size.fromHeight(45),

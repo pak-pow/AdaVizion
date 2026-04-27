@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../qr_code_constants.dart';
+import '../../../theme/app_colors.dart';
 
 /// Mixin that provides all scan-result dialog methods for [QRCodeScreen].
 ///
@@ -77,11 +77,8 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.white,
-            foregroundColor: QRCodeConstants.maroonDark,
-            side: const BorderSide(
-              color: QRCodeConstants.maroonDark,
-              width: 1.5,
-            ),
+            foregroundColor: AppColors.maroonDark,
+            side: const BorderSide(color: AppColors.maroonDark, width: 1.5),
             padding: const EdgeInsets.symmetric(horizontal: 20),
             shape: shape,
           ),
@@ -99,7 +96,7 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: QRCodeConstants.maroonDark,
+          backgroundColor: AppColors.maroonDark,
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -161,7 +158,7 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: QRCodeConstants.maroon,
+                    color: AppColors.maroon,
                     letterSpacing: 1.2,
                   ),
                 ),
@@ -323,7 +320,7 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
             Icon(
               Icons.health_and_safety_outlined,
               size: 48,
-              color: QRCodeConstants.maroonDark,
+              color: AppColors.maroonDark,
             ),
             SizedBox(height: 16),
             Text(
@@ -378,7 +375,7 @@ class _DialogHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: isDark ? QRCodeConstants.maroonDark : Colors.white,
+        color: isDark ? AppColors.maroonDark : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Text(
@@ -387,7 +384,7 @@ class _DialogHeader extends StatelessWidget {
         style: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w800,
-          color: isDark ? Colors.white : QRCodeConstants.maroonDark,
+          color: isDark ? Colors.white : AppColors.maroonDark,
         ),
       ),
     );
@@ -407,23 +404,27 @@ class _FunFactCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0FAF4),
+        color: AppColors.funFactBGFill,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFB2DFC4)),
+        border: Border.all(color: AppColors.funFactBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.lightbulb_outline, size: 16, color: Color(0xFF2E7D52)),
+              Icon(
+                Icons.lightbulb_outline,
+                size: 16,
+                color: AppColors.funFactIcon,
+              ),
               SizedBox(width: 6),
               Text(
                 "FUN FACT",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
-                  color: Color(0xFF2E7D52),
+                  color: AppColors.funFactIcon,
                   letterSpacing: 0.8,
                 ),
               ),
@@ -436,7 +437,7 @@ class _FunFactCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 14,
               height: 1.45,
-              color: Color(0xFF1A3D2B),
+              color: AppColors.funFactBody,
             ),
           ),
         ],
@@ -457,23 +458,21 @@ class _XpPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
       decoration: BoxDecoration(
-        color: QRCodeConstants.maroon.withValues(alpha: 0.1),
+        color: AppColors.maroon.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: QRCodeConstants.maroon.withValues(alpha: 0.35),
-        ),
+        border: Border.all(color: AppColors.maroon.withValues(alpha: 0.35)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.bolt, size: 16, color: QRCodeConstants.maroon),
+          const Icon(Icons.bolt, size: 16, color: AppColors.maroon),
           const SizedBox(width: 4),
           Text(
             "+$xpEarned XP earned",
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
-              color: QRCodeConstants.maroon,
+              color: AppColors.maroon,
             ),
           ),
         ],

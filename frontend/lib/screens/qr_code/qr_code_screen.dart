@@ -9,7 +9,7 @@ import '../landmarks/models/landmark_model.dart';
 import '../landmarks/views/landmark_detail_view.dart';
 import '../dashboard_screen.dart';
 
-import 'qr_code_constants.dart';
+import '../../theme/app_colors.dart';
 import 'utils/scan_error_handler.dart';
 import 'widgets/permission_denied_view.dart';
 import 'widgets/scan_dialogs.dart';
@@ -155,7 +155,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: QRCodeConstants.headerGrey,
+        backgroundColor: AppColors.headerGrey,
         centerTitle: true,
         title: Image.asset("assets/images/nav_logo.png", height: 75),
         elevation: 0,
@@ -212,7 +212,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
           CustomPaint(
             painter: ScanOverlayPainter(
               scanAreaSize: _scanAreaSize,
-              borderColor: QRCodeConstants.maroon,
+              borderColor: AppColors.maroon,
             ),
           ),
 

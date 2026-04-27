@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import '../qr_code_constants.dart';
+import '../../../theme/app_colors.dart';
 
 /// Bottom footer shown while the camera is active.
 ///
@@ -82,7 +82,7 @@ class _ControlButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: QRCodeConstants.maroon.withValues(alpha: 0.8),
+        color: AppColors.maroon.withValues(alpha: 0.8),
         shape: BoxShape.circle,
       ),
       child: IconButton(iconSize: 30, onPressed: onPressed, icon: icon),

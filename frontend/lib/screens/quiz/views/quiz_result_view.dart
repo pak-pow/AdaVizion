@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/quiz_model.dart';
-import '../quiz_constants.dart';
+import '../../../theme/app_colors.dart';
 
 // ─── Quiz result view ─────────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ class QuizResultView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        backgroundColor: kQuizHeaderGrey,
+        backgroundColor: AppColors.headerGrey,
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -61,7 +61,7 @@ class QuizResultView extends StatelessWidget {
               const SizedBox(height: 24),
 
               // ── Divider ────────────────────────────────────────────────────
-              const Divider(thickness: 1.5, color: kQuizDivider),
+              const Divider(thickness: 1.5, color: AppColors.divider),
               const SizedBox(height: 16),
 
               // ── Answer review ──────────────────────────────────────────────
@@ -90,7 +90,7 @@ class QuizResultView extends StatelessWidget {
             '🎉 Level Up! You are now Level ${result.currentLevel}!',
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
-          backgroundColor: kQuizMaroonDark,
+          backgroundColor: AppColors.maroonDark,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
         ),
@@ -107,7 +107,7 @@ class QuizResultView extends StatelessWidget {
             '🏆 $title',
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
-          backgroundColor: kQuizMaroon,
+          backgroundColor: AppColors.maroon,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
         ),
@@ -127,7 +127,7 @@ class _TitleHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: kQuizMaroonDark,
+        color: AppColors.maroonDark,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -173,7 +173,7 @@ class _StatsRow extends StatelessWidget {
             value: result.maxScore > 0
                 ? '${result.scoreAchieved} / ${result.maxScore}'
                 : '${result.scoreAchieved} pts',
-            valueColor: kQuizMaroonDark,
+            valueColor: AppColors.maroonDark,
           ),
 
           _VerticalDivider(),
@@ -182,7 +182,7 @@ class _StatsRow extends StatelessWidget {
           _StatCell(
             label: 'Result',
             value: result.isPassed ? 'Passed' : 'Failed',
-            valueColor: result.isPassed ? kQuizPassGreen : kQuizFailRed,
+            valueColor: result.isPassed ? AppColors.green : AppColors.failRed,
             icon: result.isPassed ? Icons.check_circle : Icons.cancel,
           ),
 
@@ -192,7 +192,7 @@ class _StatsRow extends StatelessWidget {
           _StatCell(
             label: 'XP Earned',
             value: '+${result.xpEarned}',
-            valueColor: kQuizMaroon,
+            valueColor: AppColors.maroon,
           ),
         ],
       ),
@@ -222,8 +222,8 @@ class _ActionsRow extends StatelessWidget {
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
-              foregroundColor: kQuizMaroonDark,
-              side: const BorderSide(color: kQuizMaroonDark, width: 1.5),
+              foregroundColor: AppColors.maroonDark,
+              side: const BorderSide(color: AppColors.maroonDark, width: 1.5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -246,7 +246,7 @@ class _ActionsRow extends StatelessWidget {
               if (Navigator.canPop(context)) Navigator.pop(context);
             }, // QuizResultScreen → QuizListScreen
             style: ElevatedButton.styleFrom(
-              backgroundColor: kQuizMaroonDark,
+              backgroundColor: AppColors.maroonDark,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -290,7 +290,7 @@ class _AnswerReview extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w900,
-            color: kQuizMaroonDark,
+            color: AppColors.maroonDark,
           ),
         ),
         const SizedBox(height: 16),
@@ -329,7 +329,7 @@ class _ReviewQuestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = wasCorrect ? kQuizPassGreen : kQuizFailRed;
+    final statusColor = wasCorrect ? AppColors.green : AppColors.failRed;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -361,13 +361,16 @@ class _ReviewQuestion extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: kQuizMaroonDark,
+                  color: AppColors.maroonDark,
                 ),
               ),
               Expanded(
                 child: Text(
                   questionText,
-                  style: const TextStyle(fontSize: 13, color: kQuizMaroonDark),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.maroonDark,
+                  ),
                 ),
               ),
             ],

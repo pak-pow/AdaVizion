@@ -1,7 +1,7 @@
 // ─── PERMISSION DENIED UI ─────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
-import '../qr_code_constants.dart';
+import '../../../theme/app_colors.dart';
 
 /// Full-screen widget displayed when camera permission has been denied.
 ///
@@ -54,7 +54,7 @@ class PermissionDeniedView extends StatelessWidget {
               icon: const Icon(Icons.refresh),
               label: const Text("Try Again"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: QRCodeConstants.maroonDark,
+                backgroundColor: AppColors.maroonDark,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,

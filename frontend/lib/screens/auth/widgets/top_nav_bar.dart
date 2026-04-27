@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../auth_enums.dart';
-import '../../../theme/app_colors.dart';
 
 // ============================================================================
 // AUTH TOP NAVIGATION BAR
@@ -28,6 +27,10 @@ class AuthTopNavBar extends StatelessWidget {
   /// Called with the target [AppView] and an optional [AuthState] when the
   /// destination is the auth sub-view (e.g. login vs signup).
   final void Function(AppView view, {AuthState? specificAuth}) onNavigate;
+
+  // ─── BRANDING COLORS ──────────────────────────────────────────────────────
+  static const _maroon = Color(0xFF7A1D1D);
+  static const _maroonDark = Color(0xFF5D1414);
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +81,7 @@ class AuthTopNavBar extends StatelessWidget {
                   onPressed: () =>
                       onNavigate(AppView.auth, specificAuth: AuthState.signup),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.maroonDark,
+                    backgroundColor: _maroonDark,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(
                       horizontal: isSmall ? 16 : 36,
@@ -126,9 +129,7 @@ class AuthTopNavBar extends StatelessWidget {
         decoration: BoxDecoration(
           // Applies the maroon underline only if active
           border: isActive
-              ? const Border(
-                  bottom: BorderSide(color: AppColors.maroon, width: 2.0),
-                )
+              ? const Border(bottom: BorderSide(color: _maroon, width: 2.0))
               : null,
         ),
         child: Text(
@@ -136,7 +137,7 @@ class AuthTopNavBar extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: isActive ? FontWeight.w900 : FontWeight.bold,
-            color: isActive ? AppColors.maroon : Colors.black87,
+            color: isActive ? _maroon : Colors.black87,
           ),
         ),
       ),

@@ -8,7 +8,6 @@ import 'auth/views/about_layout_view.dart';
 import 'auth/views/auth_layout_view.dart';
 import 'auth/views/success_layout_view.dart';
 import '../utils/toast_service.dart';
-import '../theme/app_colors.dart';
 
 // ============================================================================
 // AUTH SCREEN (Shell)
@@ -67,6 +66,8 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _selectedSpecialization;
 
   // ─── BRANDING COLORS ────────────────────────────────────────────────────────
+  static const _gradientTop = Color(0xFFB72424);
+  static const _gradientBottom = Color(0xFF5D1414);
 
   /// Always dispose of TextEditingControllers when the widget is destroyed
   /// to prevent severe memory leaks in the application.
@@ -87,7 +88,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: AppColors.maroonGradientBottom,
+      backgroundColor: _gradientBottom,
       body: Stack(
         children: [
           // 1. BACKGROUND: TOP HALF (Solid White)
@@ -110,10 +111,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.maroonGradientTop,
-                    AppColors.maroonGradientBottom,
-                  ],
+                  colors: [_gradientTop, _gradientBottom],
                 ),
               ),
             ),
@@ -137,7 +135,9 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
 
                 Expanded(
-                  child: SingleChildScrollView(child: _buildCurrentView(size)),
+                  child: SingleChildScrollView(
+                    child: _buildCurrentView(size),
+                  ),
                 ),
               ],
             ),
@@ -244,7 +244,9 @@ class _AuthScreenState extends State<AuthScreen> {
       }
     } catch (error) {
       if (mounted) {
-        _showErrorSnackBar(error.toString().replaceAll('Exception: ', ''));
+        _showErrorSnackBar(
+          error.toString().replaceAll('Exception: ', ''),
+        );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

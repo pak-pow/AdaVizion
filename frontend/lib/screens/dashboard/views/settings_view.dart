@@ -1,4 +1,3 @@
-import 'package:adavizion/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../services/api/api_config.dart';
@@ -34,6 +33,10 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
+  // ── Brand colours ─────────────────────────────────────────────────────────
+  static const _maroon = Color(0xFF7A1D1D);
+  static const _gradientTop = Color(0xFFA62121);
+
   // ── Loading ───────────────────────────────────────────────────────────────
   bool _isLoading = true;
 
@@ -188,10 +191,7 @@ class _SettingsViewState extends State<SettingsView> {
             },
             child: const Text(
               'Log out',
-              style: TextStyle(
-                color: AppColors.maroon,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: _maroon, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -247,7 +247,7 @@ class _SettingsViewState extends State<SettingsView> {
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
-                      color: AppColors.maroon,
+                      color: _maroon,
                       strokeWidth: 2,
                     ),
                   ),
@@ -300,7 +300,7 @@ class _SettingsViewState extends State<SettingsView> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.maroon,
+                    backgroundColor: _maroon,
                     foregroundColor: Colors.white,
                   ),
                   child: const Text(
@@ -326,9 +326,7 @@ class _SettingsViewState extends State<SettingsView> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F9),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.maroon),
-            )
+          ? const Center(child: CircularProgressIndicator(color: _maroon))
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -397,8 +395,8 @@ class _SettingsViewState extends State<SettingsView> {
                           _buildTile(
                             icon: Icons.logout,
                             label: 'Log Out',
-                            iconColor: AppColors.maroon,
-                            labelColor: AppColors.maroon,
+                            iconColor: _maroon,
+                            labelColor: _maroon,
                             showArrow: false,
                             onTap: _showLogoutDialog,
                           ),
@@ -462,12 +460,12 @@ class _SettingsViewState extends State<SettingsView> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.maroonGradientTop, AppColors.maroon],
+          colors: [_gradientTop, _maroon],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.maroon.withValues(alpha: 0.28),
+            color: _maroon.withValues(alpha: 0.28),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -702,10 +700,7 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: AppColors.maroon,
-                    width: 1.5,
-                  ),
+                  borderSide: const BorderSide(color: _maroon, width: 1.5),
                 ),
               ),
               items: kBackendPrograms.entries.map((e) {
@@ -767,10 +762,7 @@ class _SettingsViewState extends State<SettingsView> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: AppColors.maroon,
-                      width: 1.5,
-                    ),
+                    borderSide: const BorderSide(color: _maroon, width: 1.5),
                   ),
                 ),
                 items: kBackendSpecializations[_courseController.text]!.map((
@@ -826,10 +818,7 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: AppColors.maroon,
-                    width: 1.5,
-                  ),
+                  borderSide: const BorderSide(color: _maroon, width: 1.5),
                 ),
               ),
               items: [1, 2, 3, 4].map((int value) {
@@ -905,7 +894,7 @@ class _SettingsViewState extends State<SettingsView> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.maroon,
+                    backgroundColor: _maroon,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -960,7 +949,7 @@ class _SettingsViewState extends State<SettingsView> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: AppColors.maroon, width: 1.5),
+            borderSide: const BorderSide(color: _maroon, width: 1.5),
           ),
         ),
       ),

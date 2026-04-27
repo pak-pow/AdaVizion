@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/app_colors.dart';
+import '../../quiz_constants.dart';
 
 // ─── Error state ──────────────────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@ class QuizErrorState extends StatelessWidget {
         children: [
           Icon(
             Icons.error_outline,
-            color: AppColors.maroonDark,
+            color: kQuizMaroon,
             size: compact ? 36 : 48,
           ),
           const SizedBox(height: 12),
@@ -48,7 +48,7 @@ class QuizErrorState extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: AppColors.maroonDark,
+                color: kQuizMaroonDark,
               ),
             ),
           if (!compact) const SizedBox(height: 4),
@@ -61,8 +61,8 @@ class QuizErrorState extends StatelessWidget {
           OutlinedButton(
             onPressed: onRetry,
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.maroonDark,
-              side: const BorderSide(color: AppColors.maroonDark, width: 1.5),
+              foregroundColor: kQuizMaroonDark,
+              side: const BorderSide(color: kQuizMaroonDark, width: 1.5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/api/landmark_api.dart';
-import '../../theme/app_colors.dart';
+import 'landmark_constants.dart';
 import 'models/landmark_model.dart';
 import 'views/landmark_detail_view.dart';
 import 'widgets/landmark_card.dart';
@@ -63,7 +63,7 @@ class _LandmarkScreenState extends State<LandmarkScreen> {
           // ── Loading ─────────────────────────────────────────────────────────
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: AppColors.maroon),
+              child: CircularProgressIndicator(color: kLandmarkMaroon),
             );
           }
 
@@ -84,7 +84,7 @@ class _LandmarkScreenState extends State<LandmarkScreen> {
           final visited = landmarks.where((l) => l.isVisited).length;
 
           return RefreshIndicator(
-            color: AppColors.maroon,
+            color: kLandmarkMaroon,
             onRefresh: _refresh,
             child: CustomScrollView(
               slivers: [
@@ -145,7 +145,7 @@ class _ProgressHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w900,
-              color: AppColors.maroon,
+              color: kLandmarkMaroon,
             ),
           ),
           const SizedBox(height: 1),
@@ -175,7 +175,7 @@ class _ProgressHeader extends StatelessWidget {
                       minHeight: 8,
                       backgroundColor: Colors.grey.shade200,
                       valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppColors.maroon,
+                        kLandmarkMaroon,
                       ),
                     ),
                   ),
@@ -187,7 +187,7 @@ class _ProgressHeader extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.maroon,
+                  color: kLandmarkMaroon,
                 ),
               ),
             ],

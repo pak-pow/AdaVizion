@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/app_colors.dart';
+import '../../landmark_constants.dart';
+
 // ─── Error state ──────────────────────────────────────────────────────────────
 
 /// General-purpose error widget for the landmark feature.
@@ -101,7 +102,7 @@ class LandmarkErrorState extends StatelessWidget {
                         child: const Text(
                           'Retry',
                           style: TextStyle(
-                            color: AppColors.maroon,
+                            color: kLandmarkMaroon,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -114,7 +115,7 @@ class LandmarkErrorState extends StatelessWidget {
                         child: const Text(
                           'Go Back',
                           style: TextStyle(
-                            color: AppColors.maroon,
+                            color: kLandmarkMaroon,
                             fontWeight: FontWeight.w700,
                           ),
                         ),

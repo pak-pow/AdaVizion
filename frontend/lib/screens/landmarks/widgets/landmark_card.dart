@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../../theme/app_colors.dart';
+import '../landmark_constants.dart';
 import '../models/landmark_model.dart';
 import 'shared/landmark_image_fallback.dart';
 
@@ -95,7 +95,7 @@ class _CardImage extends StatelessWidget {
           imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
           child: image,
         ),
-        ColoredBox(color: AppColors.maroon.withValues(alpha: 0.45)),
+        ColoredBox(color: kLandmarkMaroon.withValues(alpha: 0.45)),
       ],
     );
   }
@@ -145,7 +145,7 @@ class _LockBadge extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.80),
         shape: BoxShape.circle,
       ),
-      child: const Icon(Icons.lock_rounded, color: AppColors.maroon, size: 28),
+      child: const Icon(Icons.lock_rounded, color: kLandmarkMaroon, size: 28),
     );
   }
 }

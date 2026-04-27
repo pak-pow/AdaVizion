@@ -16,7 +16,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiConfig {
   /// The root URL of the EUventure Express backend.
   /// Change this value when deploying to a staging or production server.
-  static const String baseUrl = 'http://localhost:3000';
+  static const String baseUrl = String.fromEnvironment(
+    'API_URL',
+    defaultValue: 'http://localhost:3000',
+  );
 
   /// The key used to store and retrieve the JWT token in SharedPreferences.
   /// Kept private to ensure all token access goes through the methods below.
@@ -72,9 +75,7 @@ class ApiConfig {
       };
     }
     // Return unauthenticated headers for public routes (login, register).
-    return {
-      'Content-Type': 'application/json',
-    };
+    return {'Content-Type': 'application/json'};
   }
 
   // ─── ERROR HANDLING ─────────────────────────────────────────────────────────

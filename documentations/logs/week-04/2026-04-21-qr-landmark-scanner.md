@@ -4,7 +4,7 @@
 | **Project** | EUventure |
 | **Topic** | QR Code Scanner — Landmark Backend Integration & UI Revamp |
 | **Developer** | Dequito |
-| **Tags** | `Flutter`, `Frontend`, `mobile_scanner`, `State Management`, `UI Design`, `Dev Log` |
+| **Tags** | `Flutter`, `Frontend`, `QRCode`, `mobile_scanner`, `State Management`, `UI Design`, `Dev Log` |
 
 # DEV LOG: WEEK 4 - DAY 4
 

@@ -1,3 +1,4 @@
+import 'package:adavizion/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../services/api/profile_api.dart';
 import '../widgets/badges_card.dart';
@@ -41,13 +42,6 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   int _toNextLevel = 0;
   int _landmarksVisited = 0;
   int _landmarksTotal = 1;
-
-  // ── Brand colours ─────────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
-  static const _gradientTop = Color(0xFFA62121);
-  static const _gold = Color(0xFFFFB300);
-  static const _amber = Color(0xFFE8A87C);
-  static const _green = Color(0xFF2E7D32);
 
   // ── Scholar / Explorer milestones — mirror backend achievements.data.json ─
   static const _scholarMilestones = [
@@ -143,7 +137,9 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: _maroon));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.maroon),
+      );
     }
 
     return SingleChildScrollView(
@@ -196,7 +192,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_gradientTop, _maroon],
+          colors: [AppColors.maroonGradientTop, AppColors.maroon],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -310,12 +306,12 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       decoration: BoxDecoration(
         color: _landmarksVisited == 0
             ? Colors.transparent
-            : _gold.withValues(alpha: 0.18),
+            : AppColors.gold.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: _landmarksVisited == 0
               ? Colors.white.withValues(alpha: 0.4)
-              : _gold.withValues(alpha: 0.55),
+              : AppColors.gold.withValues(alpha: 0.55),
           width: 1,
         ),
       ),
@@ -328,7 +324,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                 : Icons.military_tech_rounded,
             color: _landmarksVisited == 0
                 ? Colors.white.withValues(alpha: 0.4)
-                : _gold,
+                : AppColors.gold,
             size: 13,
           ),
           const SizedBox(width: 4),
@@ -337,7 +333,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             style: TextStyle(
               color: _landmarksVisited == 0
                   ? Colors.white.withValues(alpha: 0.4)
-                  : _gold,
+                  : AppColors.gold,
               fontSize: 10,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.2,
@@ -402,7 +398,11 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                 ],
               ),
               const SizedBox(height: 8),
-              _buildAnimatedBar(xpProgress, _green, Colors.grey.shade200),
+              _buildAnimatedBar(
+                xpProgress,
+                AppColors.green,
+                Colors.grey.shade200,
+              ),
             ],
           ),
         ),
@@ -417,7 +417,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                 label: 'Landmarks',
                 value: 'Visited: $_landmarksVisited/$_landmarksTotal',
                 icon: Icons.explore_outlined,
-                color: _amber,
+                color: AppColors.amber,
               ),
             ),
             const SizedBox(width: 16),
@@ -426,7 +426,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
                 label: 'Quiz Scores',
                 value: '$_quizPoints Total Quiz Points',
                 icon: Icons.percent_rounded,
-                color: _maroon,
+                color: AppColors.maroon,
               ),
             ),
           ],

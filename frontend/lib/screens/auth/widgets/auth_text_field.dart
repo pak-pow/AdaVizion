@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-// ─── BRAND COLOUR ─────────────────────────────────────────────────────────────
-const _maroon = Color(0xFF7A1D1D);
+import '../../../theme/app_colors.dart';
 
 /// Returns the standard subtle-grey rounded border used on every auth input.
 ///
@@ -58,7 +56,7 @@ class AuthTextField extends StatelessWidget {
             : null,
         enabledBorder: border,
         focusedBorder: border.copyWith(
-          borderSide: const BorderSide(color: _maroon, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.maroon, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -107,7 +105,7 @@ class AuthDropdownField extends StatelessWidget {
         hintStyle: TextStyle(fontSize: 12, color: Colors.grey.shade400),
         enabledBorder: border,
         focusedBorder: border.copyWith(
-          borderSide: const BorderSide(color: _maroon, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.maroon, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/badge_model.dart';
 import '../../../services/api/achievement_api.dart';
+import '../../../theme/app_colors.dart';
 
 // ============================================================================
 // BADGES CARD WIDGET
@@ -24,9 +25,6 @@ class BadgesCard extends StatefulWidget {
 }
 
 class _BadgesCardState extends State<BadgesCard> {
-  // ─── Brand colour ─────────────────────────────────────────────────────────
-  static const _maroon = Color(0xFF7A1D1D);
-
   // ─── Local state ──────────────────────────────────────────────────────────
   /// null = All categories. Otherwise filters the carousel to one category.
   BadgeCategory? _selectedBadgeFilter;
@@ -84,7 +82,7 @@ class _BadgesCardState extends State<BadgesCard> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: _maroon,
+        color: AppColors.maroon,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -333,8 +331,8 @@ class _BadgesCardState extends State<BadgesCard> {
 
     // Category accent colour for the small sublabel.
     final chipColor = config.category == BadgeCategory.explorer
-        ? const Color(0xFFE8A87C)
-        : const Color(0xFFFFD700);
+        ? AppColors.amber
+        : AppColors.gold;
 
     Widget imageWidget;
     if (config.imgPath == null || config.imgPath!.isEmpty) {
@@ -430,7 +428,10 @@ class _BadgesCardState extends State<BadgesCard> {
       // Unlocked state: "Medal Holder" Pedestal Design (3D Feel)
       imageWidget = Container(
         padding: const EdgeInsets.all(1.0), // Tight thin outer maroon border
-        decoration: const BoxDecoration(color: _maroon, shape: BoxShape.circle),
+        decoration: const BoxDecoration(
+          color: AppColors.maroon,
+          shape: BoxShape.circle,
+        ),
         child: Container(
           padding: const EdgeInsets.all(
             2.5,
@@ -585,7 +586,7 @@ class _BadgesCardState extends State<BadgesCard> {
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w900,
-                      color: _maroon,
+                      color: AppColors.maroon,
                     ),
                     textAlign: TextAlign.center,
                   ),

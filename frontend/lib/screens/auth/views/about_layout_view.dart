@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../../../theme/app_colors.dart';
 // ============================================================================
 // ABOUT LAYOUT VIEW
 //
@@ -13,8 +13,6 @@ import 'package:flutter/material.dart';
 /// Extracted from `_AuthScreenState._buildAboutLayout()`.
 class AboutLayoutView extends StatelessWidget {
   const AboutLayoutView({super.key});
-
-  static const _maroon = Color(0xFF7A1D1D);
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +37,18 @@ class AboutLayoutView extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w900,
-              color: _maroon,
+              color: AppColors.maroon,
             ),
           ),
           const SizedBox(height: 16),
           const Text(
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
             textAlign: TextAlign.justify,
-            style: TextStyle(fontSize: 12, color: _maroon, height: 1.5),
+            style: TextStyle(
+              fontSize: 12,
+              color: AppColors.maroon,
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: 32),
           const Text(
@@ -54,7 +56,7 @@ class AboutLayoutView extends StatelessWidget {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w900,
-              color: _maroon,
+              color: AppColors.maroon,
             ),
           ),
           const SizedBox(height: 16),
@@ -63,7 +65,11 @@ class AboutLayoutView extends StatelessWidget {
           const Text(
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
             textAlign: TextAlign.justify,
-            style: TextStyle(fontSize: 12, color: _maroon, height: 1.5),
+            style: TextStyle(
+              fontSize: 12,
+              color: AppColors.maroon,
+              height: 1.5,
+            ),
           ),
         ],
       ),

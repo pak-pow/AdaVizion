@@ -2,6 +2,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../services/api/landmark_api.dart';
+import 'landmarks/views/landmark_detail_view.dart';
+import 'landmarks/models/landmark_model.dart';
+import 'dashboard_screen.dart';
 
 /// The main entry point for the QR code scanning screen.
 /// This screen uses the `mobile_scanner` package to access the device's camera and scan for QR codes.
@@ -469,7 +472,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     final landmark = result['landmark'];
     final progress = result['progress'];
     final xpEarned = progress['xp']['earned'];
-    final landmarkId = landmark['landmark_id'] as int;
 
     showDialog(
       context: context,
@@ -618,7 +620,9 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                     label: "View Landmark",
                     fullWidth: true,
                     onPressed: () => _closeDialogAnd(
-                      () => _navigateToLandmarkDetails(landmarkId),
+                      () => _navigateToLandmarkDetails(
+                        landmark as Map<String, dynamic>,
+                      ),
                     ),
                   ),
                 ),
@@ -724,10 +728,30 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 
   // ─── WIDGET HELPERS ─────────────────────────────────────────────────────────
 
-  /// Navigates to the landmark details screen for the given [landmarkId].
-  /// TODO: Reroute to the correct details screen once the new details page is implemented.
-  void _navigateToLandmarkDetails(int landmarkId) {
-    Navigator.pushNamed(context, '/landmark_details', arguments: landmarkId);
+  void _navigateToLandmarkDetails(Map<String, dynamic> landmarkData) {
+    // Replace QRCodeScreen with DashboardScreen (Landmarks tab),
+    // then immediately push the detail view on top.
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const DashboardScreen(initialTab: 1)),
+    );
+    // addPostFrameCallback ensures the new route is mounted before we push again.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LandmarkDetailView(
+            landmark: LandmarkSummary(
+              landmarkId: landmarkData['landmark_id'] as int,
+              name: landmarkData['name'].toString(),
+              imgPath: landmarkData['img_path'] as String?,
+              isVisited: true,
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildControlButton({

@@ -4,7 +4,7 @@
 | **Project** | EUventure |
 | **Topic** | QR Code Scanner — Permission Handling, API Refactor & Code Cleanup |
 | **Developer** | Dequito |
-| **Tags** | `Flutter`, `Frontend`, `mobile_scanner`, `State Management`, `UI Design`, `Dev Log` |
+| **Tags** | `Flutter`, `Frontend`, `QR Code`, `mobile_scanner`, `State Management`, `UI Design`, `Dev Log` |
 
 # DEV LOG: WEEK 4 - DAY 6
 

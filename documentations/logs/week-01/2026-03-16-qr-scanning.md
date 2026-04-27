@@ -4,7 +4,7 @@
 | **Project** | EUventure |
 | **Topic** | QR Integration & Sequential Dialog Logic Initialization |
 | **Developer** | Dequito |
-| **Tags** | `Flutter`, `Dart`, `mobile_scanner`, `Asynchronous Programming`, `State Management`, `Dev Log` |
+| **Tags** | `Flutter`, `Dart`, `QRCode`, `mobile_scanner`, `Asynchronous Programming`, `State Management`, `Dev Log` |
 
 # 📝 DEV LOG: WEEK 1 - DAY 3
 

@@ -147,6 +147,20 @@ const ERRORS: ErrorDetails[] = [
     code: "DB_TRANSAC_FAILED",
     status: 500,
     message: "Database transaction failed to return new quiz submission and updated progress" 
+  },
+
+  // Server Errors
+  {
+    type: "SERVER",
+    code: "PRISMA_UNHEALTHY",
+    status: 500,
+    message: "Prisma health check failed" 
+  },
+  {
+    type: "SERVER",
+    code: "SUPABASE_UNHEALTHY",
+    status: 500,
+    message: "Supabase Storage health check failed" 
   }
 ];
 

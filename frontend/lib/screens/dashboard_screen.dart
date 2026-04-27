@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'quiz/quiz_list_screen.dart';
 import 'dashboard/views/home_view.dart';
@@ -59,15 +60,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF7F7F9),
 
       // ── APP BAR ──────────────────────────────────────────────────────────────
       appBar: AppBar(
-        backgroundColor: _headerGrey,
+        backgroundColor: Colors.white,
         elevation: 0,
-        titleSpacing: 16,
         centerTitle: false,
-        title: Image.asset('assets/images/nav_logo.png', height: 42),
+        title: Image.asset('assets/images/nav_logo.png', height: 40),
+        flexibleSpace: Stack(
+          clipBehavior: Clip.none, // Crucial for overflow
+          children: [
+            Positioned(
+              top: -25, // Pulled back down
+              right: 14, // Pulled back left
+              child: Transform.rotate(
+                angle: math.pi,
+                child: Opacity(
+                  opacity: 0.9,
+                  child: Image.asset('assets/images/logo.png', height: 60),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
 
       // ── BODY: IndexedStack keeps every tab widget alive, preserving their

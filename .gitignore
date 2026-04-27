@@ -55,6 +55,7 @@ node_modules
 qr-codes
 landmark-thumbnails
 achievement-badges
+dist
 
 # Keep environment variables out of version control
 .env 
@@ -68,3 +69,4 @@ achievement-badges
 .pub-cache/
 .pub/
 backend/package-lock.json
+frontend/pubspec.lock

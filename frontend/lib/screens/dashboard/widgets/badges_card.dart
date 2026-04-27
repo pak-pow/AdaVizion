@@ -121,8 +121,9 @@ class _BadgesCardState extends State<BadgesCard> {
                     if (b.category == BadgeCategory.scholar) {
                       if (widget.quizPoints >= b.threshold) locked = false;
                     } else {
-                      if (widget.landmarksVisited >= b.threshold)
+                      if (widget.landmarksVisited >= b.threshold) {
                         locked = false;
+                      }
                     }
                     return !locked;
                   }).length;

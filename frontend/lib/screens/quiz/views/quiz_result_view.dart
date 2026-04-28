@@ -105,7 +105,6 @@ class _QuizResultViewState extends State<QuizResultView> {
   /// TODO: Remove once dedicated toast notifications are implemented.
   void _showRewardToasts(BuildContext context) {
     if (widget.result.didLevelUp) {
-      // ← widget.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -120,7 +119,6 @@ class _QuizResultViewState extends State<QuizResultView> {
     }
 
     for (final achievement in widget.result.newAchievements) {
-      // ← widget.
       final title =
           (achievement as Map<String, dynamic>)['title'] as String? ??
           'Achievement Unlocked';

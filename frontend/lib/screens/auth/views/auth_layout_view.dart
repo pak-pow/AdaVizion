@@ -38,6 +38,7 @@ const Map<String, String> kBackendPrograms = {
   'BSEE': 'Bachelor of Science in Electrical Engineering',
   'BSECON': 'Bachelor of Science in Economics',
   'BSECE': 'Bachelor of Science in Electronics Engineering',
+  'BSEMC': 'Bachelor of Science in Entertainment and Multimedia Computing',
   'BSES': 'Bachelor of Science in Environmental Science',
   'BSGE': 'Bachelor of Science in Geodetic Engineering',
   'BSHM': 'Bachelor of Science in Hospitality Management',
@@ -66,6 +67,7 @@ const Map<String, List<String>> kBackendSpecializations = {
   'BMMA': ['Game Design', 'Video Design', 'Visual Design'],
   'BSCS': ['Data Science', 'Software Engineering'],
   'BSIT': ['CISCO Networking', 'Web & Mobile Application'],
+  'BSEMC': ['Digital Animation Technology', 'Game Development'],
   'BSED': ['English', 'Filipino', 'Mathematics', 'Science', 'Social Studies'],
   'BSHM': ['Cruise Management', 'Culinary Arts'],
 };

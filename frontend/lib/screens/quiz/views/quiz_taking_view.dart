@@ -86,6 +86,7 @@ class _QuizTakingViewState extends State<QuizTakingView> {
         widget.quizId,
         _buildAnswersPayload(),
       );
+
       if (!mounted) return;
 
       Navigator.pushReplacement(
@@ -104,8 +105,13 @@ class _QuizTakingViewState extends State<QuizTakingView> {
       if (!mounted) return;
       setState(() {
         _errorMessage = e.toString();
-        _isSubmitting = false;
       });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 

@@ -131,14 +131,10 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
   /// non-critical and must not block scanning.
   Future<void> _checkAndShowSafetyReminder() async {
     try {
-      final data = await ProfileApi.getProfile();
-      if (!mounted) return;
-      final studentNumber = data['info']['student_number'] as String?;
-      if (studentNumber == null) return;
-
       final prefs = await SharedPreferences.getInstance();
       if (!mounted) return;
-      final key = 'safety_reminder_shown_$studentNumber';
+
+      const key = 'safety_reminder_shown'; // ← device-scoped, no network needed
       if (prefs.getBool(key) ?? false) return;
 
       await prefs.setBool(key, true);
@@ -146,7 +142,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
         if (mounted) showSafetyReminderDialog();
       });
     } catch (_) {
-      // Non-critical — silently skip the reminder if profile fetch fails.
+      // Non-critical — silently skip if prefs access fails.
     }
   }
 
@@ -340,14 +336,14 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
   /// then immediately pushes [LandmarkDetailView] on top via
   /// `addPostFrameCallback` to ensure the new route is fully mounted first.
   void _navigateToLandmarkDetails(Map<String, dynamic> landmarkData) {
-    Navigator.pushReplacement(
-      context,
+    final navigator = Navigator.of(context);
+
+    navigator.pushReplacement(
       MaterialPageRoute(builder: (_) => const DashboardScreen(initialTab: 1)),
     );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      Navigator.push(
-        context,
+      navigator.push(
         MaterialPageRoute(
           builder: (_) => LandmarkDetailView(
             landmark: LandmarkSummary(

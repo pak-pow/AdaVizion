@@ -210,7 +210,7 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
           ),
         ],
       ),
-    ).then((_) => onReset());
+    );
   }
 
   /// Shows a dialog when the scanned QR code is not a recognised landmark.

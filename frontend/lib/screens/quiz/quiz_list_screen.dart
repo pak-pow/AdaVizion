@@ -55,6 +55,10 @@ class _QuizListScreenState extends State<QuizListScreen> {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
+        _expandedQuizId = null;
+        _detailData.clear();
+        _detailLoading.clear();
+        _detailErrors.clear();
       });
       final quizzes = await QuizApi.getQuizzes();
       setState(() {

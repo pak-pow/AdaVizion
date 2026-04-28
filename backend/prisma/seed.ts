@@ -63,7 +63,7 @@ async function seedQuizzes() {
   for (const quiz of quizzesData) {
     const maxPoints = quiz.questions.reduce((sum, question) => sum + question.item_points, 0);
 
-    const passingPercent = 0.75;
+    const passingPercent = 0.70;
     const passingScore = Math.ceil(maxPoints * passingPercent);
 
     const upsertedQuiz = await prisma.quiz.upsert({

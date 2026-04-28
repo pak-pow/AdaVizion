@@ -5,6 +5,7 @@ import '../widgets/student_card.dart';
 import '../widgets/student_stats.dart';
 import '../../../utils/toast_service.dart';
 import 'package:adavizion/theme/app_colors.dart';
+import '../../auth/views/auth_layout_view.dart';
 
 // ============================================================================
 // DASHBOARD HOME VIEW  (Consolidated + Hero Card)
@@ -41,7 +42,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   // ── Progress state (GET /students/me → data['progress']) ─────────────────
   int _level = 0;
   int _quizPoints = 0;
-  int _toNextLevel = 0;
+  int _currentXp = 0;
   int _landmarksVisited = 0;
   int _landmarksTotal = 1;
 
@@ -66,7 +67,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             final lastName = info['last_name'] ?? '';
             _name = '$firstName $lastName'.trim();
             _studentNumber = info['student_number'] ?? '';
-            _program = info['program'] ?? '';
+            final rawProgram = info['program'] ?? '';
+            _program = kBackendPrograms[rawProgram] ?? rawProgram;
             _specialization = info['specialization'] ?? '';
             final rawImgPath = info['img_path'];
             _imgPath = (rawImgPath is String && rawImgPath.isNotEmpty)
@@ -80,7 +82,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             final landmarks = progress['landmarks'] as Map<String, dynamic>?;
             _level = (progress['level'] as num?)?.toInt() ?? 0;
             _quizPoints = (progress['quiz_points'] as num?)?.toInt() ?? 0;
-            _toNextLevel = (xp?['to_next_level'] as num?)?.toInt() ?? 0;
+            final toNextLevel = (xp?['to_next_level'] as num?)?.toInt() ?? 0;
+            _currentXp = (500 - toNextLevel).clamp(0, 500);
             _landmarksVisited = (landmarks?['visited'] as num?)?.toInt() ?? 0;
             _landmarksTotal = (landmarks?['total'] as num?)?.toInt() ?? 1;
           }
@@ -109,49 +112,53 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
       return const Center(child: CircularProgressIndicator(color: AppColors.maroon));
     }
 
-    return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── 0. Combined Hero Card (Identity) ──────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: StudentCard(
-              name: _name,
-              studentNumber: _studentNumber,
-              program: _program,
-              specialization: _specialization,
-              imgPath: _imgPath,
+    return RefreshIndicator(
+      color: AppColors.maroon,
+      onRefresh: _fetchProfile,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── 0. Combined Hero Card (Identity) ──────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: StudentCard(
+                name: _name,
+                studentNumber: _studentNumber,
+                program: _program,
+                specialization: _specialization,
+                imgPath: _imgPath,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // ── 1. Badge Carousel (Achievements) ─────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: BadgesCard(
-              quizPoints: _quizPoints,
-              landmarksVisited: _landmarksVisited,
+            // ── 1. Badge Carousel (Achievements) ─────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: BadgesCard(
+                quizPoints: _quizPoints,
+                landmarksVisited: _landmarksVisited,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // ── 2. Student Stats (Compact Layout) ──────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: StudentStats(
-              level: _level,
-              toNextLevel: _toNextLevel,
-              landmarksVisited: _landmarksVisited,
-              landmarksTotal: _landmarksTotal,
-              quizPoints: _quizPoints,
+            // ── 2. Student Stats (Compact Layout) ──────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: StudentStats(
+                level: _level,
+                currentXp: _currentXp,
+                landmarksVisited: _landmarksVisited,
+                landmarksTotal: _landmarksTotal,
+                quizPoints: _quizPoints,
+              ),
             ),
-          ),
 
-          // Bottom clearance above BottomAppBar + FAB.
-          const SizedBox(height: 120),
-        ],
+            // Bottom clearance above BottomAppBar + FAB.
+            const SizedBox(height: 120),
+          ],
+        ),
       ),
     );
   }

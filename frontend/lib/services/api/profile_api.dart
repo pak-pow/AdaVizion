@@ -121,10 +121,29 @@ class ProfileApi {
     // because its catch swallows non-JSON bodies (HTML 500 pages, CORS
     // failure strings) into a generic message, hiding the real server error.
     if (response.statusCode < 200 || response.statusCode >= 300) {
+      // ─── AUTOMATIC LOGOUT ON UNAUTHORIZED ───────────────────────────────────
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        ApiConfig.logout();
+        ApiConfig.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          '/login',
+          (route) => false,
+        );
+      }
+
       try {
         // Attempt to extract the backend's structured error message.
         final decoded = jsonDecode(response.body);
         final message = decoded['message'];
+        if (message != null && message is String) {
+          // Double check message content for redundancy
+          if (message.contains('Access denied') || message.contains('missing token')) {
+            ApiConfig.logout();
+            ApiConfig.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+              '/login',
+              (route) => false,
+            );
+          }
+        }
         throw Exception(
           (message is String && message.isNotEmpty)
               ? message

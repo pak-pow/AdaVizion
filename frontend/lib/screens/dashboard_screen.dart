@@ -38,6 +38,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // ─── Tab state ─────────────────────────────────────────────────────────────
   late int _selectedIndex;
 
+  // ─── HomeView refresh key ──────────────────────────────────────────────────
+  // Replacing this key forces Flutter to unmount and remount DashboardHomeView,
+  // re-running initState and pulling fresh profile data from the backend.
+  Key _homeKey = UniqueKey();
+
   @override
   void initState() {
     super.initState();
@@ -90,7 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           // ── Tab 0: Home ─────────────────────────────────────────────────────
           // Consolidated: profile + badges + milestone/progress/stat feed.
-          const DashboardHomeView(),
+          DashboardHomeView(key: _homeKey),
 
           // ── Tab 1: Landmarks ──────────────────────────────────────────────
           // Placeholder until LandmarkScreen is implemented.
@@ -104,7 +109,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // ── Tab 3: Profile & Settings ──────────────────────────────────
           // onEditProfile switches _selectedIndex to 0 so the user lands on
           // the Home tab where the profile edit pencil icon lives.
-          SettingsView(onEditProfile: () => setState(() => _selectedIndex = 0)),
+          // onProfileUpdated replaces _homeKey with a new UniqueKey, forcing
+          // DashboardHomeView to remount and re-fetch its data.
+          SettingsView(
+            onEditProfile: () => setState(() => _selectedIndex = 0),
+            onProfileUpdated: () => setState(() => _homeKey = UniqueKey()),
+          ),
         ],
       ),
 

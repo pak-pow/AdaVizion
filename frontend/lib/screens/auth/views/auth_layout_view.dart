@@ -217,8 +217,8 @@ class AuthLayoutView extends StatelessWidget {
                       OutlinedButton(
                         onPressed: () {
                           ToastService.showInfo(
-                            context,
                             'Discover the future of campus tours.',
+                            context,
                           );
                         },
                         style: OutlinedButton.styleFrom(
@@ -490,7 +490,7 @@ class AuthLayoutView extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                ToastService.showInfo(context, 'Feature coming soon!');
+                ToastService.showInfo('Feature coming soon!', context);
               },
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 4),

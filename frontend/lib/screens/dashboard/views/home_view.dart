@@ -46,6 +46,9 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   int _landmarksVisited = 0;
   int _landmarksTotal = 1;
 
+  // ── Level-up detection — persisted across refreshes ───────────────────────
+  int? _previousLevel;
+
   // ── Scholar / Explorer milestones — mirror backend achievements.data.json ─
 
   @override
@@ -80,12 +83,25 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
           if (progress != null) {
             final xp = progress['xp'] as Map<String, dynamic>?;
             final landmarks = progress['landmarks'] as Map<String, dynamic>?;
-            _level = (progress['level'] as num?)?.toInt() ?? 0;
+            final newLevel = (progress['level'] as num?)?.toInt() ?? 0;
             _quizPoints = (progress['quiz_points'] as num?)?.toInt() ?? 0;
             final toNextLevel = (xp?['to_next_level'] as num?)?.toInt() ?? 0;
             _currentXp = (500 - toNextLevel).clamp(0, 500);
             _landmarksVisited = (landmarks?['visited'] as num?)?.toInt() ?? 0;
             _landmarksTotal = (landmarks?['total'] as num?)?.toInt() ?? 1;
+
+            // ── Achievement Toast: Level Up ──────────────────────────────
+            // Only fire after the *first* successful fetch (_previousLevel != null)
+            // to avoid a spurious toast on cold start.
+            if (_previousLevel != null && newLevel > _previousLevel!) {
+              // Triggered globally — no context needed. Safe from async gap.
+              ToastService.showAchievement(
+                'Level Up! 🎉',
+                'You are now Level $newLevel!',
+              );
+            }
+            _previousLevel = newLevel;
+            _level = newLevel;
           }
 
           _isLoading = false;
@@ -94,8 +110,8 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
     } catch (e) {
       if (mounted) {
         ToastService.showError(
-          context,
           e.toString().replaceFirst('Exception: ', ''),
+          context,
         );
       }
     } finally {

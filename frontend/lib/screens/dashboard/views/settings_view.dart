@@ -154,13 +154,13 @@ class _SettingsViewState extends State<SettingsView> {
       // Notify the parent (DashboardScreen) so it can force-refresh HomeView.
       widget.onProfileUpdated?.call();
       if (mounted) {
-        ToastService.showSuccess(context, 'Profile picture updated!');
+        ToastService.showSuccess('Profile picture updated!', context);
       }
     } catch (e) {
       if (mounted) {
         ToastService.showError(
-          context,
           e.toString().replaceFirst('Exception: ', ''),
+          context,
         );
       }
     } finally {
@@ -219,15 +219,15 @@ class _SettingsViewState extends State<SettingsView> {
       // Use a dedicated StatefulWidget so its controllers are properly
       // disposed when the dialog is dismissed (fixes C-3 memory leak).
       builder: (_) => _ChangePasswordDialogContent(
-        onSuccess: (msg) => ToastService.showSuccess(ctx, msg),
-        onError: (msg) => ToastService.showError(ctx, msg),
+        onSuccess: (msg) => ToastService.showSuccess(msg, ctx),
+        onError: (msg) => ToastService.showError(msg, ctx),
         buildEditField: _buildEditField,
       ),
     );
   }
 
   void _showComingSoon() {
-    ToastService.showInfo(context, 'Feature coming soon!');
+    ToastService.showInfo('Feature coming soon!', context);
   }
 
   // ─── Build ─────────────────────────────────────────────────────────────────
@@ -788,14 +788,14 @@ class _SettingsViewState extends State<SettingsView> {
                       if (!mounted) return;
                       setState(() => _isEditMode = false);
                       ToastService.showSuccess(
-                        context,
                         'Profile updated successfully!',
+                        context,
                       );
                     } catch (e) {
                       if (!mounted) return;
                       ToastService.showError(
-                        context,
                         e.toString().replaceFirst('Exception: ', ''),
+                        context,
                       );
                       setState(() => _isLoading = false);
                     }

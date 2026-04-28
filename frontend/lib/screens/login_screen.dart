@@ -213,7 +213,7 @@ class _AuthScreenState extends State<AuthScreen> {
           _loginPasswordController.text,
         );
         if (mounted) {
-          ToastService.showSuccess(context, 'Login successful!');
+          ToastService.showSuccess('Login successful!', context);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const DashboardScreen()),
@@ -248,10 +248,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
   // ─── SNACKBAR HELPERS ────────────────────────────────────────────────────────
   void _showErrorSnackBar(String message) {
-    ToastService.showError(context, message);
+    ToastService.showError(message, context);
   }
 
   void _showSuccessSnackBar(String message) {
-    ToastService.showSuccess(context, message);
+    ToastService.showSuccess(message, context);
   }
 }

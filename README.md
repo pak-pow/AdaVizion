@@ -1,10 +1,8 @@
-# AdaVizion: Interactive University Exploration Platform
+# EUventure: Interactive University Exploration Platform
 
-> **Transforming Euthenics & Orientation into an Immersive Campus Adventure.**
-
-![Flutter](https://img.shields.io/badge/Built_with-Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/Language-Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
-![Status](https://img.shields.io/badge/Status-In_Development-orange?style=for-the-badge)
+![Flutter](https://img.shields.io/badge/Built_with-Flutter-blue?style=for-the-badge&logo=flutter&logoColor=white)
+![Version](https://img.shields.io/badge/Version-1.0.0--alpha-red?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Alpha_Testing-darkgreen?style=for-the-badge)
 
 ## 🦁 About The Project
 
@@ -12,148 +10,191 @@
 
 ## 🎯 Core Objectives
 
-- **Enhance Euthenics Education:** Transform static website and handbook platform into interactive discovery.
-- **Promote Facility Awareness:** Encourage students to physically interact with campus landmarks and history.
-- **Improve Engagement:** Use gamification and achievement-based systems to increase student retention and learning outcomes.
+1. ### Enhance Euthenics Education
+
+    Serve as a gamified and interactive extension to the official MSEUF [website](https://mseuf.edu.ph) and [student handbook](https://mseuf.edu.ph/osas/announcements/is-now-available-250219110640).
+
+2. ### Promote Facility Awareness
+
+    Encourage students to physically interact with campus landmarks and history.
+
+3. ### Improve Engagement
+
+    Use gamification and achievement-based systems to increase student retention and learning outcomes.
 
 ## ✨ Key Features
 
-### 1. University Landmarks & QR Scanner
+1. ### Campus Landmarks & QR Scanner
 
-- **Physical Check-ins:** Use the integrated QR scanner to verify your presence at designated campus locations.
-- **Exploration Progress:** Track visited sites through a visual checklist that differentiates between unlocked and "padlocked" landmarks.
-- **XP Allocation:** Automatically earn a fixed amount of XP for every new landmark successfully scanned.
+    - **Physical Check-ins**: Use the integrated QR scanner to verify your presence at designated campus locations.
 
-### 2. Fun Facts & Trivia
+    - **Exploration Progress**: Track visited sites through a visual checklist that differentiates between unlocked and "padlocked" landmarks.
 
-- **Instant Lore:** Unlock bite-sized historical snippets or engaging trivia immediately after scanning a landmark.
-- **Fallback Content:** Provides general MSEUF trivia if a specific location lacks dedicated historical data.
+    - **XP Reward**: Automatically earn a fixed amount of XP for every new landmark successfully scanned.
 
-### 3. Progressive Quizzes
+2. ### Fun Facts
 
-- **XP Gatekeeping:** Access to formal curriculum assessments is restricted until you gather enough XP from campus exploration.
-- **Academic Integrity:** Limited to a single graded submission per module to ensure assessment validity.
+    - **Instant Lore**: Unlock bite-sized historical snippets or engaging trivia immediately after scanning a landmark.
 
-### 4. Student Dashboard & Profile
+    - **Fallback Content**: Provides general MSEUF trivia if a specific location lacks dedicated historical data.
 
-- **Real-time Summary:** View total XP, quiz points, and a count of visited landmarks immediately upon login.
-- **Digital Badges:** Dynamically earn and display "Explorer" or "Scholar" badges as you hit progress thresholds
+3. ### Quizzes
+
+    - **Gatekeeping**: Access to assessments is restricted until you visit enough landmarks.
+
+    - **Academic Integrity**: Correct answers are only shown immediately after submission. Quizzes are limited to a single graded submission per module to ensure assessment validity.
+
+    - **XP Reward**: Automatically earn a fixed amount of XP for every new quiz successfully submitted.
+
+4. ### Dashboard
+
+    - **Real-time Summary**: View current level, total XP, total quiz points, and a count of visited landmarks immediately upon login.
+
+    - **Digital Badges**: Dynamically earn and display `EXPLORER` or `SCHOLAR` badges as you hit progress thresholds
+
+5. ### Profile
+
+    - **Personalization**: Upload and manage your student profile picture, powered by Supabase Storage.
+
+    - **Academic Info**: Directly update your name, year level, program, and specialization to ensure your student record is accurate.
+
+    - **Account Security**: Full password management and secure session logout.
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-| --- | --- |
-| **Frontend** | [Dart](https://dart.dev/docs), [Flutter](https://flutter.dev/) |
-| **Backend** | [Node.js](https://nodejs.org/en), [TypeScript](https://www.typescriptlang.org/docs/), [Express.js](https://expressjs.com/) |
-| **ORM** | [Prisma](https://www.prisma.io/) |
-| **Database** | [PostgreSQL](https://www.postgresql.org/docs/) |
-| **Storage** | [Supabase Storage](https://supabase.com/docs/guides/storage) |
-| **Validation** | [Zod](https://zod.dev/) |
-| **Security** | [JWT](https://jwt.io/introduction), [Bcrypt](https://www.npmjs.com/package/bcrypt) |
-| **File Uploads** | [Multer](https://www.npmjs.com/package/multer) |
-| **Testing** | [Postman](https://www.postman.com/), [Thunder Client](https://www.thunderclient.com/) |
-| **Development** | [VS Code](https://code.visualstudio.com/), Web Browser |
-| **Version Control** | [Git](https://git-scm.com/), [GitHub](https://github.com/) |
-| **Deployment** | [Vercel](https://vercel.com/), [Render](https://render.com/) |
+1. ### Frontend
 
-## ⚙️ Environment Setup Guide (Windows)
+    | Category | Technology |
+    | --- | --- |
+    | **Language** | [Dart](https://dart.dev/docs) |
+    | **Framework** | [Flutter](https://flutter.dev/) |
+    | **HTTP Client** | [http](https://pub.dev/packages/http) |
+    | **Scanner** | [mobile_scanner](https://pub.dev/packages/mobile_scanner) |
+    | **Storage** | [shared_preferences](https://pub.dev/packages/shared_preferences) |
+    | **Media** | [image_picker](https://pub.dev/packages/image_picker) |
+    | **Design** | [cupertino_icons](https://pub.dev/packages/cupertino_icons) |
 
-### 2. Flutter SDK Installation
+2. ### Backend
 
-> **Official Reference:** We follow the [Flutter Windows Quick Start Guide](https://docs.flutter.dev/install/quick).
+    | Category | Technology |
+    | --- | --- |
+    | **Runtime** | [Node.js](https://nodejs.org/en) |
+    | **Language** | [TypeScript](https://www.typescriptlang.org/docs/) |
+    | **Framework** | [Express.js](https://expressjs.com/) |
+    | **Database** | [PostgreSQL](https://www.postgresql.org/docs/) |
+    | **ORM** | [Prisma](https://www.prisma.io/) |
+    | **Storage** | [Supabase](https://supabase.com/docs/guides/storage) |
+    | **File Handling** | [Multer](https://www.npmjs.com/package/multer) |
+    | **Authentication** | [JWT](https://jwt.io/introduction), [Bcrypt](https://www.npmjs.com/package/bcrypt) |
+    | **Validation** | [Zod](https://zod.dev/) |
+    | **Utilities** | [qrcode](https://www.npmjs.com/package/qrcode) |
+    | **CORS** | [cors](https://www.npmjs.com/package/cors) |
+    | **Config** | [Dotenv](https://www.npmjs.com/package/dotenv) |
 
-1.  Download the **Flutter SDK (Stable)** zip file from the official website.
+4. ### Shared Tools & DevOps
 
-2.  Extract the folder to `C:\src\flutter`.
-    - ** IMPORTANT:** Do *not* install in `C:\Program Files` (Windows permissions will block updates).
+    | Category | Technology |
+    | --- | --- |
+    | **Version Control** | [Git](https://git-scm.com/), [GitHub](https://github.com/) |
+    | **Testing** | [Postman](https://www.postman.com/), [Thunder Client](https://www.thunderclient.com/) |
+    | **IDE** | [VS Code](https://code.visualstudio.com/) |
+    | **Deployment** | [Vercel](https://vercel.com/), [Render](https://render.com/) |
 
-3.  **Add to Path:**
-    - Press `Windows Key` and type "env". Select **Edit environment variables for your account**.
-    - Under "User variables", find `Path` and click **Edit**.
-    - Click **New** and paste: `C:\src\flutter\bin`.
-    - Click OK to save.
+## 💻 Download Prerequisite Software
 
-### 3. VS Code Configuration
+> We follow the [Flutter Windows Quick Start Guide](https://docs.flutter.dev/install/quick).
 
-1.  Install **Visual Studio Code** if you haven't already, then open it.
+1. ### Install Git for Windows
 
-2.  Go to the Extensions tab (`Ctrl+Shift+X`).
+    Download and install the latest version of [Git for Windows](https://git-scm.com/downloads/win).
 
-3.  Search for and install the **Flutter** extension (This automatically installs Dart).
+2. ### Download and install Visual Studio Code
 
-### 4. Final Verification
+    To quickly install Flutter, then edit and debug your apps, [install and set up Visual Studio Code](https://code.visualstudio.com/docs/setup/setup-overview).
 
-1. Open your VS Code terminal and run:
+## 🪽 Install and set up Flutter
 
-```bash
-flutter doctor --android-licenses
-```
+> If you prefer to manually install Flutter, follow the instructions in [Install Flutter manually](https://docs.flutter.dev/install/manual).
 
-2. Type `y` and hit Enter for every license prompt.
+1. ### Launch VS Code
 
-3. Finally, run `flutter doctor`. You should see all Green Checks ✅.
+2. ### Add the Flutter extension to VS Code
+
+    To add the Dart and Flutter extensions to VS Code, visit the [Flutter extension's marketplace](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) page, then click **Install**. If prompted by your browser, allow it to open VS Code.
+
+3. ### Install Flutter with VS Code
+
+    - Open the command palette in VS Code by pressing `Control` + `Shift` + `P`.
+
+    - In the command palette, type flutter.
+
+    - Select **Flutter: New Project**.
+
+    - VS Code prompts you to locate the Flutter SDK on your computer. Select **Download SDK**.
+
+    - When the **Select Folder for Flutter SDK** dialog displays, choose where you want to install Flutter.
+
+    - Click **Clone Flutter**.
+
+    - Click Add SDK to PATH.
+
+    - Restart VS Code to ensure that Flutter is available in all terminals.
 
 ## 🔒 Database & Backend Setup
 
-### 1. Install Dependencies
+1. ### Install Dependencies
 
-* Ensure you have [Node.js](https://nodejs.org/en/download/current) installed, then run:
+    Ensure you have [Node.js](https://nodejs.org/en/download/current) installed, then run:
+    
+    ```bash
+    cd backend
+    npm install
+    ```
 
-```bash
-cd backend
-npm install
-```
+2. ### Environment Configuration
 
-### 2. Environment Configuration
+    Duplicate `.env.example` as `.env` in `/backend`:
+    
+    ```env
+    DATABASE_URL="request from neophiles"
+    SUPABASE_URL="request from neophiles"
+    SUPABASE_SERVICE_ROLE_KEY="request from neophiles"
+    PORT=3000
+    JWT_SECRET="request from neophiles or generate your own"
+    FRONTEND_ORIGIN="http://localhost:5000"
+    ```
 
-* Create a `.env` file in `/backend`.
+3. ### Initialize Prisma and Sync Schema
 
-```env
-DATABASE_URL="Past your connection string (Ask neophiles for it)"
-```
+    ```bash
+    npx prisma generate
+    npx prisma migrate dev
+    ```
 
-### 3. Initialize Prisma
+4. ### Run Backend
 
-```bash
-npx prisma generate
-```
-
-### 4. Sync Schema to the Cloud Database
-
-```bash
-npx prisma migrate dev
-```
-
-### 5. Seed Initial Data (Landmarks, Quizzes, and Achievements)
-
-```bash
-npm run seed
-```
-
-### 6. Run Backend
-
-```bash
-npm run dev
-```
+    ```bash
+    npm run dev
+    ```
 
 ## 📱 Frontend Setup
 
-### 1. Install Dependencies
+1. ### Install Dependencies
 
-```bash
-cd frontend
-flutter pub get
-```
+    ```bash
+    cd frontend
+    flutter pub get
+    ```
 
-### 2. Run App
+2. ### Run Frontend
 
-```bash
-flutter run
-```
+    ```bash
+    flutter run -d chrome --web-port 5000
+    ```
 
 ## 🤩 Contributors & Core Team
 
-This project is developed by the AdaVizion Team.
+This project is developed by the AdaVizion team.
 
 | Role | Name | GitHub |
 | --- | --- | --- |
@@ -166,3 +207,5 @@ This project is developed by the AdaVizion Team.
 ## ✒️ License
 
 Proprietary Software. Copyright (c) 2026 AdaVizion. All rights reserved.
+
+This software and associated documentation files are the exclusive property of AdaVizion. Unauthorized copying, modification, distribution, or use of this software via any medium is strictly prohibited.

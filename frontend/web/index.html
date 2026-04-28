@@ -49,6 +49,19 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
+  <script>
+    // iOS Safari cannot render a live camera feed through Flutter's CanvasKit
+    // canvas — the video stream initialises but the frame never paints, giving
+    // a pure-black screen. Forcing the HTML renderer lets Safari handle the
+    // <video> element natively so the camera feed displays correctly.
+    window.flutterConfiguration = {
+      renderer: (function() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        return (isIOS || isSafari) ? 'html' : 'canvaskit';
+      })()
+    };
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 

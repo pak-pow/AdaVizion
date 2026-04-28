@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'quiz/quiz_list_screen.dart';
 import 'dashboard/views/home_view.dart';
 import 'dashboard/views/settings_view.dart';
-import 'qrcode_screen.dart';
+import '../screens/qr_code/qr_code_screen.dart';
 import 'landmarks/landmark_screen.dart';
 import 'package:adavizion/theme/app_colors.dart';
 

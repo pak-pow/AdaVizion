@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import '../models/quiz_model.dart';
 import 'package:adavizion/theme/app_colors.dart';
 
@@ -34,13 +35,31 @@ class QuizResultView extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: AppColors.surfaceWhite,
+
+      // ── APP BAR ──────────────────────────────────────────────────────────────
       appBar: AppBar(
-        backgroundColor: AppColors.surfaceGrey,
-        elevation: 0,
-        centerTitle: true,
         automaticallyImplyLeading: false,
-        title: Image.asset('assets/images/nav_logo.png', height: 75),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+        title: Image.asset('assets/images/nav_logo.png', height: 40),
+        flexibleSpace: Stack(
+          clipBehavior: Clip.none, // Crucial for overflow
+          children: [
+            Positioned(
+              top: -25, // Pulled back down
+              right: 14, // Pulled back left
+              child: Transform.rotate(
+                angle: math.pi,
+                child: Opacity(
+                  opacity: 0.9,
+                  child: Image.asset('assets/images/logo.png', height: 60),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -223,7 +242,10 @@ class _ActionsRow extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: AppColors.maroonGradientBottom,
-              side: const BorderSide(color: AppColors.maroonGradientBottom, width: 1.5),
+              side: const BorderSide(
+                color: AppColors.maroonGradientBottom,
+                width: 1.5,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -367,7 +389,10 @@ class _ReviewQuestion extends StatelessWidget {
               Expanded(
                 child: Text(
                   questionText,
-                  style: const TextStyle(fontSize: 13, color: AppColors.maroonGradientBottom),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.maroonGradientBottom,
+                  ),
                 ),
               ),
             ],

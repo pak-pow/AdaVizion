@@ -4,7 +4,6 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/api/landmark_api.dart';
-import '../../services/api/profile_api.dart';
 import '../landmarks/models/landmark_model.dart';
 import '../landmarks/views/landmark_detail_view.dart';
 import '../dashboard_screen.dart';

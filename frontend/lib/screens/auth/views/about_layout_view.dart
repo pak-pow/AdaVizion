@@ -46,14 +46,29 @@ class AboutLayoutView extends StatelessWidget {
           const SizedBox(height: 16),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.0),
-            child: Text(
-              'EUventure, a mobile-first web application designed to modernize the EU111: University and I course at Manuel S. Enverga University Foundation by transforming traditional university orientation into an interactive and exploratory experience. This document outlines the purpose, core features, and functionalities of EUventure, including its user interfaces, system features, and the external and internal interfaces essential to its operation. It also specifies the technical and operational constraints under which the software must function.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.maroon,
-                height: 1.5,
-              ),
+            child: Column(
+              children: [
+                Text(
+                  'EUventure is a mobile-first web application designed to modernize the orientation experience at Manuel S. Enverga University Foundation (MSEUF). By gamifying the EU111: University and I course, the platform shifts traditional classroom lectures into a hands-on, on-site exploration of the campus. Step out, scan the landmarks, and begin your adventure today!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.maroon,
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Developed by AdaVizion. This is an independent student project and is not an official MSEUF platform.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.maroon,
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 32),
@@ -71,7 +86,7 @@ class AboutLayoutView extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.0),
             child: Text(
-              "The EUventure logo is a modern and sleek design featuring a slipper-shaped pin form that symbolizes direction, movement, and exploration. At its center is the wildcat—the official mascot of Enverga University—serving as a bold representation of strength, pride, and school identity. The use of red as the primary color conveys passion, energy, and determination, reflecting the spirit of innovation and ambition within the EUventure community. The smooth, flowing curves of the logo enhance its contemporary feel, while the combination of shape and symbol creates a strong and memorable visual identity.",
+              'The EUventure logo features a modern design of dual footprints, symbolizing the physical journey and active exploration of the campus. At the center sits the wildcat, the official MSEUF mascot, representing strength, pride, and school identity. The use of maroon as the primary color reflects the spirit of the university, while the flowing curves of the design create a contemporary and memorable visual identity for the community.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,

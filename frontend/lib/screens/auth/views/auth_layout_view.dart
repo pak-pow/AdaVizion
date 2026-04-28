@@ -472,7 +472,7 @@ class AuthLayoutView extends StatelessWidget {
         if (isLogin) ...[
           AuthTextField(
             controller: emailController,
-            hint: isDesktop ? 'Enter your email' : 'Student ID',
+            hint: isDesktop ? 'Student ID' : 'Student ID',
             icon: Icons.email_outlined,
             border: border,
             maxLength: 15,

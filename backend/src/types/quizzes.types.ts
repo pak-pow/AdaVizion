@@ -1,6 +1,6 @@
 import type { Quiz, Question } from "../../generated/prisma/client";
 
-type SeedQuestion = Omit<Question, "question_id" | "quiz_id">
+type SeedQuestion = Omit<Question, "question_id" | "quiz_id" | "created_at" | "updated_at">
 
 type ViewQuestion = Omit<Question, "correct_idx"> & {
   correct_idx?: number;

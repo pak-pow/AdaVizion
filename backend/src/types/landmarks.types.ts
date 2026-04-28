@@ -1,6 +1,6 @@
 import type { Landmark } from "../../generated/prisma/client";
 
-type SeedLandmark = Omit<Landmark, "landmark_id" | "created_at">
+type SeedLandmark = Omit<Landmark, "landmark_id" | "created_at" | "updated_at">
 
 type ViewLandmark = Omit<Landmark, "qr_string">
 

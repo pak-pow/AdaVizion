@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import '../../../services/api/quiz_api.dart';
 import '../models/quiz_model.dart';
 import 'package:adavizion/theme/app_colors.dart';
@@ -113,13 +114,31 @@ class _QuizTakingViewState extends State<QuizTakingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: AppColors.surfaceWhite,
+
+      // ── APP BAR ──────────────────────────────────────────────────────────────
       appBar: AppBar(
-        backgroundColor: AppColors.surfaceGrey,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
-        automaticallyImplyLeading: false,
-        title: Image.asset('assets/images/nav_logo.png', height: 42),
+        title: Image.asset('assets/images/nav_logo.png', height: 40),
+        flexibleSpace: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              top: -25,
+              right: 14,
+              child: Transform.rotate(
+                angle: math.pi,
+                child: Opacity(
+                  opacity: 0.9,
+                  child: Image.asset('assets/images/logo.png', height: 60),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -269,7 +288,10 @@ class _QuestionItem extends StatelessWidget {
             Expanded(
               child: Text(
                 text,
-                style: const TextStyle(fontSize: 13, color: AppColors.maroonGradientBottom),
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.maroonGradientBottom,
+                ),
               ),
             ),
           ],
@@ -345,7 +367,10 @@ class _SubmitSection extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: AppColors.maroonGradientBottom,
-                side: const BorderSide(color: AppColors.maroonGradientBottom, width: 1.5),
+                side: const BorderSide(
+                  color: AppColors.maroonGradientBottom,
+                  width: 1.5,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

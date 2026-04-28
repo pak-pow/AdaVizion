@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math' as math;
 
 import '../../services/api/landmark_api.dart';
 import '../../services/api/profile_api.dart';
@@ -153,12 +154,14 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.surfaceWhite,
+
+      // ── APP BAR ──────────────────────────────────────────────────────────────
       appBar: AppBar(
-        backgroundColor: AppColors.headerGrey,
-        centerTitle: true,
-        title: Image.asset("assets/images/nav_logo.png", height: 75),
+        backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
+        title: Image.asset('assets/images/nav_logo.png', height: 40),
       ),
       body: _buildBody(context),
     );

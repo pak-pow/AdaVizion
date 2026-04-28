@@ -255,29 +255,14 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
       actions: [
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: buildDialogButton(
-                    label: "Close",
-                    isSecondary: true,
-                    fullWidth: true,
-                    onPressed: () =>
-                        closeDialogAnd(() => Navigator.pop(context)),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: buildDialogButton(
-                    label: "Scan Another",
-                    fullWidth: true,
-                    onPressed: () => closeDialogAnd(onReset),
-                  ),
-                ),
-              ],
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildDialogButton(
+                label: "Try Again",
+                onPressed: () => closeDialogAnd(onReset),
+              ),
+            ],
           ),
         ),
       ],

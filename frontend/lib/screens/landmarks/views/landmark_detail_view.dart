@@ -38,6 +38,8 @@ class _LandmarkDetailViewState extends State<LandmarkDetailView> {
     return LandmarkDetail.fromJson(raw);
   }
 
+  void _retry() => setState(() => _detailFuture = _fetchDetail());
+
   // ─── Build ─────────────────────────────────────────────────────────────────
 
   @override
@@ -59,6 +61,7 @@ class _LandmarkDetailViewState extends State<LandmarkDetailView> {
             return LandmarkErrorState(
               error: snapshot.error.toString(),
               onBack: () => Navigator.pop(context),
+              onRetry: _retry,
             );
           }
 
@@ -261,7 +264,11 @@ class _FunFactCard extends StatelessWidget {
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.lightbulb_outline, color: AppColors.funFactIcon, size: 18),
+              Icon(
+                Icons.lightbulb_outline,
+                color: AppColors.funFactIcon,
+                size: 18,
+              ),
               SizedBox(width: 8),
               Text(
                 'DID YOU KNOW?',

@@ -29,7 +29,6 @@ import 'widgets/scanner_footer.dart';
 /// * **[ScanOverlayPainter]** — camera overlay graphic.
 /// * **[ScannerFooter]** — torch button and instruction label.
 /// * **[PermissionDeniedView]** — camera-denied fallback.
-/// * **[QRCodeConstants]** — shared colours and dimensions.
 class QRCodeScreen extends StatefulWidget {
   const QRCodeScreen({super.key});
 
@@ -161,7 +160,8 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
   Widget _onScannerError(BuildContext context, MobileScannerException error) {
     // Capture the human-readable error so we can display it on-screen.
     // This is critical for diagnosing iOS Safari black-screen issues remotely.
-    final errMsg = 'Camera error: ${error.errorCode.name} — ${error.errorDetails?.message ?? 'No details'}';
+    final errMsg =
+        'Camera error: ${error.errorCode.name} — ${error.errorDetails?.message ?? 'No details'}';
     if (_cameraPermissionGranted != false) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _cameraPermissionGranted != false) {

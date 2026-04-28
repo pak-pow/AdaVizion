@@ -25,26 +25,26 @@
   },
   {
     "title": "Envergan Aspirant",
-    "description": "50 quiz points achieved.",
+    "description": "100 quiz points achieved.",
     "category": "SCHOLAR",
     "tier": 1,
-    "threshold": 150,
+    "threshold": 100,
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-1.png"
   },
   {
     "title": "Wildcat Seeker",
-    "description": "100 quiz points achieved.",
+    "description": "200 quiz points achieved.",
     "category": "SCHOLAR",
     "tier": 2,
-    "threshold": 300,
+    "threshold": 200,
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-2.png"
   },
   {
     "title": "Luzonian Paragon",
-    "description": "150 quiz points achieved. Hawak mo ang beat!",
+    "description": "300 quiz points achieved. Hawak mo ang beat!",
     "category": "SCHOLAR",
     "tier": 3,
-    "threshold": 450,
+    "threshold": 300,
     "img_path": "https://eufjupzszpgeadrnvigc.supabase.co/storage/v1/object/public/achievement-badges/scholar-level-3.png"
   }
 ]

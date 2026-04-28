@@ -7,7 +7,7 @@ import 'package:adavizion/theme/app_colors.dart';
 
 /// Displays the score, pass/fail status, XP earned, and a full answer review
 /// after a quiz is submitted.
-class QuizResultView extends StatelessWidget {
+class QuizResultView extends StatefulWidget {
   final String quizName;
   final QuizResult result;
   final List<dynamic> questions;
@@ -25,19 +25,29 @@ class QuizResultView extends StatelessWidget {
     this.onNavigateToTab,
   });
 
-  // ─── Build ──────────────────────────────────────────────────────────────────
+  @override
+  State<QuizResultView> createState() => _QuizResultViewState();
+}
+
+// ─── Build ──────────────────────────────────────────────────────────────────
+class _QuizResultViewState extends State<QuizResultView> {
+  bool _toastsShown = false; // ← guard
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !_toastsShown) {
+        _toastsShown = true;
+        _showRewardToasts(context);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: REMOVE ONCE DEDICATED TOASTS ARE IMPLEMENTED - This is just a temporary way to show rewards until we have a proper notification system in place.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showRewardToasts(context);
-    });
-
     return Scaffold(
       backgroundColor: AppColors.surfaceWhite,
-
-      // ── APP BAR ──────────────────────────────────────────────────────────────
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
@@ -45,11 +55,11 @@ class QuizResultView extends StatelessWidget {
         centerTitle: false,
         title: Image.asset('assets/images/nav_logo.png', height: 40),
         flexibleSpace: Stack(
-          clipBehavior: Clip.none, // Crucial for overflow
+          clipBehavior: Clip.none,
           children: [
             Positioned(
-              top: -25, // Pulled back down
-              right: 14, // Pulled back left
+              top: -25,
+              right: 14,
               child: Transform.rotate(
                 angle: math.pi,
                 child: Opacity(
@@ -67,27 +77,20 @@ class QuizResultView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Title ──────────────────────────────────────────────────────
-              _TitleHeader(title: quizName),
+              _TitleHeader(title: widget.quizName), // ← widget.
               const SizedBox(height: 20),
-
-              // ── Stats row ──────────────────────────────────────────────────
-              _StatsRow(result: result),
+              _StatsRow(result: widget.result), // ← widget.
               const SizedBox(height: 16),
-
-              // ── Action buttons ─────────────────────────────────────────────
-              _ActionsRow(onNavigateToTab: onNavigateToTab, context: context),
+              _ActionsRow(
+                onNavigateToTab: widget.onNavigateToTab,
+              ), // ← widget. + context removed
               const SizedBox(height: 24),
-
-              // ── Divider ────────────────────────────────────────────────────
               const Divider(thickness: 1.5, color: AppColors.divider),
               const SizedBox(height: 16),
-
-              // ── Answer review ──────────────────────────────────────────────
               _AnswerReview(
-                questions: questions,
-                selectedAnswers: selectedAnswers,
-                correctnessById: result.correctnessById,
+                questions: widget.questions, // ← widget.
+                selectedAnswers: widget.selectedAnswers, // ← widget.
+                correctnessById: widget.result.correctnessById, // ← widget.
               ),
               const SizedBox(height: 40),
             ],
@@ -98,15 +101,15 @@ class QuizResultView extends StatelessWidget {
   }
 
   // ─── Reward toasts ───────────────────────────────────────────────────────────
-
   /// Shows level-up and achievement snackbars.
   /// TODO: Remove once dedicated toast notifications are implemented.
   void _showRewardToasts(BuildContext context) {
-    if (result.didLevelUp) {
+    if (widget.result.didLevelUp) {
+      // ← widget.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '🎉 Level Up! You are now Level ${result.currentLevel}!',
+            '🎉 Level Up! You are now Level ${widget.result.currentLevel}!', // ← widget.
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
           backgroundColor: AppColors.maroonGradientBottom,
@@ -116,7 +119,8 @@ class QuizResultView extends StatelessWidget {
       );
     }
 
-    for (final achievement in result.newAchievements) {
+    for (final achievement in widget.result.newAchievements) {
+      // ← widget.
       final title =
           (achievement as Map<String, dynamic>)['title'] as String? ??
           'Achievement Unlocked';
@@ -223,12 +227,11 @@ class _StatsRow extends StatelessWidget {
 
 class _ActionsRow extends StatelessWidget {
   final void Function(int index)? onNavigateToTab;
-  final BuildContext context;
 
-  const _ActionsRow({required this.context, this.onNavigateToTab});
+  const _ActionsRow({this.onNavigateToTab});
 
   @override
-  Widget build(BuildContext _) {
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(

@@ -15,6 +15,7 @@ const PROGRAM_ABBREVIATIONS: Record<string, string> = {
   "BSOA": "Bachelor of Science in Office Administration",
   "BMMA": "Bachelor of Multimedia Arts",
   "BSCS": "Bachelor of Science in Computer Science",
+  "BSEMC": "Bachelor of Science in Entertainment and Multimedia Computing",
   "BSIT": "Bachelor of Science in Information Technology",
   "BSCrim": "Bachelor of Science in Criminology",
   "BEED": "Bachelor of Elementary Education",
@@ -42,7 +43,8 @@ const PROGRAM_SPECIALIZATIONS: Partial<Record<string, string[]>> = {
   "BFA": ["Visual Communication"],
   "BSBA": ["Marketing Management", "Human Resource Management", "Financial Management", "Operations Management"],
   "BMMA": ["Visual Design", "Video Design", "Game Design"],
-  "BSCS": ["Data Science", "Software Engineering"],
+  "BSCS": ["Data Science", "Software Engineering", ],
+  "BSEMC": ["Digital Animation Technology", "Game Development"],
   "BSIT": ["Web & Mobile Application", "CISCO Networking"],
   "BSED": ["English", "Filipino", "Mathematics", "Science", "Social Studies"],
   "BSHM": ["Cruise Management", "Culinary Arts"]

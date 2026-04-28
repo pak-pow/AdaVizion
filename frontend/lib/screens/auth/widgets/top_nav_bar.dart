@@ -64,7 +64,7 @@ class AuthTopNavBar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _navTextItem('Homepage', AppView.home),
+                _navTextItem('Home', AppView.home),
                 SizedBox(width: isSmall ? 12 : 24),
                 _navTextItem('About', AppView.about),
                 SizedBox(width: isSmall ? 12 : 24),

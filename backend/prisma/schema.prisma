@@ -37,6 +37,7 @@ model Landmark {
   qr_string   String             @unique @db.VarChar(255)
   img_path    String?            @db.VarChar(255)
   created_at  DateTime           @default(now())
+  updated_at  DateTime           @default(now()) @updatedAt
   visitors    LandmarksVisited[]
 
   @@map("landmarks")
@@ -48,7 +49,8 @@ model Quiz {
   min_landmarks Int
   max_score     Int              @default(0)
   passing_score Int              @default(0)
-  created_at     DateTime        @default(now())
+  created_at    DateTime         @default(now())
+  updated_at    DateTime         @default(now()) @updatedAt
   questions     Question[]
   submissions   QuizSubmission[]
 
@@ -56,13 +58,15 @@ model Quiz {
 }
 
 model Question {
-  question_id   Int    @id @default(autoincrement())
+  question_id   Int                @id @default(autoincrement())
   quiz_id       Int
-  question_text String @unique
+  question_text String             @unique
   choices       Json
   correct_idx   Int
-  item_points   Int    @default(10)
-  quiz          Quiz   @relation(fields: [quiz_id], references: [quiz_id])
+  item_points   Int                @default(10)
+  created_at    DateTime           @default(now())
+  updated_at    DateTime           @default(now()) @updatedAt
+  quiz          Quiz               @relation(fields: [quiz_id], references: [quiz_id])
   responses     QuestionResponse[]
 
   @@map("questions")
@@ -82,6 +86,7 @@ model Achievement {
   threshold      Int
   img_path       String?              @db.VarChar(255)
   created_at     DateTime             @default(now())
+  updated_at     DateTime             @default(now()) @updatedAt
   earners        AchievementsEarned[]
 
   @@map("achievements")
@@ -118,6 +123,7 @@ model QuestionResponse {
   question_id     Int
   selected_idx    Int
   is_correct      Boolean
+  answered_at     DateTime       @default(now())
   student         Student        @relation(fields: [student_number], references: [student_number])
   question        Question       @relation(fields: [question_id], references: [question_id])
   quiz_submission QuizSubmission @relation(fields: [student_number, quiz_id], references: [student_number, quiz_id])
@@ -131,6 +137,7 @@ model Progress {
   level          Int      @default(1)
   total_xp       Int      @default(0)
   quiz_points    Int      @default(0)
+  created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
   student        Student  @relation(fields: [student_number], references: [student_number])
 

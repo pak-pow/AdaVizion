@@ -214,9 +214,13 @@ class _AuthScreenState extends State<AuthScreen> {
         );
         if (mounted) {
           ToastService.showSuccess('Login successful!', context);
-          Navigator.pushReplacement(
+          // Clear the entire navigation stack so the Dashboard becomes the
+          // root route. This prevents a back button from appearing on the
+          // Dashboard AppBar after a successful login.
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const DashboardScreen()),
+            (route) => false,
           );
         }
       } else {

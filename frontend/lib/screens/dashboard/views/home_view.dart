@@ -43,6 +43,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
   int _level = 0;
   int _quizPoints = 0;
   int _currentXp = 0;
+  int _xpMax = 500;  // next_threshold from backend; defaults to 500
   int _landmarksVisited = 0;
   int _landmarksTotal = 1;
 
@@ -85,8 +86,13 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
             final landmarks = progress['landmarks'] as Map<String, dynamic>?;
             final newLevel = (progress['level'] as num?)?.toInt() ?? 0;
             _quizPoints = (progress['quiz_points'] as num?)?.toInt() ?? 0;
-            final toNextLevel = (xp?['to_next_level'] as num?)?.toInt() ?? 0;
-            _currentXp = (500 - toNextLevel).clamp(0, 500);
+            // total_xp  = XP earned within the current level.
+            // to_next_level = XP still needed to level up.
+            // Level size = earned + remaining (NOT next_threshold, which is cumulative).
+            final toNextLevel = (xp?['to_next_level'] as num?)?.toInt() ?? 500;
+            _currentXp = (xp?['total_xp'] as num?)?.toInt() ?? 0;
+            _xpMax = (_currentXp + toNextLevel)
+                .clamp(1, 999999); // Guard against 0 to prevent division-by-zero.
             _landmarksVisited = (landmarks?['visited'] as num?)?.toInt() ?? 0;
             _landmarksTotal = (landmarks?['total'] as num?)?.toInt() ?? 1;
 
@@ -165,6 +171,7 @@ class _DashboardHomeViewState extends State<DashboardHomeView> {
               child: StudentStats(
                 level: _level,
                 currentXp: _currentXp,
+                xpMax: _xpMax,
                 landmarksVisited: _landmarksVisited,
                 landmarksTotal: _landmarksTotal,
                 quizPoints: _quizPoints,

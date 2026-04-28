@@ -69,6 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
+        automaticallyImplyLeading: false, // Dashboard is always the root — never show a back button.
         title: Image.asset('assets/images/nav_logo.png', height: 40),
         flexibleSpace: Stack(
           clipBehavior: Clip.none, // Crucial for overflow

@@ -4,6 +4,7 @@ import 'package:adavizion/theme/app_colors.dart';
 class StudentStats extends StatelessWidget {
   final int level;
   final int currentXp;
+  final int xpMax;          // next_threshold from backend (XP needed to level up)
   final int landmarksVisited;
   final int landmarksTotal;
   final int quizPoints;
@@ -12,6 +13,7 @@ class StudentStats extends StatelessWidget {
     super.key,
     required this.level,
     required this.currentXp,
+    required this.xpMax,
     required this.landmarksVisited,
     required this.landmarksTotal,
     required this.quizPoints,
@@ -19,7 +21,9 @@ class StudentStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final xpProgress = (currentXp / 500.0).clamp(0.0, 1.0);
+    // Use the real per-level XP cap from the backend (xpMax) instead of a
+    // hardcoded 500, so the bar fills correctly at every level threshold.
+    final xpProgress = xpMax > 0 ? (currentXp / xpMax).clamp(0.0, 1.0) : 0.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -53,7 +57,7 @@ class StudentStats extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '$currentXp / 500 XP',
+                    '$currentXp / $xpMax XP',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

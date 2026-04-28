@@ -1,5 +1,5 @@
 // ─── SCANNER FOOTER ─────────────────────────────────────────────────
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:adavizion/theme/app_colors.dart';
@@ -37,25 +37,30 @@ class ScannerFooter extends StatelessWidget {
             "Center the QR code within the frame",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _ControlButton(
-                onPressed: () async => controller.toggleTorch,
-                icon: ValueListenableBuilder(
-                  valueListenable: controller,
-                  builder: (context, state, _) => _torchIcon(state.torchState),
+          if (!kIsWeb) ...[
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _ControlButton(
+                  onPressed: () async => await controller.toggleTorch(),
+                  icon: ValueListenableBuilder(
+                    valueListenable: controller,
+                    builder: (context, state, _) =>
+                        _torchIcon(state.torchState),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 
   /// Returns the appropriate [Icon] for the given [TorchState].
+  /// Checks if user on Web or Native
+
   static Icon _torchIcon(TorchState state) {
     return switch (state) {
       TorchState.on => const Icon(Icons.flash_on, color: Colors.yellow),

@@ -21,7 +21,7 @@ interface QuestionResult {
   };
 }
 
-type SeedQuiz = Omit<Quiz, "quiz_id" | "max_score" | "passing_score" | "created_at"> & {
+type SeedQuiz = Omit<Quiz, "quiz_id" | "max_score" | "passing_score" | "created_at" | "updated_at"> & {
   questions: SeedQuestion[]
 }
 

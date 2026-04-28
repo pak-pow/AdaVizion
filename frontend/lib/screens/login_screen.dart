@@ -220,21 +220,15 @@ class _AuthScreenState extends State<AuthScreen> {
           );
         }
       } else {
-        final full = [
-          _firstNameController.text.trim(),
-          _middleNameController.text.trim(),
-          _lastNameController.text.trim(),
-        ].where((s) => s.isNotEmpty).join(' ');
-
-        final studentData = {
-          'full_name': full,
-          'student_number': _studentIdController.text.trim(),
-          'program': _selectedProgram,
-          'specialization': _selectedSpecialization,
-          'password': _signupPasswordController.text,
-        };
-
-        await AuthApi.register(studentData);
+        await AuthApi.register(
+          firstName: _firstNameController.text.trim(),
+          middleName: _middleNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+          studentNumber: _studentIdController.text.trim(),
+          program: _selectedProgram,
+          specialization: _selectedSpecialization,
+          password: _signupPasswordController.text,
+        );
 
         if (mounted) {
           _showSuccessSnackBar('Account successfully created!');

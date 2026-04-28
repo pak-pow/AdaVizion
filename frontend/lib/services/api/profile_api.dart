@@ -44,7 +44,7 @@ class ProfileApi {
     );
 
     // Throws a user-readable Exception for any non-2xx response.
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
 
     // Decode the JSON string from the response body into a Dart Map.
     return jsonDecode(response.body);
@@ -123,7 +123,7 @@ class ProfileApi {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       // ─── AUTOMATIC LOGOUT ON UNAUTHORIZED ───────────────────────────────────
       if (response.statusCode == 401 || response.statusCode == 403) {
-        ApiConfig.logout();
+        await ApiConfig.logout();
         ApiConfig.navigatorKey.currentState?.pushNamedAndRemoveUntil(
           '/login',
           (route) => false,
@@ -137,7 +137,7 @@ class ProfileApi {
         if (message != null && message is String) {
           // Double check message content for redundancy
           if (message.contains('Access denied') || message.contains('missing token')) {
-            ApiConfig.logout();
+            await ApiConfig.logout();
             ApiConfig.navigatorKey.currentState?.pushNamedAndRemoveUntil(
               '/login',
               (route) => false,
@@ -187,7 +187,7 @@ class ProfileApi {
         'yearLevel': yearLevel,
       }),
     );
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
   }
 
   // ─── CHANGE PASSWORD ────────────────────────────────────────────────────────
@@ -210,6 +210,6 @@ class ProfileApi {
         'confirmPassword': confirmPassword,
       }),
     );
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
   }
 }

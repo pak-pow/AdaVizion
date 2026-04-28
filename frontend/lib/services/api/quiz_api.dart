@@ -47,7 +47,7 @@ class QuizApi {
       headers: await ApiConfig.getHeaders(),
     );
 
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
 
     return jsonDecode(response.body);
   }
@@ -91,7 +91,7 @@ class QuizApi {
       headers: await ApiConfig.getHeaders(),
     );
 
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
 
     return jsonDecode(response.body);
   }
@@ -146,7 +146,7 @@ class QuizApi {
       body: jsonEncode({'answers': answers}),
     );
 
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
 
     return jsonDecode(response.body);
   }

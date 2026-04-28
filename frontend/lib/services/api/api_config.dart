@@ -100,10 +100,10 @@ class ApiConfig {
   /// **Usage:** Call immediately after every `http.get/post/patch` call:
   /// ```dart
   /// final response = await http.get(...);
-  /// ApiConfig.handleBackendError(response); // throws if not 2xx
-  /// return jsonDecode(response.body);       // safe to decode here
+  /// await ApiConfig.handleBackendError(response); // throws if not 2xx
+  /// return jsonDecode(response.body);             // safe to decode here
   /// ```
-  static void handleBackendError(http.Response response) {
+  static Future<void> handleBackendError(http.Response response) async {
     // 2xx range means success — nothing to do.
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return;
@@ -113,7 +113,7 @@ class ApiConfig {
     // If the backend rejects the token (401 or 403), we clear the local session
     // and force the user back to the login screen.
     if (response.statusCode == 401 || response.statusCode == 403) {
-      logout(); // Clear the token asynchronously
+      await logout(); // Await ensures the token is cleared before navigating.
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
         '/login',
         (route) => false,
@@ -129,7 +129,7 @@ class ApiConfig {
         // Also check for specific "Access denied" message strings just in case
         // the status code wasn't enough.
         if (message.contains('Access denied') || message.contains('missing token')) {
-          logout();
+          await logout(); // Await ensures the token is cleared before navigating.
           navigatorKey.currentState?.pushNamedAndRemoveUntil(
             '/login',
             (route) => false,

@@ -42,7 +42,7 @@ class AuthApi {
     );
 
     // Throws a user-readable Exception if the server returns 4xx or 5xx.
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
 
     // Decode the success body and extract the JWT token.
     final decoded = jsonDecode(response.body);
@@ -62,18 +62,21 @@ class AuthApi {
   /// Auth required: ❌ No token needed
   ///
   /// Parameters:
-  ///   [data] — A map containing the raw form values from the registration screen:
-  ///     - `'full_name'`      (String) — Full name entered by the user.
-  ///     - `'student_number'` (String) — Student ID (e.g., "A12-1235").
-  ///     - `'program'`        (String) — Program abbreviation (e.g., "BSCS").
-  ///     - `'specialization'` (String?) — Optional track (e.g., "Software Engineering").
-  ///     - `'password'`       (String) — Plain-text password chosen by the user.
+  ///   [firstName]      — First name, sourced directly from the form field.
+  ///   [middleName]     — Middle name (may be empty for students with none).
+  ///   [lastName]       — Last name / surname.
+  ///   [studentNumber]  — Student ID string (e.g., "A12-1235").
+  ///                      `.trim()` is applied before sending.
+  ///   [program]        — Program abbreviation (e.g., "BSCS").
+  ///   [specialization] — Optional track (e.g., "Software Engineering").
+  ///                      Pass `null` or an empty string if not applicable.
+  ///   [password]       — Plain-text password chosen by the user.
   ///
   /// Data transformations applied before sending:
-  ///   - `full_name` is split into `firstName` / `lastName` (backend requires these separately).
-  ///   - `student_number` is `.trim()`-ed to strip whitespace.
+  ///   - `studentNumber` is `.trim()`-ed to strip whitespace.
   ///   - `email` is auto-generated as `<studentNum>@student.mseuf.edu.ph` (lowercase).
-  ///   - Empty or null `specialization` is explicitly sent as `null` (not an empty string).
+  ///   - Empty `middleName` and `specialization` are sent as `null` — the Zod
+  ///     schema rejects empty strings for optional fields but accepts null.
   ///   - `yearLevel` is hardcoded to `1` for all new registrations.
   ///
   /// On success: The backend creates the student and a Progress record in a
@@ -81,29 +84,29 @@ class AuthApi {
   ///
   /// On failure: Throws an [Exception] — most commonly a duplicate student
   ///   number/email (Prisma P2002 → "Student number or email already exists").
-  static Future<void> register(Map<String, dynamic> data) async {
-    // Split the full name into first and last name components.
-    // The backend's RegistrationSchema requires them as separate fields.
-    final fullName = (data['full_name'] as String).trim();
-    final parts = fullName.split(' ');
-    final firstName = parts.first;
-    // If only one word was entered, default last name to 'Unknown'.
-    final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : 'Unknown';
-
-    final studentNum = (data['student_number'] as String).trim();
-    final program = data['program'];
-    final specialization = data['specialization'];
-    final password = data['password'];
+  static Future<void> register({
+    required String firstName,
+    required String middleName,
+    required String lastName,
+    required String studentNumber,
+    required String? program,
+    required String? specialization,
+    required String password,
+  }) async {
+    final studentNum = studentNumber.trim();
 
     final requestBody = {
       'studentNum': studentNum,
-      'firstName': firstName,
-      'lastName': lastName,
+      'firstName': firstName.trim(),
+      // Send null for empty middle name — the Zod schema rejects empty strings
+      // for optional fields but accepts null.
+      'middleName': middleName.trim().isEmpty ? null : middleName.trim(),
+      'lastName': lastName.trim(),
       'program': program,
-      // Convert empty string to null — the Zod schema rejects empty strings
-      // for optional fields, but accepts null.
-      'specialization':
-          specialization == '' || specialization == null ? null : specialization,
+      // Same null-coercion for specialization.
+      'specialization': (specialization == null || specialization.isEmpty)
+          ? null
+          : specialization,
       // All new students start at year level 1.
       'yearLevel': 1,
       // Email is derived from the student number per university convention.
@@ -117,7 +120,7 @@ class AuthApi {
       body: jsonEncode(requestBody),
     );
 
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
     // No return value needed — the UI simply navigates to the login screen on success.
   }
 }

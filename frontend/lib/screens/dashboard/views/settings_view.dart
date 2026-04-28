@@ -210,117 +210,18 @@ class _SettingsViewState extends State<SettingsView> {
 
   // ─── Change Password ───────────────────────────────────────────────────────
   void _showChangePasswordDialog() {
-    final currentPasswordController = TextEditingController();
-    final newPasswordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
-    bool isLoading = false;
-
+    // Capture the context synchronously (before showDialog's async gap).
+    // Pass plain callbacks so _ChangePasswordDialogContent never holds a
+    // BuildContext reference that crosses an async boundary inside itself.
+    final ctx = context;
     showDialog<void>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            surfaceTintColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Text(
-              'Change Password',
-              style: TextStyle(fontWeight: FontWeight.w900),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildEditField(
-                    controller: currentPasswordController,
-                    hint: 'Current Password',
-                  ),
-                  _buildEditField(
-                    controller: newPasswordController,
-                    hint: 'New Password',
-                  ),
-                  _buildEditField(
-                    controller: confirmPasswordController,
-                    hint: 'Confirm New Password',
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              if (isLoading)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: AppColors.maroon,
-                      strokeWidth: 2,
-                    ),
-                  ),
-                )
-              else ...[
-                TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (newPasswordController.text !=
-                        confirmPasswordController.text) {
-                      ToastService.showError(
-                        context,
-                        'New passwords do not match.',
-                      );
-                      return;
-                    }
-                    if (newPasswordController.text.length < 8) {
-                      ToastService.showError(
-                        context,
-                        'Password must be at least 8 characters.',
-                      );
-                      return;
-                    }
-
-                    setDialogState(() => isLoading = true);
-                    try {
-                      await ProfileApi.changePassword(
-                        currentPassword: currentPasswordController.text,
-                        newPassword: newPasswordController.text,
-                        confirmPassword: confirmPasswordController.text,
-                      );
-                      if (context.mounted) {
-                        Navigator.of(dialogContext).pop();
-                        ToastService.showSuccess(
-                          context,
-                          'Password changed successfully!',
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ToastService.showError(
-                          context,
-                          e.toString().replaceFirst('Exception: ', ''),
-                        );
-                        setDialogState(() => isLoading = false);
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.maroon,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text(
-                    'Change',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ],
-          );
-        },
+      context: ctx,
+      // Use a dedicated StatefulWidget so its controllers are properly
+      // disposed when the dialog is dismissed (fixes C-3 memory leak).
+      builder: (_) => _ChangePasswordDialogContent(
+        onSuccess: (msg) => ToastService.showSuccess(ctx, msg),
+        onError: (msg) => ToastService.showError(ctx, msg),
+        buildEditField: _buildEditField,
       ),
     );
   }
@@ -1040,6 +941,163 @@ class _SettingsViewState extends State<SettingsView> {
               ? const Icon(Icons.chevron_right, color: AppColors.textLight, size: 20)
               : null),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+    );
+  }
+}
+
+// ============================================================================
+// _ChangePasswordDialogContent
+//
+// Extracted from the old StatefulBuilder closure in _showChangePasswordDialog.
+// Being a proper StatefulWidget, its dispose() is called by the framework
+// when the dialog is dismissed, ensuring the three TextEditingControllers
+// are always freed — fixing the C-3 memory leak identified in the audit.
+// ============================================================================
+
+class _ChangePasswordDialogContent extends StatefulWidget {
+  /// Called with a success message string after a successful password change.
+  /// The parent invokes [ToastService.showSuccess] — no BuildContext is stored
+  /// inside this widget, so no context crosses an async gap.
+  final void Function(String message) onSuccess;
+
+  /// Called with an error message string if the API call fails.
+  final void Function(String message) onError;
+
+  /// A reference to [_SettingsViewState._buildEditField] so we can reuse
+  /// the same styled TextField without duplicating code.
+  final Widget Function({
+    required TextEditingController controller,
+    required String hint,
+    bool readOnly,
+  }) buildEditField;
+
+  const _ChangePasswordDialogContent({
+    required this.onSuccess,
+    required this.onError,
+    required this.buildEditField,
+  });
+
+  @override
+  State<_ChangePasswordDialogContent> createState() =>
+      _ChangePasswordDialogContentState();
+}
+
+class _ChangePasswordDialogContentState
+    extends State<_ChangePasswordDialogContent> {
+  // ── Controllers ─────────────────────────────────────────────────────────────
+  // Declared here (not in a method) so dispose() can reliably clean them up.
+  late final TextEditingController _currentPasswordController;
+  late final TextEditingController _newPasswordController;
+  late final TextEditingController _confirmPasswordController;
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPasswordController = TextEditingController();
+    _newPasswordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    // Guaranteed to run when the dialog route is popped — no leak.
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      widget.onError('New passwords do not match.');
+      return;
+    }
+    if (_newPasswordController.text.length < 8) {
+      widget.onError('Password must be at least 8 characters.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      await ProfileApi.changePassword(
+        currentPassword: _currentPasswordController.text,
+        newPassword: _newPasswordController.text,
+        confirmPassword: _confirmPasswordController.text,
+      );
+      if (mounted) {
+        Navigator.of(context).pop();
+        widget.onSuccess('Password changed successfully!');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        widget.onError(e.toString().replaceFirst('Exception: ', ''));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: const Text(
+        'Change Password',
+        style: TextStyle(fontWeight: FontWeight.w900),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            widget.buildEditField(
+              controller: _currentPasswordController,
+              hint: 'Current Password',
+            ),
+            widget.buildEditField(
+              controller: _newPasswordController,
+              hint: 'New Password',
+            ),
+            widget.buildEditField(
+              controller: _confirmPasswordController,
+              hint: 'Confirm New Password',
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        if (_isLoading)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                color: AppColors.maroon,
+                strokeWidth: 2,
+              ),
+            ),
+          )
+        else ...[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: _submit,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.maroon,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text(
+              'Change',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

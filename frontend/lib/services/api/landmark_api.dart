@@ -39,7 +39,7 @@ class LandmarkApi {
       headers: await ApiConfig.getHeaders(),
     );
 
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
 
     return jsonDecode(response.body);
   }
@@ -78,7 +78,7 @@ class LandmarkApi {
       headers: await ApiConfig.getHeaders(),
     );
 
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
 
     return jsonDecode(response.body);
   }
@@ -129,7 +129,7 @@ class LandmarkApi {
       body: jsonEncode({'qr_code_scanned': qrCode}),
     );
 
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
 
     return jsonDecode(response.body);
   }

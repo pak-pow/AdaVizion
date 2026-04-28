@@ -13,7 +13,7 @@ class AchievementApi {
       headers: await ApiConfig.getHeaders(),
     );
 
-    ApiConfig.handleBackendError(response);
+    await ApiConfig.handleBackendError(response);
 
     final List<dynamic> data = jsonDecode(response.body);
     return data.map((json) => BadgeConfig.fromJson(json)).toList();

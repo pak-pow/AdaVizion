@@ -3,7 +3,7 @@ import 'package:adavizion/theme/app_colors.dart';
 
 class StudentStats extends StatelessWidget {
   final int level;
-  final int toNextLevel;
+  final int currentXp;
   final int landmarksVisited;
   final int landmarksTotal;
   final int quizPoints;
@@ -11,18 +11,15 @@ class StudentStats extends StatelessWidget {
   const StudentStats({
     super.key,
     required this.level,
-    required this.toNextLevel,
+    required this.currentXp,
     required this.landmarksVisited,
     required this.landmarksTotal,
     required this.quizPoints,
   });
 
-
-
   @override
   Widget build(BuildContext context) {
-    final currentXP = (500 - toNextLevel).clamp(0, 500);
-    final xpProgress = currentXP / 500.0;
+    final xpProgress = (currentXp / 500.0).clamp(0.0, 1.0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -56,7 +53,7 @@ class StudentStats extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '$currentXP / 500 XP',
+                    '$currentXp / 500 XP',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

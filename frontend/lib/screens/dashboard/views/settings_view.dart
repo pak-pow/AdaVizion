@@ -23,11 +23,19 @@ import '../../../utils/toast_service.dart';
 // ============================================================================
 
 class SettingsView extends StatefulWidget {
-  const SettingsView({super.key, required this.onEditProfile});
+  const SettingsView({
+    super.key,
+    required this.onEditProfile,
+    this.onProfileUpdated,
+  });
 
   /// Called when "Edit Profile" tile is tapped as a shortcut.
   /// The accordion on this screen is the primary edit entry point.
   final VoidCallback onEditProfile;
+
+  /// Called after a successful profile picture upload so the parent
+  /// (DashboardScreen) can force-refresh the HomeView.
+  final VoidCallback? onProfileUpdated;
 
   @override
   State<SettingsView> createState() => _SettingsViewState();
@@ -143,6 +151,8 @@ class _SettingsViewState extends State<SettingsView> {
       await ProfileApi.uploadProfilePicture(pickedImage);
       await _fetchProfile();
       if (mounted) setState(() => _isEditMode = false);
+      // Notify the parent (DashboardScreen) so it can force-refresh HomeView.
+      widget.onProfileUpdated?.call();
       if (mounted) {
         ToastService.showSuccess(context, 'Profile picture updated!');
       }
@@ -331,76 +341,81 @@ class _SettingsViewState extends State<SettingsView> {
               children: [
                 _buildHeader(),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // ── Detailed profile banner + optional edit form ──
-                        _buildDetailedProfileBanner(),
+                  child: RefreshIndicator(
+                    color: AppColors.maroon,
+                    onRefresh: _fetchProfile,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // ── Detailed profile banner + optional edit form ──
+                          _buildDetailedProfileBanner(),
 
-                        // ── Edit accordion ────────────────────────────────
-                        AnimatedSize(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOutCubic,
-                          alignment: Alignment.topCenter,
-                          child: _isEditMode
-                              ? _buildEditForm()
-                              : const SizedBox(width: double.infinity),
-                        ),
-
-                        const SizedBox(height: 28),
-
-                        // ── Account section ──────────────────────────────
-                        _buildSectionLabel('Account'),
-                        _buildSettingsGroup([
-                          _buildTile(
-                            icon: Icons.notifications_outlined,
-                            label: 'Notifications',
-                            onTap: _showComingSoon,
+                          // ── Edit accordion ────────────────────────────────
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOutCubic,
+                            alignment: Alignment.topCenter,
+                            child: _isEditMode
+                                ? _buildEditForm()
+                                : const SizedBox(width: double.infinity),
                           ),
-                          _buildTile(
-                            icon: Icons.lock_outline,
-                            label: 'Change Password',
-                            onTap: _showChangePasswordDialog,
-                          ),
-                        ]),
 
-                        const SizedBox(height: 20),
+                          const SizedBox(height: 28),
 
-                        // ── App section ──────────────────────────────────
-                        _buildSectionLabel('App'),
-                        _buildSettingsGroup([
-                          _buildTile(
-                            icon: Icons.info_outline,
-                            label: 'App Version',
-                            showArrow: false,
-                            trailing: Text(
-                              'v1.0.0',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                                fontWeight: FontWeight.w500,
+                          // ── Account section ──────────────────────────────
+                          _buildSectionLabel('Account'),
+                          _buildSettingsGroup([
+                            _buildTile(
+                              icon: Icons.notifications_outlined,
+                              label: 'Notifications',
+                              onTap: _showComingSoon,
+                            ),
+                            _buildTile(
+                              icon: Icons.lock_outline,
+                              label: 'Change Password',
+                              onTap: _showChangePasswordDialog,
+                            ),
+                          ]),
+
+                          const SizedBox(height: 20),
+
+                          // ── App section ──────────────────────────────────
+                          _buildSectionLabel('App'),
+                          _buildSettingsGroup([
+                            _buildTile(
+                              icon: Icons.info_outline,
+                              label: 'App Version',
+                              showArrow: false,
+                              trailing: Text(
+                                'v1.0.0',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
-                          ),
-                        ]),
+                          ]),
 
-                        const SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
-                        // ── Session section ──────────────────────────────
-                        _buildSectionLabel('Session'),
-                        _buildSettingsGroup([
-                          _buildTile(
-                            icon: Icons.logout,
-                            label: 'Log Out',
-                            iconColor: AppColors.maroon,
-                            labelColor: AppColors.maroon,
-                            showArrow: false,
-                            onTap: _showLogoutDialog,
-                          ),
-                        ]),
-                      ],
+                          // ── Session section ──────────────────────────────
+                          _buildSectionLabel('Session'),
+                          _buildSettingsGroup([
+                            _buildTile(
+                              icon: Icons.logout,
+                              label: 'Log Out',
+                              iconColor: AppColors.maroon,
+                              labelColor: AppColors.maroon,
+                              showArrow: false,
+                              onTap: _showLogoutDialog,
+                            ),
+                          ]),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -579,7 +594,7 @@ class _SettingsViewState extends State<SettingsView> {
                     if (_courseController.text.isNotEmpty) ...[
                       const SizedBox(height: 5),
                       Text(
-                        _courseController.text,
+                        kBackendPrograms[_courseController.text] ?? _courseController.text,
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.80),
                           fontSize: 11,

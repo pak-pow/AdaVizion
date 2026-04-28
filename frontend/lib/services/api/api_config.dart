@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,6 +21,10 @@ class ApiConfig {
     'API_URL',
     defaultValue: 'http://localhost:3000',
   );
+
+  /// Global key to access the Navigator from outside the widget tree.
+  /// Primarily used by [handleBackendError] to redirect to Login on 401s.
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   /// The key used to store and retrieve the JWT token in SharedPreferences.
   /// Kept private to ensure all token access goes through the methods below.
@@ -104,11 +109,32 @@ class ApiConfig {
       return;
     }
 
+    // ─── AUTOMATIC LOGOUT ON UNAUTHORIZED ─────────────────────────────────────
+    // If the backend rejects the token (401 or 403), we clear the local session
+    // and force the user back to the login screen.
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      logout(); // Clear the token asynchronously
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        '/login',
+        (route) => false,
+      );
+    }
+
     try {
       // Attempt to decode the error body to extract the message field.
       final decoded = jsonDecode(response.body);
       final message = decoded['message'];
+
       if (message != null && message is String) {
+        // Also check for specific "Access denied" message strings just in case
+        // the status code wasn't enough.
+        if (message.contains('Access denied') || message.contains('missing token')) {
+          logout();
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            '/login',
+            (route) => false,
+          );
+        }
         throw Exception(message);
       } else {
         throw Exception('An unknown backend error occurred.');

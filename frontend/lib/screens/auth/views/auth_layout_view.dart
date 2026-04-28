@@ -117,8 +117,6 @@ class AuthLayoutView extends StatelessWidget {
   /// Called when the user taps "Continue" / "Confirm".
   final Future<void> Function() onSubmit;
 
-
-
   @override
   Widget build(BuildContext context) {
     final border = authInputBorder();
@@ -225,7 +223,10 @@ class AuthLayoutView extends StatelessWidget {
                         },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.maroon,
-                          side: const BorderSide(color: AppColors.maroon, width: 2),
+                          side: const BorderSide(
+                            color: AppColors.maroon,
+                            width: 2,
+                          ),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 48,
                             vertical: 24,
@@ -295,19 +296,12 @@ class AuthLayoutView extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 48), // Top padding for mascot
-        if (isLogin)
-          Center(child: Image.asset('assets/images/title.png', height: 100))
-        else
-          const Text(
-            'Welcome to\nEUventure',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w900,
-              color: AppColors.maroon,
-              height: 1.1,
-            ),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 24.0),
+            child: Image.asset('assets/images/title.png', height: 100),
           ),
+        ),
         const SizedBox(height: 12), // Reduced gap below title
         Padding(
           padding: const EdgeInsets.only(

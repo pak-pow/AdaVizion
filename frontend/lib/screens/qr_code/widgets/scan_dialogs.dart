@@ -72,18 +72,19 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
     if (isSecondary) {
       return SizedBox(
         width: width,
-        height: 45,
         child: OutlinedButton(
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.white,
             foregroundColor: AppColors.maroonDark,
             side: const BorderSide(color: AppColors.maroonDark, width: 1.5),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             shape: shape,
           ),
           child: Text(
             label,
+            textAlign: TextAlign.center,
+            softWrap: true,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -92,17 +93,21 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
 
     return SizedBox(
       width: width,
-      height: 45,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.maroonDark,
           foregroundColor: Colors.white,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           shape: shape,
         ),
-        child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          softWrap: true,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
@@ -121,7 +126,7 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
   /// Shows the "Landmark Unlocked!" success dialog after a successful scan.
   ///
   /// Displays the landmark name, a fun-fact card, and the XP earned. Offers
-  /// "Close" (which resets the scanner) and "View Landmark" (which navigates
+  /// "Close" (which resets the scanner) and "View" (which navigates
   /// to [LandmarkDetailView]).
   ///
   /// - [result] is the decoded API response from `LandmarkApi.visitLandmark`.
@@ -134,7 +139,7 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
   }) {
     final landmark = result['landmark'] as Map<String, dynamic>;
     final progress = result['progress'] as Map<String, dynamic>;
-    final xpEarned = progress['xp']['earned'];
+    final xpEarned = (progress['xp'] as Map?)?['earned'] ?? 0;
 
     showDialog(
       context: context,
@@ -178,26 +183,29 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
         actions: [
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: Row(
-              children: [
-                Expanded(
-                  child: buildDialogButton(
-                    label: "Close",
-                    isSecondary: true,
-                    fullWidth: true,
-                    onPressed: () => closeDialogAnd(onReset),
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: buildDialogButton(
+                      label: "Close",
+                      isSecondary: true,
+                      fullWidth: true,
+                      onPressed: () => closeDialogAnd(onReset),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: buildDialogButton(
-                    label: "View Landmark",
-                    fullWidth: true,
-                    onPressed: () =>
-                        closeDialogAnd(() => onViewLandmark(landmark)),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: buildDialogButton(
+                      label: "View",
+                      fullWidth: true,
+                      onPressed: () =>
+                          closeDialogAnd(() => onViewLandmark(landmark)),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -247,25 +255,29 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
       actions: [
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-          child: Row(
-            children: [
-              Expanded(
-                child: buildDialogButton(
-                  label: "Close",
-                  isSecondary: true,
-                  fullWidth: true,
-                  onPressed: () => closeDialogAnd(() => Navigator.pop(context)),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: buildDialogButton(
+                    label: "Close",
+                    isSecondary: true,
+                    fullWidth: true,
+                    onPressed: () =>
+                        closeDialogAnd(() => Navigator.pop(context)),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: buildDialogButton(
-                  label: "Scan Another",
-                  fullWidth: true,
-                  onPressed: () => closeDialogAnd(onReset),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: buildDialogButton(
+                    label: "Scan Another",
+                    fullWidth: true,
+                    onPressed: () => closeDialogAnd(onReset),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],

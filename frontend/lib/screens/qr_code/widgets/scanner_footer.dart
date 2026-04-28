@@ -42,7 +42,7 @@ class ScannerFooter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _ControlButton(
-                onPressed: controller.toggleTorch,
+                onPressed: () async => controller.toggleTorch,
                 icon: ValueListenableBuilder(
                   valueListenable: controller,
                   builder: (context, state, _) => _torchIcon(state.torchState),

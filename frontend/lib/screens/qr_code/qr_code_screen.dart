@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math' as math;
 
 import '../../services/api/landmark_api.dart';
 import '../../services/api/profile_api.dart';
@@ -133,10 +132,12 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
   Future<void> _checkAndShowSafetyReminder() async {
     try {
       final data = await ProfileApi.getProfile();
+      if (!mounted) return;
       final studentNumber = data['info']['student_number'] as String?;
       if (studentNumber == null) return;
 
       final prefs = await SharedPreferences.getInstance();
+      if (!mounted) return;
       final key = 'safety_reminder_shown_$studentNumber';
       if (prefs.getBool(key) ?? false) return;
 
@@ -154,7 +155,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surfaceWhite,
+      backgroundColor: AppColors.surfaceBlack,
 
       // ── APP BAR ──────────────────────────────────────────────────────────────
       appBar: AppBar(
@@ -306,11 +307,17 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
     }
   }
 
-  /// Disposes and recreates the scanner controller, resetting permission state.
+  /// Disposes and recreates the scanner controller to retry camera permission.
   ///
   /// On web, recreating the controller re-calls `getUserMedia`, which
   /// re-triggers the browser permission prompt.
+  ///
+  /// > **Note:** If the user has permanently denied camera access in their
+  /// > browser/OS settings, the prompt will not reappear. The
+  /// > [PermissionDeniedView] message already guides them to settings.
   void _retryPermission() {
+    if (_isLoading) return;
+
     _disposeController();
     _initController();
     setState(() {

@@ -51,6 +51,9 @@ abstract final class AppColors {
   /// Near-white surface color. Used for screen backgrounds.
   static const Color surfaceWhite = Color(0xFFF7F7F9);
 
+  /// Near-black surface color. Used for screen backgrounds (primarily in QR SCAN).
+  static const Color surfaceBlack = Color(0xFF080806);
+
   // --- Neutral / Grey semantic tokens ---
   static const Color textPrimary = Color(0xFF1A1A1A);
   static const Color textSecondary = Color(0xFF757575); // shade 600

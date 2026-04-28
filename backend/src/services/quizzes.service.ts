@@ -80,6 +80,9 @@ async function fetchQuiz(studentNum: string, quizId: number) {
       choices: response.question.choices,
       your_answer: response.selected_idx,
       item_points: response.question.item_points,
+      answered_at: response.answered_at,
+      created_at: response.question.created_at,
+      updated_at: response.question.updated_at
     }));
   } 
   // If not taken, return the raw questions without the correct answers

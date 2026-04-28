@@ -56,9 +56,19 @@
     // <video> element natively so the camera feed displays correctly.
     window.flutterConfiguration = {
       renderer: (function() {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        return (isIOS || isSafari) ? 'html' : 'canvaskit';
+        const ua = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+        const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+        const isIOSChrome = /CriOS/.test(ua);
+
+        const useHtml = isIOS || isSafari || isIOSChrome;
+        
+        if (useHtml) {
+          console.log("Forcing HTML renderer for iOS/Safari compatibility");
+          window.flutterWebRenderer = "html"; // Legacy flag, still highly effective
+          return 'html';
+        }
+        return 'canvaskit';
       })()
     };
   </script>

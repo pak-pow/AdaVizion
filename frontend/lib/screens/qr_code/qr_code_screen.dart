@@ -404,11 +404,21 @@ class _QRCodeScreenState extends State<QRCodeScreen> with ScanDialogsMixin {
     try {
       final result = await LandmarkApi.visitLandmark(qrCode);
       if (!mounted) return;
+
+      // Await the dialog so toasts fire only after it's dismissed.
       showSuccessDialog(
         result: result,
         onReset: _resetScanner,
         onViewLandmark: _navigateToLandmarkDetails,
       );
+
+      // Fire toasts after dialog open animation settles (~400ms).
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (!mounted) return;
+      });
+
+      if (!mounted) return;
+      showRewardToasts(result);
     } catch (e) {
       if (!mounted) return;
       ScanErrorHandler.handle(

@@ -132,7 +132,7 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
   /// - [result] is the decoded API response from `LandmarkApi.visitLandmark`.
   /// - [onReset] resets the scanner to resume scanning after the dialog closes.
   /// - [onViewLandmark] navigates to the landmark detail screen.
-  void showSuccessDialog({
+  Future<void> showSuccessDialog({
     required Map<String, dynamic> result,
     required VoidCallback onReset,
     required void Function(Map<String, dynamic>) onViewLandmark,
@@ -141,7 +141,7 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
     final progress = result['progress'] as Map<String, dynamic>;
     final xpEarned = (progress['xp'] as Map?)?['earned'] ?? 0;
 
-    showDialog(
+    return showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -362,6 +362,85 @@ mixin ScanDialogsMixin<T extends StatefulWidget> on State<T> {
           ),
         ),
       ],
+    );
+  }
+
+  // Inside ScanDialogsMixin, after showSafetyReminderDialog()
+
+  // ─── REWARD TOASTS ────────────────────────────────────────────────────────
+
+  /// Fires floating snackbars for level-up and/or newly unlocked achievements.
+  void showRewardToasts(Map<String, dynamic> result) {
+    final progress = result['progress'] as Map<String, dynamic>? ?? {};
+    final levelData = progress['level'] as Map?;
+    final didLevelUp = levelData?['did_level_up'] as bool? ?? false;
+    final currentLevel = levelData?['current'] ?? 0;
+    final achievements =
+        (result['new_achievements'] as List?)?.cast<Map<String, dynamic>>() ??
+        [];
+
+    int slot = 0;
+
+    if (didLevelUp) {
+      Future.delayed(Duration(milliseconds: slot * 3500), () {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          _buildToast(
+            icon: '🎉',
+            message: 'Level Up! You are now Level $currentLevel!',
+            color: AppColors.maroonGradientBottom,
+          ),
+        );
+      });
+      slot++;
+    }
+
+    for (final achievement in achievements) {
+      final title =
+          achievement['title']?.toString() ??
+          'Achievement'; // ← 'title' not 'name'
+      final offset = slot * 3500;
+      Future.delayed(Duration(milliseconds: offset), () {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          _buildToast(
+            icon: '🏆',
+            message: 'Achievement Unlocked: $title',
+            color: AppColors.maroon,
+          ),
+        );
+      });
+      slot++;
+    }
+  }
+
+  /// Builds a branded floating [SnackBar].
+  SnackBar _buildToast({
+    required String icon,
+    required String message,
+    required Color color,
+  }) {
+    return SnackBar(
+      content: Row(
+        children: [
+          Text(icon, style: const TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: color,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      duration: const Duration(seconds: 3),
     );
   }
 }
